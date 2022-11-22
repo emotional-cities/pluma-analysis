@@ -8,7 +8,10 @@ dependencies:
   - jupyter
   - s3fs
   - pip
+  - git
+  - nepy
   - pip:
     - pyubx2
     - tilemapbase
     - dotmap
+    - git+https://github.com/emotional-cities/pluma-analysis

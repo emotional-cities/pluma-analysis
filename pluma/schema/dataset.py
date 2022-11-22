@@ -1,9 +1,12 @@
 import pickle
 import os
 
+from dotmap import DotMap
+from typing import Union
+
 from pluma.schema.outdoor import build_schema
 from pluma.sync.ubx2harp import get_clockcalibration_ubx_to_harp_clock
-from pluma.stream import StreamType
+from pluma.stream import StreamType, Stream
 
 from pluma.plotting import maps
 
@@ -63,6 +66,36 @@ class Dataset:
         self.georeference.from_dataframe(navdata)
         if strip is True:
             self.georeference.strip()
+
+
+    def reload_streams(self,
+                       schema: Union[DotMap, Stream, None] = None,
+                       force_load: bool = False) -> None:
+        """Recursively loads, from disk , all available streams in the streams' schema
+
+        Args:
+            schema (Union[DotMap, Stream, None]): Target schema to reload. \
+                If None it will default to the Dataset.streams schema. Defaults to None.
+            force_load (bool, optional): If True, it will attempt to load any stream found,\
+                ignoring the stream.autoload value. Defaults to False.
+        Raises:
+            TypeError: An error is raised if a not allowed type is passed.
+        """
+        if schema is None:
+            schema = self.streams
+
+        if isinstance(schema, Stream):
+            if force_load is True:
+                schema.load()
+            else:
+                if schema.autoload is True:
+                    schema.load()
+        elif isinstance(schema, DotMap):
+            for _stream in schema.values():
+                self.reload_streams(_stream, force_load=force_load)
+        else:
+            raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
+
 
     def export_streams(self, filename: str = None):
         """Serializes and exports the dataset as a pickle object.

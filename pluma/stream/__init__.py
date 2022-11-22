@@ -8,6 +8,7 @@ class StreamType(Enum):
 	ACCELEROMETER = 'AccelerometerStream'
 	MICROPHONE = 'MicrophoneStream'
 	EMPATICA = 'EmpaticaStream'
+	EEG = 'EegStream'
 
 
 class Stream:

@@ -17,10 +17,14 @@ class UbxStream(Stream):
 		self.positiondata = None
 		self.clock_calib_model = None  # Store the model here
 		self.streamtype = StreamType.UBX
+		self.autoload_messages = autoload_messages
 		if self.autoload:
-			self.load_event_list(autoload_messages)
+			self.load_event_list(self.autoload_messages)
 
-	def load(self, event: _UBX_MSGIDS):
+	def load(self):
+		self.load_event_list(self.autoload_messages)
+
+	def load_event(self, event: _UBX_MSGIDS):
 		self._update_dotmap(event,
                       load_ubx_event_stream(
                           event,
@@ -35,7 +39,7 @@ class UbxStream(Stream):
 
 	def load_event_list(self, events: list):
 		for event in events:
-			self.load(event)
+			self.load_event(event)
 
 	def parseposition(self,
                    event: _UBX_MSGIDS = _UBX_MSGIDS.NAV_HPPOSLLH,

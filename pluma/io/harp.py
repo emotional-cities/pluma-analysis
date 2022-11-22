@@ -31,6 +31,7 @@ def read_harp_bin(file: str, time_offset: float = 0) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Dataframe with address data indexed by time (Seconds)
     """
+
     data = np.fromfile(file, dtype=np.uint8)
 
     if len(data) == 0:
@@ -106,13 +107,16 @@ def load_harp_stream(streamID: int,
     """
 
     path = get_stream_path(streamID, root)
-    if os.path.isfile(path):
-        data = read_harp_bin(path)
-        return data
-    else:
-        if throwFileError:
-            raise FileExistsError
-        else:
-            warnings.warn(f'Harp stream with Id {streamID} not found')
-            return pd.DataFrame()
+    try:
+        return read_harp_bin(path)
+    except FileNotFoundError:
+        warnings.warn(f'Harp stream file\
+            {path} could not be found.')
+        return pd.DataFrame()
+    except FileExistsError:
+        warnings.warn(f'Harp stream file\
+            {path} could not be found.')
+        return pd.DataFrame()
+
+
 

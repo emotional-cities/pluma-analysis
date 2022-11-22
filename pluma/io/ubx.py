@@ -28,8 +28,18 @@ def read_ubx_file(path: str) -> pd.DataFrame:
 
     print(f'Opening file {path}...')
     out = []
-    with open(path, 'rb') as fstream:
-        out = read(fstream)
+
+    try:
+        with open(path, 'rb') as fstream:
+            out = read(fstream)
+    except FileNotFoundError:
+        warnings.warn(f'UBX file\
+            {path} could not be found.')
+        return pd.DataFrame()
+    except FileExistsError:
+        warnings.warn(f'UBX file\
+            {path} could not be found.')
+        return pd.DataFrame()
 
     df = pd.DataFrame({'Message': out})
     df['Identity'] = df['Message'].apply(lambda x: x.identity)
@@ -40,33 +50,19 @@ def read_ubx_file(path: str) -> pd.DataFrame:
     print('Done.')
     return df
 
-@DeprecationWarning
-def filter_ubx_event(df: pd.DataFrame, event: str) -> pd.DataFrame:
-    """Filters a UBX dataframe by the specified event (or "Identity") string.
-
-    Args:
-        df (pd.DataFrame): Input DataFrame with UBX data. E.g. the output of read_ubx_file()
-        event (str): Identity label used to filter the messages.
-
-    Returns:
-        pd.DataFrame: _description_
-    """
-    return df.loc[df['Identity'] == event, :]
-
-
 def load_ubx_bin_event(root: str,
                        ubxmsgid: _UBX_MSGIDS,
-                       ubxfolder: str = 'ubx',
+                       ubxfolder: str = 'UBX',
                        ext: str = 'bin') -> pd.DataFrame:
-    filename = f'{ubxfolder}\{ubxmsgid.value.upper()}.{ext}'
+    filename = os.path.join(f'{ubxfolder}',f'{ubxmsgid.value.upper()}.{ext}')
     return load_ubx_bin(filename, root)
 
 
 def load_ubx_harp_ts_event(root: str,
                            ubxmsgid: _UBX_MSGIDS,
-                           ubxfolder: str = 'ubx',
+                           ubxfolder: str = 'UBX',
                            ext: str = 'csv') -> pd.DataFrame:
-    filename = f'{ubxfolder}\{ubxmsgid.value.upper()}.{ext}'
+    filename = os.path.join(f'{ubxfolder}',f'{ubxmsgid.value.upper()}.{ext}')
     return load_ubx_harp_ts(filename, root)
 
 
@@ -143,31 +139,6 @@ def load_ubx_event_stream(ubxmsgid: _UBX_MSGIDS,
         return bin_file
     else:
         raise ValueError('Misalignment found between CSV and UBX arrays.')
-
-
-@DeprecationWarning
-def load_ubx_stream(root: str = '') -> pd.DataFrame:
-    """Helper function that outputs the merge the outputs of load_ubx_bin() and load_ubx_harp_ts().
-    It additionally checks if, for each binary messages there exists the correspondent timestamped event.
-
-    Args:
-        root (str, optional): Root path for both .csv and .bin files. Defaults to ''.
-
-    Raises:
-        ValueError: Raises an error if there is a mismatch between the two files.
-
-    Returns:
-        pd.DataFrame: DataFrame indexed by the message times found in the output of load_ubx_harp_ts()
-    """
-    bin_file = load_ubx_bin(root=root)
-    csv_file = load_ubx_harp_ts(root=root)
-    if (bin_file['Class'].values == csv_file['Class'].values).all():
-        bin_file['Seconds'] = csv_file.index
-        bin_file = bin_file.set_index('Seconds')
-        return bin_file
-    else:
-        raise ValueError('Misalignment found between CSV and UBX arrays.')
-
 
 def errhandler(err):
     '''

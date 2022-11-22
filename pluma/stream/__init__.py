@@ -31,6 +31,9 @@ class Stream:
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE
 
+	def load(self):
+		raise NotImplementedError("load() method is not implemented for the Stream base class.")
+
 	def plot(self, col = None , **kwargs):
 		if self.data.empty:
 			raise ValueError("Input dataframe is empty.")

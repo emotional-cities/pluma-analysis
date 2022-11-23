@@ -1,4 +1,5 @@
 from dotmap import DotMap
+from typing import Union
 
 from pluma.stream.harp import HarpStream
 from pluma.stream.accelerometer import AccelerometerStream
@@ -6,8 +7,10 @@ from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.microphone import MicrophoneStream
 
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
-def build_schema(root: str = None, autoload: bool = False) -> DotMap:
+def build_schema(root: Union[str, ComplexPath],
+                 autoload: bool = False) -> DotMap:
     """Builds a stream schema from a predefined structure.
 
     Args:
@@ -17,6 +20,7 @@ def build_schema(root: str = None, autoload: bool = False) -> DotMap:
     Returns:
         DotMap: DotMap with all the created data streams.
     """
+    root = ensure_complexpath(root)
     streams = DotMap()
     # BioData streams
     streams.BioData.EnableStreams =               HarpStream(32, device='BioData', streamlabel='EnableStreams', root=root, autoload=autoload)

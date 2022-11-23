@@ -1,5 +1,8 @@
 from enum import Enum
 import matplotlib.pyplot as plt
+from typing import Union
+
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 class StreamType(Enum):
 	NONE = None
@@ -14,7 +17,12 @@ class StreamType(Enum):
 class Stream:
 	"""Based class for all stream types
 	"""
-	def __init__(self, device : str, streamlabel : str, root = '', data : any = None, autoload : bool = True):
+	def __init__(self,
+              device: str,
+              streamlabel: str,
+              root: Union[str, ComplexPath] = '',
+              data: any = None,
+              autoload: bool = True):
 		"""_summary_
 		Args:
 			device (str): Device label
@@ -26,29 +34,37 @@ class Stream:
 
 		self.device = device
 		self.streamlabel = streamlabel
-		self.rootfolder = root
+		self._rootfolder = self.rootfolder = ensure_complexpath(root)
 		self.data = data
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE
 
+	@property
+	def rootfolder(self):
+		return self._rootfolder
+
+	@rootfolder.setter
+	def rootfolder(self, value: Union[str, ComplexPath]):
+		self._rootfolder = ensure_complexpath(value)
+
 	def load(self):
 		raise NotImplementedError("load() method is not implemented for the Stream base class.")
 
-	def plot(self, col = None , **kwargs):
+	def plot(self, col=None, **kwargs):
 		if self.data.empty:
 			raise ValueError("Input dataframe is empty.")
 		thisfigure = plt.figure()
 		label = self.device + "." + self.streamlabel
 		if col is None:
-			plt.plot(self.data, **kwargs, label = label)
+			plt.plot(self.data, **kwargs, label=label)
 		else:
-			plt.plot(self.data.loc[col], **kwargs, label = label)
+			plt.plot(self.data.loc[col], **kwargs, labe=label)
 		plt.xlabel("Time")
 		plt.ylabel("Sensor value (a.u.)")
 		plt.title(label)
 		return thisfigure
 
-	def slice(self, start = None, end = None):
+	def slice(self, start=None, end=None):
 		if (start is not None) & (end is not None):
 			return self.data.loc[start:end]
 		elif (start is None) & (end is not None):

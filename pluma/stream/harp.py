@@ -42,8 +42,7 @@ class HarpStream(Stream):
 
 	def load(self):
 		self.data = load_harp_stream(self.eventcode,
-                               root=self.rootfolder,
-                               throwFileError=False)
+                               root=self.rootfolder)
 
 	def __str__(self):
 		return (f'Harp stream from device \

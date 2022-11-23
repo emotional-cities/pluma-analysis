@@ -8,6 +8,7 @@ dependencies:
   - jupyter
   - s3fs
   - pip
+  - simplekml
   - pip:
     - pyubx2
     - tilemapbase

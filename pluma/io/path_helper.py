@@ -21,7 +21,8 @@ class ComplexPath():
                  remotetype: RemoteType = RemoteType.WIN) -> None:
 
         self._remote = RemoteType.NONE
-        self._root = self.root = root
+        self._root = root
+        self.root = self._root
 
     # Instance properties
     @property

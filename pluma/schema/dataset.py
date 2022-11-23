@@ -1,5 +1,4 @@
 import pickle
-import os
 
 from dotmap import DotMap
 from typing import Union

@@ -31,6 +31,7 @@ class ComplexPath():
     @root.setter
     def root(self, value: str):
         self._remote_type_conversion(value)
+        value = self._format_os_path(value)
         self._root = value
 
     @property
@@ -52,7 +53,8 @@ class ComplexPath():
 
     # Class methods
     def join_to_str(self, path: str) -> str:
-        return os.path.join(self.root, path)
+        print(os.path.join(self.root, path))
+        return self._format_os_path(os.path.join(self.root, path))
 
     def join(self, path: str):
         return ComplexPath(self.join_to_str(path))
@@ -69,6 +71,16 @@ class ComplexPath():
                 )
 
     # Helper private methods
+    def _format_os_path(self, path):
+        if self.remote == RemoteType.WIN:
+            return path.replace("/", "\\")
+        elif self.remote == RemoteType.AWS:
+            return path.replace("\\", "/")
+        elif self.remote == RemoteType.UNIX:
+            return path.replace("\\", "/")
+        else:
+            return path.replace("\\", "/")
+
     def _remote_type_conversion(self, new_root: str):
         self.remote = self._parse_remote_type(new_root)
 

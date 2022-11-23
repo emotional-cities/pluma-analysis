@@ -14,11 +14,12 @@ class RemoteType (Enum):
 
 
 class ComplexPath():
+    s3fs = S3FileSystem()
+
     def __init__(self,
                  root: str = '',
                  remotetype: RemoteType = RemoteType.WIN) -> None:
 
-        self._s3fs = S3FileSystem()
         self._remote = RemoteType.NONE
         self._root = self.root = root
 
@@ -46,14 +47,18 @@ class ComplexPath():
     def iss3f(self):
         return self.remote == RemoteType.AWS
 
+    def str(self):
+        return self.root
+
     # Class methods
-    def join(self, path: str, force_str: bool = False) -> str:
-        if force_str is True:
-            return os.path.join(self.root, path)
-        else:
-            return self._dynamic_path_constructor(
-                os.path.join(self.root, path)
-                )
+    def join_to_str(self, path: str) -> str:
+        return os.path.join(self.root, path)
+
+    def join(self, path: str):
+        return ComplexPath(self.join_to_str(path))
+
+    def append(self, path: str) -> None:
+        self.root = self.join(path)
 
     def format(self, force_str: bool = False) -> str:
         if force_str is True:
@@ -78,7 +83,7 @@ class ComplexPath():
         if self._remote == RemoteType.WIN:
             return path
         elif self._remote == RemoteType.AWS:
-            return self._s3fs.open(path)
+            return self.s3fs.open(path)
         else:
             return path
 
@@ -94,5 +99,16 @@ class ComplexPath():
 def ensure_complexpath(root: Union[str, ComplexPath]) -> ComplexPath:
     if isinstance(root, str):
         return ComplexPath(root=root)
-    else:
+    elif isinstance(root, ComplexPath):
         return root
+    else:
+        raise TypeError("Must be of str or ComplexPath type")
+
+
+def ensure_strpath(root: Union[str, ComplexPath]) -> str:
+    if isinstance(root, str):
+        return root
+    elif isinstance(root, ComplexPath):
+        return ComplexPath(root)
+    else:
+        raise TypeError("Must be of str or ComplexPath type")

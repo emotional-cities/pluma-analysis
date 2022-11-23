@@ -14,21 +14,23 @@ from pluma.stream.ubx import UbxStream
 
 from pluma.stream.georeference import Georeference
 
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
+
 
 class Dataset:
 
     def __init__(self,
-                 root: str,
+                 root: Union[str, ComplexPath],
                  datasetlabel: str = '',
                  georeference: Georeference = Georeference()):
         """High level class to represent an entire dataset. Loads and
         contains all the streams and methods for general dataset management.
 
         Args:
-            root (str): Path to the folder containing the full dataset raw data.
+            root (Union[str, Path]): Path to the folder containing the full dataset raw data.
             datasetlabel (str, optional): Descriptive label. Defaults to ''.
         """
-        self.rootfolder = root
+        self.rootfolder = ensure_complexpath(root)
         self.datasetlabel = datasetlabel
         self.georeference = georeference
         self.streams = None
@@ -41,9 +43,12 @@ class Dataset:
         """_summary_
 
         Args:
-            ubxstream (UbxStream, optional): UBX stream that will be used to automatically generate a vallid NavData. Defaults to None.
-            event (str, optional): If ubxstream is None, this string will be used to extract the valid position event. Defaults to "NAV-HPPOSLLH".
-            calibrate_clock (bool, optional): If True, automatic drift correction will be attempted to correct the UBX clock to the harp clock. Defaults to True.
+            ubxstream (UbxStream, optional): UBX stream that will be used to automatically\
+                generate a valid NavData. Defaults to None.
+            event (str, optional): If ubxstream is None, this string will be used to\
+                extract the valid position event. Defaults to "NAV-HPPOSLLH".
+            calibrate_clock (bool, optional): If True, automatic drift correction will\
+                be attempted to correct the UBX clock to the harp clock. Defaults to True.
 
         Raises:
             ImportError: Raises an error if the import of the UBX stream fails.
@@ -66,7 +71,6 @@ class Dataset:
         self.georeference.from_dataframe(navdata)
         if strip is True:
             self.georeference.strip()
-
 
     def reload_streams(self,
                        schema: Union[DotMap, Stream, None] = None,
@@ -96,15 +100,15 @@ class Dataset:
         else:
             raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
 
-
     def export_streams(self, filename: str = None):
         """Serializes and exports the dataset as a pickle object.
 
         Args:
-            filename (str, optional): Path to save the .pickle file. If None, it will save to Dataset.root. Defaults to None.
+            filename (str, optional): Path to save the .pickle file.\
+                If None, it will save to Dataset.root. Defaults to None.
         """
         if filename is None:
-            filename = os.path.join(self.rootfolder, 'dataset.pickle')
+            filename = self.rootfolder.join_to_str('dataset.pickle')
         with open(filename, 'wb') as handle:
             pickle.dump(self.streams, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -112,36 +116,49 @@ class Dataset:
         """Deserializes and imports the dataset as a pickle object.
 
         Args:
-            filename (str, optional): Path to load the .pickle file from. If None, it will use Dataset.root. Defaults to None.
+            filename (str, optional): Path to load the .pickle file from.\
+                If None, it will use Dataset.root. Defaults to None.
         """
         if filename is None:
-            filename = os.path.join(self.rootfolder, 'dataset.pickle')
+            filename = self.rootfolder.join_to_str('dataset.pickle')
         with open(filename, 'rb') as handle:
             self.streams = pickle.load(handle)
 
-    def populate_streams(self, root: str = None, autoload: bool = False):
+    def populate_streams(self,
+                         root: Union[str, ComplexPath, None] = None,
+                         autoload: bool = False):
         """Populates the streams property with all the schema information.
 
         Args:
-            root (str, optional): Path to the folder containing the full dataset rawdata. If None, it will default to Dataset.root.
-            autoload (bool, optional): If True it will automatically attempt to load data from disk. Defaults to False.
+            root (str, optional): Path to the folder containing the full\
+                dataset rawdata. If None, it will default to Dataset.root.
+            autoload (bool, optional): If True it will automatically\
+                attempt to load data from disk. Defaults to False.
         """
         if root is None:
             root = self.rootfolder
-        self.streams = build_schema(root=root, autoload=autoload)
+        if isinstance(root, str):
+            root = ComplexPath(root)
+        root = ensure_complexpath(root)
+        self.streams = build_schema(
+            root=root,
+            autoload=autoload)
 
     def calibrate_ubx_to_harp(self,
                               dt_error: float = 0.002,
                               plot_diagnosis: bool = False,
                               r2_min_qc: float = 0.99):
-        """Attempts to calibrate the ubx clock to harp clock using the synchronization pulses
-        as a reference.
+        """Attempts to calibrate the ubx clock to harp clock using\
+            the synchronization pulses as a reference.
 
         Args:
-            dt_error (float, optional): Allowed error between the derivate of timestamps detected in the two streams. Defaults to 0.002 seconds.
-            plot_diagnosis (bool, optional): If True plots the output of the syncing algorithm. Defaults to False.
+            dt_error (float, optional): Allowed error between the derivate\
+                of timestamps detected in the two streams. Defaults to 0.002 seconds.
+            plot_diagnosis (bool, optional): If True plots the output of\
+                the syncing algorithm. Defaults to False.
             r2_min_qc (float, optional): Quality control parameter.
-            If < r2_min_qc, an error will be raised, since it likely results from an automatic correction procedure. Defaults to 0.99.
+            If < r2_min_qc, an error will be raised, since it likely\
+                results from an automatic correction procedure. Defaults to 0.99.
         """
         self.streams.UBX.clock_calib_model =\
             get_clockcalibration_ubx_to_harp_clock(

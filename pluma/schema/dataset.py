@@ -85,6 +85,7 @@ class Dataset:
         Raises:
             TypeError: An error is raised if a not allowed type is passed.
         """
+
         if schema is None:
             schema = self.streams
 

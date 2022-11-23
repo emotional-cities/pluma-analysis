@@ -54,7 +54,6 @@ class ComplexPath():
 
     # Class methods
     def join_to_str(self, path: str) -> str:
-        print(os.path.join(self.root, path))
         return self._format_os_path(os.path.join(self.root, path))
 
     def join(self, path: str):

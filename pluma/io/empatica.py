@@ -3,12 +3,14 @@ import warnings
 
 import pandas as pd
 from dotmap import DotMap
+from typing import Union
 
 from pluma.io.harp import _HARP_T0
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
 def load_empatica(filename: str = 'empatica_harp_ts.csv',
-                  root: str = '') -> DotMap:
+                  root: Union[str, ComplexPath] = '') -> DotMap:
     """Loads the raw Empatica data, from a .csv file, to a DotMap structure.
 
     Args:
@@ -18,10 +20,22 @@ def load_empatica(filename: str = 'empatica_harp_ts.csv',
     Returns:
         DotMap: DotMap where each Empatica message type can be indexed.
     """
+    root = ensure_complexpath(root)
+
     try:
-        df = pd.read_csv(os.path.join(root, filename),
-                         names=['Message', 'Seconds'],
-                         delimiter=',', header=1)
+        if isinstance(root, ComplexPath):
+            if root.iss3f():
+                df = pd.read_csv(root.join(filename).format(),
+                                 names=['Message', 'Seconds'],
+                                 delimiter=',', header=1)
+            else:
+                df = pd.read_csv(root.join_to_str(filename),
+                                 names=['Message', 'Seconds'],
+                                 delimiter=',', header=1)
+        else:
+            df = pd.read_csv(root.join_to_str(filename),
+                             names=['Message', 'Seconds'],
+                             delimiter=',', header=1)
     except FileNotFoundError:
         warnings.warn(f'Empatica stream file {filename} could not be found.')
         return

@@ -35,14 +35,18 @@ def read_harp_bin(file: Union[str, ComplexPath],
     Returns:
         pd.DataFrame: Dataframe with address data indexed by time (Seconds)
     """
-    if isinstance(file, ComplexPath):
-        if file.iss3f():
-            data = np.frombuffer(file.format().read(), dtype=np.uint8)
-        else:
-            data = np.fromfile(file, dtype=np.uint8)
-    else:
-        data = np.fromfile(file, dtype=np.uint8)
-
+    path = ensure_complexpath(file)
+    try:
+        with path.open('rb') as stream:
+            data = np.frombuffer(stream.read(), dtype=np.uint8)
+    except FileNotFoundError:
+        warnings.warn(f'Harp stream file\
+            {path} could not be found.')
+        return pd.DataFrame()
+    except FileExistsError:
+        warnings.warn(f'Harp stream file\
+            {path} could not be found.')
+        return pd.DataFrame()
     if len(data) == 0:
         return None
 
@@ -81,52 +85,23 @@ def read_harp_bin(file: Union[str, ComplexPath],
             columns=['Value' + str(x) for x in np.arange(payload.shape[1])])
 
 
-def get_stream_path(streamID: int,
-                    root: Union[str, ComplexPath] = '',
-                    suffix: str = 'Streams_',
-                    ext: str = '') -> str:
-    """Helper function to generate a full path of the harp stream binary file.
-
-    Args:
-        streamID (int): Integer ID of the harp stream (aka address).
-        root (str, optional): Root path where filename is expected to be found. Defaults to ''.
-        suffix (str, optional): Suffix of the binary file name. Defaults to 'Streams_'.
-        ext (str, optional): Extension. Defaults to ''.
-
-    Returns:
-        str: The absolute path of the binary file
-    """
-    root = ensure_complexpath(root)
-    fullfile = f'{suffix}{streamID}{ext}'
-    return root.join(fullfile)
-
-
 def load_harp_stream(streamID: int,
-                     root: Union[str, ComplexPath] = '') -> pd.DataFrame:
-    """Helper function that runs read_harp_bin() with arguments built using get_stream_path()
+                     root: Union[str, ComplexPath] = '',
+                     suffix: str = 'Streams_',
+                     ext: str = '') -> pd.DataFrame:
+    """Helper function that runs read_harp_bin()
 
     Args:
         streamID (int): Integer ID of the harp stream (aka address).
-        root (str, optional): Root path where filename is expected to be found. Defaults to ''.
-
-    Raises:
-        FileExistsError: Error if a binary file is not found.
+        root (Union[str, ComplexPath], optional): Root path where filename is expected to be found. Defaults to ''.
+        suffix (str, optional): Expected file suffix. Defaults to 'Streams_'.
+        ext (str, optional): Expected file extension Defaults to ''.
 
     Returns:
         pd.DataFrame: Dataframe with address data indexed by time (Seconds)
     """
-
-    path = get_stream_path(streamID, root)
-    try:
-        return read_harp_bin(path)
-    except FileNotFoundError:
-        warnings.warn(f'Harp stream file\
-            {path} could not be found.')
-        return pd.DataFrame()
-    except FileExistsError:
-        warnings.warn(f'Harp stream file\
-            {path} could not be found.')
-        return pd.DataFrame()
-
+    path = ensure_complexpath(root)
+    path.join(f'{suffix}{streamID}{ext}')
+    return read_harp_bin(path)
 
 

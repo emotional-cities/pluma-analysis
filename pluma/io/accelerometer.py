@@ -32,19 +32,11 @@ def load_accelerometer(
     Returns:
         pd.DataFrame: Dataframe with descriptive data indexed by time (Seconds)
     """
-    root = ensure_complexpath(root)
+    path = ensure_complexpath(root)
+    path.join(filename)
     try:
-        if isinstance(root, ComplexPath):
-            if root.iss3f():
-                acc_df = pd.read_csv(root.join(filename).format(),
-                                     header=None,
-                                     names=_accelerometer_header)
-            else:
-                acc_df = pd.read_csv(root.join_to_str(filename),
-                                     header=None,
-                                     names=_accelerometer_header)
-        else:
-            acc_df = pd.read_csv(root.join_to_str(filename),
+        with path.open('rb') as stream:
+            acc_df = pd.read_csv(stream,
                                  header=None,
                                  names=_accelerometer_header)
     except FileNotFoundError:
@@ -53,6 +45,7 @@ def load_accelerometer(
     except FileExistsError:
         warnings.warn(f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
         return
+
     acc_df['Seconds'] = _HARP_T0 + pd.to_timedelta(acc_df['Seconds'].values, 's')
     acc_df['SoftwareTimestamp'] = \
         _HARP_T0 + pd.to_timedelta(acc_df['SoftwareTimestamp'].values, 's')

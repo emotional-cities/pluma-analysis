@@ -20,20 +20,11 @@ def load_empatica(filename: str = 'empatica_harp_ts.csv',
     Returns:
         DotMap: DotMap where each Empatica message type can be indexed.
     """
-    root = ensure_complexpath(root)
-
+    path = ensure_complexpath(root)
+    path.join(filename)
     try:
-        if isinstance(root, ComplexPath):
-            if root.iss3f():
-                df = pd.read_csv(root.join(filename).format(),
-                                 names=['Message', 'Seconds'],
-                                 delimiter=',', header=1)
-            else:
-                df = pd.read_csv(root.join_to_str(filename),
-                                 names=['Message', 'Seconds'],
-                                 delimiter=',', header=1)
-        else:
-            df = pd.read_csv(root.join_to_str(filename),
+        with path.open('rb') as stream:
+            df = pd.read_csv(stream,
                              names=['Message', 'Seconds'],
                              delimiter=',', header=1)
     except FileNotFoundError:
@@ -42,6 +33,7 @@ def load_empatica(filename: str = 'empatica_harp_ts.csv',
     except FileExistsError:
         warnings.warn(f'Empatica stream file {filename} could not be found.')
         return
+
     df['Seconds'] = _HARP_T0 + pd.to_timedelta(df['Seconds'].values, 's')
     df.set_index('Seconds', inplace=True)
     df['StreamId'] = df['Message'].apply(lambda x: x.split(' ')[0])

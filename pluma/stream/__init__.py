@@ -2,7 +2,8 @@ from enum import Enum
 import matplotlib.pyplot as plt
 from typing import Union
 
-from pluma.io.path_helper import ComplexPath, ensure_complexpath
+from pluma.io.path_helper import ComplexPath
+
 
 class StreamType(Enum):
 	NONE = None
@@ -34,7 +35,7 @@ class Stream:
 
 		self.device = device
 		self.streamlabel = streamlabel
-		self._rootfolder = self.rootfolder = ensure_complexpath(root)
+		self._rootfolder = self.rootfolder = root
 		self.data = data
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE
@@ -45,7 +46,7 @@ class Stream:
 
 	@rootfolder.setter
 	def rootfolder(self, value: Union[str, ComplexPath]):
-		self._rootfolder = ensure_complexpath(value)
+		self._rootfolder = value
 
 	def load(self):
 		raise NotImplementedError("load() method is not implemented for the Stream base class.")

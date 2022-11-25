@@ -1,4 +1,3 @@
-import os
 import warnings
 
 import pyubx2 as ubx
@@ -19,6 +18,15 @@ _UBX_MSGIDS = Enum('_UBX_MSGIDS',
                     for x in ubx.UBX_MSGIDS.values()})
 
 
+def load_ubx_bin_event(root: Union[str, ComplexPath],
+                       ubxmsgid: _UBX_MSGIDS,
+                       ubxfolder: str = 'UBX',
+                       ext: str = 'bin') -> pd.DataFrame:
+    root = ensure_complexpath(root)
+    root.join([ubxfolder, f'{ubxmsgid.value.upper()}.{ext}'])
+    return read_ubx_file(root)
+
+
 def read_ubx_file(path: Union[str, ComplexPath]) -> pd.DataFrame:
     """Outputs a dataframe with all messages from UBX binary file.
 
@@ -28,20 +36,11 @@ def read_ubx_file(path: Union[str, ComplexPath]) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Output DataFrame with minimally parsed UBX messages.
     """
-    print(f'Opening file {path}...')
     out = []
-
+    path = ensure_complexpath(path)
     try:
-        if isinstance(path, ComplexPath):
-            if path.iss3f():
-                with path.format() as fstream:
-                    out = read(fstream)
-            else:
-                with open(path.root, 'rb') as fstream:
-                    out = read(fstream)
-        else:
-            with open(path, 'rb') as fstream:
-                out = read(fstream)
+        with path.open('rb') as fstream:
+            out = read(fstream)
     except FileNotFoundError:
         warnings.warn(f'UBX file\
             {path} could not be found.')
@@ -56,76 +55,42 @@ def read_ubx_file(path: Union[str, ComplexPath]) -> pd.DataFrame:
     df['Class'] = df['Message'].apply(lambda x: x.identity.split('-')[0])
     df['Id'] = df['Message'].apply(lambda x: x.identity.split('-')[1])
     df['Length'] = df['Message'].apply(lambda x: x.length)
-
-    print('Done.')
     return df
-
-
-def load_ubx_bin_event(root: Union[str, ComplexPath],
-                       ubxmsgid: _UBX_MSGIDS,
-                       ubxfolder: str = 'UBX',
-                       ext: str = 'bin') -> pd.DataFrame:
-    root = ensure_complexpath(root).join(ubxfolder)
-    filename = f'{ubxmsgid.value.upper()}.{ext}'
-    return load_ubx_bin(filename, root)
 
 
 def load_ubx_harp_ts_event(root: Union[str, ComplexPath],
                            ubxmsgid: _UBX_MSGIDS,
                            ubxfolder: str = 'UBX',
                            ext: str = 'csv') -> pd.DataFrame:
-    root = ensure_complexpath(root).join(ubxfolder)
-    filename = f'{ubxmsgid.value.upper()}.{ext}'
-    return load_ubx_harp_ts(filename, root)
-
-
-def load_ubx_bin(filename: str = 'ubx.bin',
-                 root: Union[str, ComplexPath] = '') -> pd.DataFrame:
-    """Helper function for read_ubx_file()
-
-    Args:
-        filename (str, optional): Relative path of the expected UBX binary file. Defaults to 'ubx.bin'.
-        root (str, optional): Root path for the UBX binary file. Defaults to ''.
-
-    Returns:
-        pd.DataFrame: Output from read_ubx_file()
-    """
     root = ensure_complexpath(root)
-    try:
-        df = read_ubx_file(root.join(filename))
-    except FileNotFoundError:
-        warnings.warn(f'UBX stream file {filename} could not be found.')
-        return
-    except FileExistsError:
-        warnings.warn(f'UBX stream file {filename} could not be found.')
-        return
-    return df
+    root.join([ubxfolder, f'{ubxmsgid.value.upper()}.{ext}'])
+    return load_ubx_harp_ts(root)
 
 
-def load_ubx_harp_ts(filename: str = 'ubx_harp_ts.csv',
-                     root: Union[str, ComplexPath] = '') -> pd.DataFrame:
+def load_ubx_harp_ts(path: Union[str, ComplexPath] = '') -> pd.DataFrame:
     """Reads the software timestamped data of all UBX messages
 
     Args:
-        filename (str, optional): Relative path of the expected .csv file wherein each line is a received UBX message. Defaults to 'ubx_harp_ts.csv'.
+        path (str, optional): Relative path of the expected .csv file
+        wherein each line is a received UBX message. Defaults to 'ubx_harp_ts.csv'.
         root (str, optional): Root path for the .csv file. Defaults to ''.
 
     Returns:
         pd.DataFrame: DataFrame with relevant data index by time.
     """
-    root = ensure_complexpath(root)
-    fullfile = root.join_to_str(filename)
+    path = ensure_complexpath(path)
     try:
-        df = pd.read_csv(fullfile,
-                         header=None,
-                         names=('Seconds', 'Class', 'Identity'))
+        with path.open('rb') as stream:
+            df = pd.read_csv(stream,
+                             header=None,
+                             names=('Seconds', 'Class', 'Identity'))
     except FileNotFoundError:
         warnings.warn(
-            f'UBX stream alignment file {filename} could not be found.')
+            f'UBX stream alignment file {path} could not be found.')
         return
     except FileExistsError:
         warnings.warn(
-            f'UBX stream alignment file {filename} could not be found.')
+            f'UBX stream alignment file {path} could not be found.')
         return
     df['Seconds'] = _HARP_T0 + pd.to_timedelta(df['Seconds'].values, 's')
     df.set_index('Seconds', inplace=True)
@@ -135,20 +100,22 @@ def load_ubx_harp_ts(filename: str = 'ubx_harp_ts.csv',
 def load_ubx_event_stream(ubxmsgid: _UBX_MSGIDS,
                           root: Union[str, ComplexPath] = '',
                           ubxfolder: str = 'UBX') -> pd.DataFrame:
-    """Helper function that outputs the merge the outputs of load_ubx_bin_event() and load_ubx_harp_ts_event().
-    It additionally checks if, for each binary messages there exists the corresponding timestamped event.
+    """Helper function that outputs the merge the outputs of
+    load_ubx_bin_event() and load_ubx_harp_ts_event().
+    It additionally checks if, for each binary messages
+    there exists the corresponding timestamped event.
 
     Args:
         ubxmsgid (_UBX_MSGIDS): _description_
         root (str, optional): Root path for both .csv and .bin files. Defaults to ''.
-        ubxfolder (str, optional): Folder name of containing all ubxmsgid-separated binary files. Defaults to 'ubx'.
+        ubxfolder (str, optional): Folder name of containing all
+        ubxmsgid-separated binary files. Defaults to 'ubx'.
     Raises:
         ValueError: Raises an error if there is a mismatch between the two files.
 
     Returns:
         pd.DataFrame: DataFrame indexed by the message times found in the output of load_ubx_harp_ts()
     """
-    root = ensure_complexpath(root)
     bin_file = load_ubx_bin_event(ubxmsgid=ubxmsgid,
                                   root=root,
                                   ubxfolder=ubxfolder)
@@ -184,7 +151,7 @@ def read(stream,
         msgmode=msgmode,
         parsebitfield=True,
     )
-    return [ parsed_data for (_, parsed_data) in ubr.iterate(
+    return [parsed_data for (_, parsed_data) in ubr.iterate(
         quitonerror=quitonerror, errorhandler=errorhandler
     )]
 

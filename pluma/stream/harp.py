@@ -14,7 +14,7 @@ class HarpStream(Stream):
 		Stream (_type_): _description_
 	"""
 	def __init__(self,
-              eventcode,
+              eventcode: int,
               data: pd.DataFrame = pd.DataFrame(
                   columns=['Seconds', 'Value']),
               si_conversion: SiUnitConversion = SiUnitConversion(),

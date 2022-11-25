@@ -10,6 +10,7 @@ dependencies:
   - pip
   - git
   - nepy
+  - simplekml
   - pip:
     - pyubx2
     - tilemapbase

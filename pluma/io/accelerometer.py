@@ -36,7 +36,7 @@ def load_accelerometer(
     path.join(filename)
     try:
         with path.open('rb') as stream:
-            acc_df = pd.read_csv(stream,
+            acc_df = pd.read_csv(stream,  
                                  header=None,
                                  names=_accelerometer_header)
     except FileNotFoundError:
@@ -45,7 +45,7 @@ def load_accelerometer(
     except FileExistsError:
         warnings.warn(f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
         return
-
+    
     acc_df['Seconds'] = _HARP_T0 + pd.to_timedelta(acc_df['Seconds'].values, 's')
     acc_df['SoftwareTimestamp'] = \
         _HARP_T0 + pd.to_timedelta(acc_df['SoftwareTimestamp'].values, 's')

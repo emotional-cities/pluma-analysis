@@ -47,7 +47,6 @@ def read_harp_bin(file: Union[str, ComplexPath],
         warnings.warn(f'Harp stream file\
             {path} could not be found.')
         return pd.DataFrame()
-
     if len(data) == 0:
         return None
 
@@ -101,8 +100,8 @@ def load_harp_stream(streamID: int,
     Returns:
         pd.DataFrame: Dataframe with address data indexed by time (Seconds)
     """
-
     path = ensure_complexpath(root)
     path.join(f'{suffix}{streamID}{ext}')
     return read_harp_bin(path)
+
 

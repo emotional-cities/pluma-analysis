@@ -57,7 +57,6 @@ def read_ubx_file(path: Union[str, ComplexPath]) -> pd.DataFrame:
     df['Length'] = df['Message'].apply(lambda x: x.length)
     return df
 
-
 def load_ubx_harp_ts_event(root: Union[str, ComplexPath],
                            ubxmsgid: _UBX_MSGIDS,
                            ubxfolder: str = 'UBX',
@@ -65,7 +64,6 @@ def load_ubx_harp_ts_event(root: Union[str, ComplexPath],
     root = ensure_complexpath(root)
     root.join([ubxfolder, f'{ubxmsgid.value.upper()}.{ext}'])
     return load_ubx_harp_ts(root)
-
 
 def load_ubx_harp_ts(path: Union[str, ComplexPath] = '') -> pd.DataFrame:
     """Reads the software timestamped data of all UBX messages
@@ -116,6 +114,7 @@ def load_ubx_event_stream(ubxmsgid: _UBX_MSGIDS,
     Returns:
         pd.DataFrame: DataFrame indexed by the message times found in the output of load_ubx_harp_ts()
     """
+    root = ensure_complexpath(root)
     bin_file = load_ubx_bin_event(ubxmsgid=ubxmsgid,
                                   root=root,
                                   ubxfolder=ubxfolder)

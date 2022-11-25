@@ -3,7 +3,6 @@ import os
 from enum import Enum
 from typing import Union
 
-
 class RemoteType (Enum):
     NONE = ''
     AWS = 'AWS'
@@ -61,6 +60,7 @@ class ComplexPath():
             self.path = _path
         else:
             raise ValueError("")
+
     # Helper private methods
     def _format_os_path(self, path):
         if self.remote == RemoteType.WIN:

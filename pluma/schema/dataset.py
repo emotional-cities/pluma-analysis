@@ -100,19 +100,23 @@ class Dataset:
         else:
             raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
 
-    def export_streams(self, filename: str = None):
+    def export_streams(self, filename: Union[str, ComplexPath] = None):
         """Serializes and exports the dataset as a pickle object.
 
         Args:
             filename (str, optional): Path to save the .pickle file.\
                 If None, it will save to Dataset.root. Defaults to None.
         """
+
         if filename is None:
-            filename = self.rootfolder.join_to_str('dataset.pickle')
-        with open(filename, 'wb') as handle:
+            path = ensure_complexpath(self.rootfolder)
+            path.join('dataset.pickle')
+        else:
+            path = ensure_complexpath(filename)
+        with path.open('wb') as handle:
             pickle.dump(self.streams, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def import_streams(self, filename: str = None):
+    def import_streams(self, filename: Union[str, ComplexPath] = None):
         """Deserializes and imports the dataset as a pickle object.
 
         Args:
@@ -120,8 +124,11 @@ class Dataset:
                 If None, it will use Dataset.root. Defaults to None.
         """
         if filename is None:
-            filename = self.rootfolder.join_to_str('dataset.pickle')
-        with open(filename, 'rb') as handle:
+            path = ensure_complexpath(self.rootfolder)
+            path.join('dataset.pickle')
+        else:
+            path = ensure_complexpath(filename)
+        with path.open('rb') as handle:
             self.streams = pickle.load(handle)
 
     def populate_streams(self,

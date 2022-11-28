@@ -44,7 +44,7 @@ class UbxStream(Stream):
 	def parseposition(self,
                    event: _UBX_MSGIDS = _UBX_MSGIDS.NAV_HPPOSLLH,
                    calibrate_clock: bool = True):
-		NavData = self.data[event.value]
+		NavData = self.data[event.value].copy()
 		NavData.insert(NavData.shape[1], "Latitude",
                  NavData.apply(lambda x: x.Message.lat, axis=1),
                  False)

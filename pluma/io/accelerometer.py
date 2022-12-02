@@ -22,12 +22,11 @@ _accelerometer_header = [
 def load_accelerometer(
         filename: str = 'Accelerometer.csv',
         root: Union[str, ComplexPath] = '') -> pd.DataFrame:
-
-    """Loads the raw acceleromter data from file to a pandas DataFrame.
+    """Loads the raw accelerometer data from file to a pandas DataFrame.
 
     Args:
         filename (str, optional): Input file name to target. Defaults to 'Accelerometer.csv'.
-        root (str, optional): Root path where filename is expected to be found. Defaults to ''.
+        root (Union[str, ComplexPath], optional): Root path where filename is expected to be found. Defaults to ''.
 
     Returns:
         pd.DataFrame: Dataframe with descriptive data indexed by time (Seconds)
@@ -36,17 +35,20 @@ def load_accelerometer(
     path.join(filename)
     try:
         with path.open('rb') as stream:
-            acc_df = pd.read_csv(stream,  
+            acc_df = pd.read_csv(stream,
                                  header=None,
                                  names=_accelerometer_header)
     except FileNotFoundError:
-        warnings.warn(f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
+        warnings.warn(
+            f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
         return
     except FileExistsError:
-        warnings.warn(f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
+        warnings.warn(
+            f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
         return
-    
-    acc_df['Seconds'] = _HARP_T0 + pd.to_timedelta(acc_df['Seconds'].values, 's')
+
+    acc_df['Seconds'] = _HARP_T0 + pd.to_timedelta(
+        acc_df['Seconds'].values, 's')
     acc_df['SoftwareTimestamp'] = \
         _HARP_T0 + pd.to_timedelta(acc_df['SoftwareTimestamp'].values, 's')
     acc_df.set_index('Seconds', inplace=True)

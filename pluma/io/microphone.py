@@ -15,11 +15,14 @@ def load_microphone(filename: str = 'Microphone.bin',
     Args:
         filename (str, optional): Input file name to target. Defaults to 'Microphone.bin'.
         channels (int, optional): Number of expected audio input channels. Defaults to 2.
-        root (str, optional): Root path where filename is expected to be found. Defaults to ''.
-        dtype (any, optional): Data type of the binary file. Defaults to np.uint16.
+        root (Union[str, ComplexPath], optional): Root path\
+            where filename is expected to be found. Defaults to ''.
+        dtype (_type_, optional): Data type of the binary file. Defaults to np.uint16.
+
     Returns:
         np.array: Array with raw waveform data from the microphone stream.
     """
+
     path = ensure_complexpath(root)
     path.join(filename)
 

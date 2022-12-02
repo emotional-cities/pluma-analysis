@@ -27,13 +27,14 @@ _payloadtypes = {
 def read_harp_bin(file: Union[str, ComplexPath],
                   time_offset: float = 0) -> pd.DataFrame:
     """Reads data from the specified Harp binary file. \
-        Ideally, from a single address and stable format.
+        Expects a stable message format.
+
     Args:
-        file (str): Input file name to target.
-        time_offset (float, optional): time offset to add to the harp timestamp. Defaults to 0.
+        file (Union[str, ComplexPath]): Input file name to target.
+        time_offset (float, optional): Time offset to add to the harp timestamp. Defaults to 0.
 
     Returns:
-        pd.DataFrame: Dataframe with address data indexed by time (Seconds)
+        pd.DataFrame: Dataframe with data stream indexed by time (Seconds)
     """
     path = ensure_complexpath(file)
     try:
@@ -89,19 +90,19 @@ def load_harp_stream(streamID: int,
                      root: Union[str, ComplexPath] = '',
                      suffix: str = 'Streams_',
                      ext: str = '') -> pd.DataFrame:
-    """Helper function that runs read_harp_bin()
+    """Helper function that runs assembles the expected path to the\
+        binary harp file.
 
     Args:
         streamID (int): Integer ID of the harp stream (aka address).
-        root (Union[str, ComplexPath], optional): Root path where filename is expected to be found. Defaults to ''.
+        root (Union[str, ComplexPath], optional): Root path where \
+            filename is expected to be found. Defaults to ''.
         suffix (str, optional): Expected file suffix. Defaults to 'Streams_'.
         ext (str, optional): Expected file extension Defaults to ''.
 
     Returns:
-        pd.DataFrame: Dataframe with address data indexed by time (Seconds)
+        pd.DataFrame: Dataframe with data stream indexed by time (Seconds)
     """
     path = ensure_complexpath(root)
     path.join(f'{suffix}{streamID}{ext}')
     return read_harp_bin(path)
-
-

@@ -1,4 +1,3 @@
-import os
 import warnings
 
 import pandas as pd
@@ -11,15 +10,16 @@ from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 def load_empatica(filename: str = 'empatica_harp_ts.csv',
                   root: Union[str, ComplexPath] = '') -> DotMap:
-    """Loads the raw Empatica data, from a .csv file, to a DotMap structure.
+    """Loads the raw Empatica data stream, from a .csv file, to a DotMap structure.
 
     Args:
         filename (str, optional): Input file name to target. Defaults to 'empatica_harp_ts.csv'.
-        root (str, optional): Root path where filename is expected to be found. Defaults to ''.
+        root (Union[str, ComplexPath], optional): Root path where filename is expected to be found. Defaults to ''.
 
     Returns:
         DotMap: DotMap where each Empatica message type can be indexed.
     """
+
     path = ensure_complexpath(root)
     path.join(filename)
     try:
@@ -44,7 +44,7 @@ def load_empatica(filename: str = 'empatica_harp_ts.csv',
 
 
 def parse_empatica_stream(empatica_stream: pd.DataFrame) -> pd.DataFrame:
-    """Helper function to parse the messages from various empatica message types
+    """Helper function to parse the messages from various empatica message types.
 
     Args:
         empatica_stream (pd.DataFrame): CSV data in DataFrame format
@@ -74,7 +74,6 @@ def parse_empatica_stream(empatica_stream: pd.DataFrame) -> pd.DataFrame:
         df[['Value']] = df[['Value']].astype(float)
         df['E4_Seconds'] = _HARP_T0 +\
             pd.to_timedelta(df['E4_Seconds'].values.astype(float), 's')
-
     elif stream_id == 'R':
         df = pd.DataFrame(index=empatica_stream.index.copy())
         df['Message'] = empatica_stream['Message'].apply(

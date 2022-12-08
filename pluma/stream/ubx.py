@@ -71,9 +71,7 @@ class UbxStream(Stream):
 		return NavData
 
 	def calibrate_itow(self, input_itow_array):
-		model = self.clock_calib_model
-		calibrated_itow = model.predict(input_itow_array)
-		return calibrated_itow
+		return self.clockreferencering.conversion_model(input_itow_array)
 
 	def __str__(self):
 		return f'Ubx stream from device {self.device}, stream {self.streamlabel}'

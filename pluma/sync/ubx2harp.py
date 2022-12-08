@@ -143,7 +143,6 @@ def align_ubx_to_harp(
         plt.ylabel('$\Delta t$ (s)')
         plt.xlabel('Trial number')
         plt.legend()
-
         plt.show()
 
     return pulses_lookup

@@ -6,7 +6,7 @@ from shapely.errors import ShapelyDeprecationWarning
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 import pluma.plotting.export as plumaexport
-
+from pluma.sync import ClockReferencering, ClockRefId
 
 class Georeference():
 
@@ -17,7 +17,8 @@ class Georeference():
                  time: pd.Series = pd.Series(dtype='datetime64[ns]'),
                  lon: pd.Series = pd.Series(dtype=float),
                  lat: pd.Series = pd.Series(dtype=float),
-                 height: pd.Series = pd.Series(dtype=float)) -> None:
+                 height: pd.Series = pd.Series(dtype=float),
+                 clockreferenceid: ClockRefId = ClockRefId.NONE) -> None:
         self._spacetime = self._build_spacetime_from_dataframe(spacetime)
         if self._spacetime is None:
             # if no spacetime is provided attempt to assemble it individually
@@ -28,6 +29,7 @@ class Georeference():
             self._build_spacetime_from_series()
         else:
             self._refresh_properties()
+        self.clockreferencing = ClockReferencering(referenceid=clockreferenceid)
 
     @property
     def spacetime(self):

@@ -5,6 +5,8 @@ from typing import Union
 
 from pluma.schema.outdoor import build_schema
 from pluma.sync.ubx2harp import get_clockcalibration_ubx_to_harp_clock
+from pluma.sync import ClockRefId
+
 from pluma.stream import StreamType, Stream
 
 from pluma.plotting import maps
@@ -169,13 +171,17 @@ class Dataset:
             If < r2_min_qc, an error will be raised, since it likely\
                 results from an automatic correction procedure. Defaults to 0.99.
         """
+
         model = get_clockcalibration_ubx_to_harp_clock(
                 ubx_stream=self.streams.UBX,
                 harp_sync=self.streams.BioData.Set.data,
                 dt_error=dt_error,
                 r2_min_qc=r2_min_qc,
                 plot_diagnosis=plot_diagnosis)
-        return model
+
+        self.streams.UBX.clockreferencering.set_conversion_model(
+            model=model,
+            reference_from=ClockRefId.HARP)
 
     def showmap(self, **kwargs):
         """Overload to plotting.showmap that shows spatial information color-coded by time.

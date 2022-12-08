@@ -1,12 +1,13 @@
 import pandas as pd
 import geopandas
 
-import shapely
 import warnings
 from shapely.errors import ShapelyDeprecationWarning
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 import pluma.plotting.export as plumaexport
+
+
 class Georeference():
 
     _georeference_header = ["Seconds", "Longitude", "Latitude", "Elevation"]
@@ -18,12 +19,13 @@ class Georeference():
                  lat: pd.Series = pd.Series(dtype=float),
                  height: pd.Series = pd.Series(dtype=float)) -> None:
         self._spacetime = self._build_spacetime_from_dataframe(spacetime)
-        if self._spacetime is None:  # if no spacetime is provided attempt to assemble it individually
+        if self._spacetime is None:
+            # if no spacetime is provided attempt to assemble it individually
             self._time = time
             self._lon = lon
             self._lat = lat
             self._height = height
-            self._spacetime = self._build_spacetime_from_series()
+            self._build_spacetime_from_series()
         else:
             self._refresh_properties()
 
@@ -167,8 +169,9 @@ class Georeference():
     def strip(self):
         tokeep = Georeference._georeference_header[1:]
         tokeep.append('geometry')
-        self.spacetime = self.spacetime.loc[:, self.spacetime.columns.intersection(
-            tokeep)]
+        self.spacetime = self.spacetime.loc[
+            :,
+            self.spacetime.columns.intersection(tokeep)]
 
     def __str__(self) -> str:
         return str(self.spacetime)
@@ -177,7 +180,7 @@ class Georeference():
         return repr(self.spacetime)
 
     def export_kml(self,
-                   export_path:str = "walk.kml",
+                   export_path: str = "walk.kml",
                    **kwargs):
         plumaexport.export_kml_line(
             df=self.spacetime,

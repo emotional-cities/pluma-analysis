@@ -5,6 +5,7 @@ from dotmap import DotMap
 from pluma.stream import Stream, StreamType
 from pluma.stream.harp import HarpStream
 from pluma.io.ubx import load_ubx_event_stream, _UBX_MSGIDS, _UBX_CLASSES
+from pluma.sync import ClockRefId
 
 
 class UbxStream(Stream):
@@ -12,11 +13,14 @@ class UbxStream(Stream):
 	def __init__(self,
               data: DotMap = DotMap(),
               autoload_messages: list = [],
+              clockreferenceid: ClockRefId = ClockRefId.GNSS,
               **kw):
 		super(UbxStream, self).__init__(data=data, **kw)
 		self.positiondata = None
-		self.clock_calib_model = None  # Store the model here
 		self.streamtype = StreamType.UBX
+		self.clockreferencering.reference = clockreferenceid
+		self.clock_calib_model = None  # Store the model here
+
 		self.autoload_messages = autoload_messages
 		if self.autoload:
 			self.load_event_list(self.autoload_messages)

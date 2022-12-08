@@ -6,6 +6,8 @@ from pluma.io.harp import load_harp_stream, _HARP_T0
 
 from pluma.stream.siconversion import SiUnitConversion
 
+from pluma.sync import ClockRefId
+
 
 class HarpStream(Stream):
 	"""_summary_
@@ -18,12 +20,13 @@ class HarpStream(Stream):
               data: pd.DataFrame = pd.DataFrame(
                   columns=['Seconds', 'Value']),
               si_conversion: SiUnitConversion = SiUnitConversion(),
+              clockreferenceid: ClockRefId = ClockRefId.HARP,
               **kw):
 		super(HarpStream, self).__init__(data=data, **kw)
 		self.eventcode = eventcode
 		self.streamtype = StreamType.HARP
-
 		self.si_conversion = si_conversion
+		self.clockreferencering.reference = clockreferenceid
 
 		if self.autoload:
 			self.load()

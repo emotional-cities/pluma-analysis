@@ -3,6 +3,7 @@ import pandas as pd
 from pluma.stream import Stream, StreamType
 from pluma.stream.siconversion import SiUnitConversion
 from pluma.io.accelerometer import load_accelerometer, _accelerometer_header
+from pluma.sync import ClockRefId
 
 
 class AccelerometerStream(Stream):
@@ -15,10 +16,15 @@ class AccelerometerStream(Stream):
               data: pd.DataFrame = pd.DataFrame(
                   columns=_accelerometer_header),
               si_conversion: SiUnitConversion = SiUnitConversion(),
+              clockreferenceid: ClockRefId = ClockRefId.HARP,
               **kw):
-		super(AccelerometerStream, self).__init__(data=data, **kw)
+
+		super(AccelerometerStream, self).__init__(
+                                            data=data,
+                                            **kw)
 		self.streamtype = StreamType.ACCELEROMETER
 		self.si_conversion = si_conversion
+		self.clockreferencering.reference = clockreferenceid
 
 		if self.autoload:
 			self.load()

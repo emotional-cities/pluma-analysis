@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from typing import Union
 
 from pluma.io.path_helper import ComplexPath
-
+from pluma.sync import ClockReferencering, ClockRefId
 class StreamType(Enum):
 	NONE = None
 	UBX = 'UbxStream'
@@ -22,20 +22,24 @@ class Stream:
               streamlabel: str,
               root: Union[str, ComplexPath] = '',
               data: any = None,
+              clockreferencering:
+                  ClockReferencering = ClockReferencering(
+                      referenceid=ClockRefId.NONE),
               autoload: bool = True):
 		"""_summary_
 		Args:
 			device (str): Device label
 			streamlabel (str): Stream label
-			root (str, optional): Root path where the files of the stream are expected to be found. Defaults to ''.
+			root (Union[str, ComplexPath], optional): Root path where the files of the stream are expected to be found. Defaults to ''.
 			data (any, optional): Data to initially populate the stream. Defaults to None.
-			autoload (bool, optional): If True, it will attempt to automatically load the data when instantiated. Defaults to True.
+   			autoload (bool, optional): If True, it will attempt to automatically load the data when instantiated. Defaults to True.
 		"""
 
 		self.device = device
 		self.streamlabel = streamlabel
 		self._rootfolder = self.rootfolder = root
 		self.data = data
+		self.clockreferencering = clockreferencering
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE
 
@@ -46,7 +50,6 @@ class Stream:
 	@rootfolder.setter
 	def rootfolder(self, value: Union[str, ComplexPath]):
 		self._rootfolder = value
-
 
 	def load(self):
 		raise NotImplementedError("load() method is not implemented for the Stream base class.")

@@ -3,6 +3,8 @@ import numpy as np
 from pluma.stream import Stream, StreamType
 from pluma.stream.siconversion import SiUnitConversion
 from pluma.io.microphone import load_microphone
+from pluma.sync import ClockRefId
+
 
 class MicrophoneStream (Stream):
 	"""_summary_
@@ -15,12 +17,14 @@ class MicrophoneStream (Stream):
               fs: float = None,
               channels: int = 2,
               si_conversion: SiUnitConversion = SiUnitConversion(),
+              clockreferenceid: ClockRefId = ClockRefId.HARP,
               **kw):
 		super(MicrophoneStream, self).__init__(data=data, **kw)
 		self.streamtype = StreamType.MICROPHONE
 		self.fs = fs
 		self.channels = channels
 		self.si_conversion = si_conversion
+		self.clockreferencering.reference = clockreferenceid
 
 		if self.autoload:
 			self.load()

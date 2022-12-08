@@ -5,6 +5,8 @@ from typing import Union
 
 from pluma.schema.outdoor import build_schema
 from pluma.sync.ubx2harp import get_clockcalibration_ubx_to_harp_clock
+from pluma.sync import ClockRefId
+
 from pluma.stream import StreamType, Stream
 
 from pluma.plotting import maps
@@ -55,21 +57,23 @@ class Dataset:
         """
         if ubxstream is None:
             try:
-                navdata = self.streams.UBX.parseposition(
-                    event=event,
-                    calibrate_clock=calibrate_clock)
+                ubxstream = self.streams.UBX
             except:
                 raise ImportError('Could not load Ubx stream.')
+
+        if not(ubxstream.streamtype == StreamType.UBX):
+            raise TypeError("Reference must be a UBX Stream")
         else:
-            if not(ubxstream.streamtype == StreamType.UBX):
-                raise TypeError("Reference must be a Ubx Stream")
-            else:
-                navdata = ubxstream.parseposition(
-                    event=event,
-                    calibrate_clock=calibrate_clock)
+            navdata = ubxstream.parseposition(
+                event=event,
+                calibrate_clock=calibrate_clock)
+
         self.georeference.from_dataframe(navdata)
         if strip is True:
             self.georeference.strip()
+        if calibrate_clock is True:
+            self.georeference.clockreferencing.reference =\
+                ubxstream.clockreferencering.reference
 
     def reload_streams(self,
                        schema: Union[DotMap, Stream, None] = None,
@@ -167,13 +171,17 @@ class Dataset:
             If < r2_min_qc, an error will be raised, since it likely\
                 results from an automatic correction procedure. Defaults to 0.99.
         """
-        self.streams.UBX.clock_calib_model =\
-            get_clockcalibration_ubx_to_harp_clock(
+
+        model = get_clockcalibration_ubx_to_harp_clock(
                 ubx_stream=self.streams.UBX,
                 harp_sync=self.streams.BioData.Set.data,
                 dt_error=dt_error,
                 r2_min_qc=r2_min_qc,
                 plot_diagnosis=plot_diagnosis)
+
+        self.streams.UBX.clockreferencering.set_conversion_model(
+            model=model,
+            reference_from=ClockRefId.HARP)
 
     def showmap(self, **kwargs):
         """Overload to plotting.showmap that shows spatial information color-coded by time.

@@ -40,11 +40,11 @@ def load_accelerometer(
                                  names=_accelerometer_header)
     except FileNotFoundError:
         warnings.warn(
-            f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
+            f'Accelerometer stream file {path} could not be found.')
         return
     except FileExistsError:
         warnings.warn(
-            f'Accelerometer stream file {root.join_to_str(filename)} could not be found.')
+            f'Accelerometer stream file {path} could not be found.')
         return
 
     acc_df['Seconds'] = _HARP_T0 + pd.to_timedelta(

@@ -9,10 +9,11 @@ dependencies:
   - s3fs
   - pip
   - git
-  - nepy
   - simplekml
   - pip:
     - pyubx2
     - tilemapbase
     - dotmap
+    - nepy
     - git+https://github.com/emotional-cities/pluma-analysis
+    - nepy

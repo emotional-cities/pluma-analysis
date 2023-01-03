@@ -2,11 +2,18 @@ import matplotlib.pyplot as plt
 import tilemapbase as tmb
 import numpy as np
 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 
 def showmap(NavData,
             figsize=(20, 20),
-            with_scaling=0.6, to_aspect=(4/3), tiles=tmb.tiles.build_OSM(),
-            cmap='jet', markersize=15, colorscale_override=None):
+            with_scaling=0.6,
+            to_aspect=(4/3),
+            tiles=tmb.tiles.build_OSM(),
+            cmap='jet',
+            markersize=15,
+            colorscale_override=None,
+            **figkwargs):
 
     if 'Data' not in NavData.columns:
         raise ValueError(
@@ -37,8 +44,12 @@ def showmap(NavData,
 
     if colorscale_override is None:
         colorscale_override = NavData['Data'].values
-    ax.scatter(x, y,
-               c=colorscale_override,
-               s=markersize,
-               cmap=cmap)
+    im = ax.scatter(
+        x, y,
+        c=colorscale_override,
+        s=markersize,
+        cmap=cmap)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    fig.colorbar(im, cax=cax)
     return fig

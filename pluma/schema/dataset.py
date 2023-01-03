@@ -187,4 +187,5 @@ class Dataset:
         """Overload to plotting.showmap that shows spatial information color-coded by time.
         """
         temp_df = self.georeference.spacetime.assign(Data=1)
-        maps.showmap(temp_df, **kwargs)
+        fig = maps.showmap(temp_df, **kwargs)
+        return fig

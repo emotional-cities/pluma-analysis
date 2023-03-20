@@ -104,7 +104,7 @@ class Dataset:
         else:
             raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
 
-    def export_streams(self, filename: Union[str, ComplexPath] = None):
+    def export_dataset(self, filename: Union[str, ComplexPath] = None):
         """Serializes and exports the dataset as a pickle object.
 
         Args:
@@ -120,7 +120,7 @@ class Dataset:
         with path.open('wb') as handle:
             pickle.dump(self.streams, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def import_streams(self, filename: Union[str, ComplexPath] = None):
+    def import_dataset(self, filename: Union[str, ComplexPath] = None):
         """Deserializes and imports the dataset as a pickle object.
 
         Args:

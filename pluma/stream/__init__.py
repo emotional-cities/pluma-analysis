@@ -77,3 +77,6 @@ class Stream:
 			return self.data.loc[start:]
 		else:
 			return self.data
+		
+	def convert_to_si(self, data=None):
+		raise NotImplementedError("convert_to_si() method is not implemented for the Stream base class.")

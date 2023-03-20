@@ -37,6 +37,7 @@ class EegStream(Stream):
 
 	def load(self):
 		self.data = load_eeg(root=self.rootfolder)
+		self.si_conversion.is_si = False
 
 	def __str__(self):
 		return f'EEG stream from device {self.device},\

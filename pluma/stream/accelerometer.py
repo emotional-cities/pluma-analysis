@@ -43,6 +43,7 @@ class AccelerometerStream(Stream):
 
 	def load(self):
 		self.data = load_accelerometer(root=self.rootfolder)
+		self.si_conversion.is_si = False
 
 	def __str__(self):
 		return f'Accelerometer stream from device {self.device},\

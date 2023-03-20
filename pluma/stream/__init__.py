@@ -1,6 +1,6 @@
 from enum import Enum
 import matplotlib.pyplot as plt
-from typing import Union
+from typing import Union, Optional
 
 from pluma.io.path_helper import ComplexPath
 from pluma.sync import ClockReferencering, ClockRefId
@@ -54,6 +54,9 @@ class Stream:
 	def load(self):
 		raise NotImplementedError("load() method is not implemented for the Stream base class.")
 
+	def reload(self):
+		self.load()
+
 	def plot(self, col=None, **kwargs):
 		if self.data.empty:
 			raise ValueError("Input dataframe is empty.")
@@ -77,6 +80,9 @@ class Stream:
 			return self.data.loc[start:]
 		else:
 			return self.data
-		
+
 	def convert_to_si(self, data=None):
 		raise NotImplementedError("convert_to_si() method is not implemented for the Stream base class.")
+
+	def export_to_csv(self):
+		raise NotImplementedError("export_to_csv() method is not implemented for the Stream base class.")

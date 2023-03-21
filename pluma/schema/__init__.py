@@ -12,7 +12,7 @@ from pluma.sync import ClockRefId
 
 from pluma.stream import StreamType, Stream
 
-from pluma.plotting import maps
+from pluma.export import maps
 
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
@@ -189,7 +189,7 @@ class Dataset:
             reference_from=ClockRefId.HARP)
 
     def showmap(self, **kwargs):
-        """Overload to plotting.showmap that shows spatial information color-coded by time.
+        """Overload to export.showmap that shows spatial information color-coded by time.
         """
         temp_df = self.georeference.spacetime.assign(Data=1)
         fig = maps.showmap(temp_df, **kwargs)

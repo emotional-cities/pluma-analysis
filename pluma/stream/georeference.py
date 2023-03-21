@@ -5,7 +5,7 @@ import warnings
 from shapely.errors import ShapelyDeprecationWarning
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
-import pluma.plotting.export as plumaexport
+from pluma.export.maps import export_kml_line
 from pluma.sync import ClockReferencering, ClockRefId
 
 
@@ -82,7 +82,7 @@ class Georeference():
             return None
         else:
             if self._validate_build_spacetime_from_dataframe(df) is True:
-                if not(df.index.name == 'Seconds'):
+                if not (df.index.name == 'Seconds'):
                     df.set_index("Seconds", inplace=True)
                 gdf = geopandas.GeoDataFrame(
                     df, geometry=geopandas.points_from_xy(
@@ -185,7 +185,7 @@ class Georeference():
     def export_kml(self,
                    export_path: str = "walk.kml",
                    **kwargs):
-        plumaexport.export_kml_line(
+        export_kml_line(
             df=self.spacetime,
             export_path=export_path,
             **kwargs)

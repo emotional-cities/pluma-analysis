@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import tilemapbase as tmb
 import numpy as np
 
+import pandas as pd
+import simplekml
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
@@ -53,3 +56,15 @@ def showmap(NavData,
     cax = divider.append_axes("right", size="5%", pad=0.05)
     fig.colorbar(im, cax=cax)
     return fig
+
+
+def export_kml_line(df: pd.DataFrame,
+                    output_path: str = "walk.kml",
+                    **kwargs):
+    kml = simplekml.Kml()
+    ls = kml.newlinestring(**kwargs)
+    ls.coords = [(x, y) for x, y in zip(
+        df.Longitude.values, df.Latitude.values)]
+    ls.extrude = 1
+    ls.altitudemode = simplekml.AltitudeMode.relativetoground
+    kml.save(output_path)

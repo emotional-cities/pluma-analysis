@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import pickle
 
 from dotmap import DotMap
 from typing import Union
 
 from pluma.schema.outdoor import build_schema
+
 from pluma.sync.ubx2harp import get_clockcalibration_ubx_to_harp_clock
 from pluma.sync import ClockRefId
 
@@ -11,8 +14,7 @@ from pluma.stream import StreamType, Stream
 
 from pluma.plotting import maps
 
-from pluma.stream.ubx import UbxStream
-
+from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
@@ -35,6 +37,8 @@ class Dataset:
         self.datasetlabel = datasetlabel
         self.georeference = georeference
         self.streams = None
+        self._is_calibrated = False
+        
 
     def add_ubx_georeference(self,
                              ubxstream: UbxStream = None,
@@ -153,6 +157,7 @@ class Dataset:
         root = ensure_complexpath(root)
         self.streams = build_schema(
             root=root,
+            parent_dataset=self,
             autoload=autoload)
 
     def calibrate_ubx_to_harp(self,
@@ -163,7 +168,7 @@ class Dataset:
             the synchronization pulses as a reference.
 
         Args:
-            dt_error (float, optional): Allowed error between the derivate\
+            dt_error (float, optional): Allowed error between the derivative\
                 of timestamps detected in the two streams. Defaults to 0.002 seconds.
             plot_diagnosis (bool, optional): If True plots the output of\
                 the syncing algorithm. Defaults to False.
@@ -189,3 +194,12 @@ class Dataset:
         temp_df = self.georeference.spacetime.assign(Data=1)
         fig = maps.showmap(temp_df, **kwargs)
         return fig
+
+    def add_georeference_and_calibrate(self):
+        if self._is_calibrated is False:
+            self.calibrate_ubx_to_harp(plot_diagnosis=True, dt_error=1)
+            self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH,
+                                    calibrate_clock=True)
+            self._is_calibrated = True
+        else:
+            raise AssertionError('Dataset is already been automatically calibrated.')

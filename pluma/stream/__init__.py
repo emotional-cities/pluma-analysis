@@ -4,6 +4,8 @@ from typing import Union, Optional
 
 from pluma.io.path_helper import ComplexPath
 from pluma.sync import ClockReferencering, ClockRefId
+
+
 class StreamType(Enum):
 	NONE = None
 	UBX = 'UbxStream'
@@ -22,10 +24,9 @@ class Stream:
               streamlabel: str,
               root: Union[str, ComplexPath] = '',
               data: any = None,
-              clockreferencering:
-                  ClockReferencering = ClockReferencering(
-                      referenceid=ClockRefId.NONE),
-              autoload: bool = True):
+              clockreferencering: ClockReferencering=ClockReferencering(referenceid=ClockRefId.NONE),
+			  parent_dataset = None,
+			  autoload: bool = True):
 		"""_summary_
 		Args:
 			device (str): Device label
@@ -40,6 +41,7 @@ class Stream:
 		self._rootfolder = self.rootfolder = root
 		self.data = data
 		self.clockreferencering = clockreferencering
+		self.parent_dataset = parent_dataset
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE
 

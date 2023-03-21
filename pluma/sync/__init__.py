@@ -4,7 +4,6 @@ from typing import Callable, Union
 from sklearn.linear_model import LinearRegression
 
 
-
 class ClockRefId(Enum):
 	NONE = None
 	GNSS = 'gnss'

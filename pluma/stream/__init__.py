@@ -25,7 +25,7 @@ class Stream:
               root: Union[str, ComplexPath] = '',
               data: any = None,
               clockreferencering: ClockReferencering=ClockReferencering(referenceid=ClockRefId.NONE),
-			  parent_dataset = None,
+			  parent_dataset=None,
 			  autoload: bool = True):
 		"""_summary_
 		Args:

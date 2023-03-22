@@ -8,7 +8,7 @@ from pluma.stream.siconversion import SiUnitConversion
 
 from pluma.sync import ClockRefId
 
-
+from pluma.export.streams import export_stream_to_csv
 class HarpStream(Stream):
 	"""_summary_
 
@@ -62,3 +62,6 @@ class HarpStream(Stream):
 	def from_seconds(index):
 		# Converts seconds (double) back to a harp referenced timedelta
 		return (_HARP_T0 + pd.to_timedelta(index, 's')).values
+
+	def export_to_csv(self, root_path, **kwargs):
+		export_stream_to_csv(self, root_path, **kwargs)

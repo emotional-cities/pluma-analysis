@@ -37,8 +37,7 @@ class Dataset:
         self.datasetlabel = datasetlabel
         self.georeference = georeference
         self.streams = None
-        self._is_calibrated = False
-        
+        self.has_calibration = False
 
     def add_ubx_georeference(self,
                              ubxstream: UbxStream = None,
@@ -106,10 +105,18 @@ class Dataset:
             for _stream in schema.values():
                 self.reload_streams(_stream, force_load=force_load)
         else:
-            raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
+            raise TypeError(f"Invalid type was found. Must be of \
+                            {Union[DotMap, Stream]}")
+
+    @staticmethod
+    def import_dataset(filename: Union[str, ComplexPath]) -> Dataset:
+        path = ensure_complexpath(filename)
+        with path.open('rb') as handle:
+            return pickle.load(handle)
 
     def export_dataset(self, filename: Union[str, ComplexPath] = None):
-        """Serializes and exports the dataset as a pickle object.
+        """Serializes and exports the dataset's streams field as a
+        pickle object.
 
         Args:
             filename (str, optional): Path to save the .pickle file.\
@@ -122,9 +129,26 @@ class Dataset:
         else:
             path = ensure_complexpath(filename)
         with path.open('wb') as handle:
+            pickle.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def export_streams(self, filename: Union[str, ComplexPath] = None):
+        """Serializes and exports the dataset's streams field as a
+        pickle object.
+
+        Args:
+            filename (str, optional): Path to save the .pickle file.\
+                If None, it will save to Dataset.root. Defaults to None.
+        """
+
+        if filename is None:
+            path = ensure_complexpath(self.rootfolder)
+            path.join('dataset_streams.pickle')
+        else:
+            path = ensure_complexpath(filename)
+        with path.open('wb') as handle:
             pickle.dump(self.streams, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def import_dataset(self, filename: Union[str, ComplexPath] = None):
+    def import_streams(self, filename: Union[str, ComplexPath] = None):
         """Deserializes and imports the dataset as a pickle object.
 
         Args:
@@ -133,7 +157,7 @@ class Dataset:
         """
         if filename is None:
             path = ensure_complexpath(self.rootfolder)
-            path.join('dataset.pickle')
+            path.join('dataset_streams.pickle')
         else:
             path = ensure_complexpath(filename)
         with path.open('rb') as handle:
@@ -187,6 +211,7 @@ class Dataset:
         self.streams.UBX.clockreferencering.set_conversion_model(
             model=model,
             reference_from=ClockRefId.HARP)
+        self.has_calibration = True
 
     def showmap(self, **kwargs):
         """Overload to export.showmap that shows spatial information color-coded by time.
@@ -196,10 +221,10 @@ class Dataset:
         return fig
 
     def add_georeference_and_calibrate(self):
-        if self._is_calibrated is False:
+        if self.has_calibration is False:
             self.calibrate_ubx_to_harp(plot_diagnosis=True, dt_error=1)
             self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH,
                                     calibrate_clock=True)
-            self._is_calibrated = True
+            self.has_calibration = True
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')

@@ -48,3 +48,4 @@ class AccelerometerStream(Stream):
 	def __str__(self):
 		return f'Accelerometer stream from device {self.device},\
       stream {self.streamlabel}'
+

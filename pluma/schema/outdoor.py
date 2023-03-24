@@ -6,6 +6,7 @@ from pluma.stream.accelerometer import AccelerometerStream
 from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.microphone import MicrophoneStream
+from pluma.stream.eeg import EegStream
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
@@ -100,6 +101,9 @@ def build_schema(root: Union[str, ComplexPath],
                                                                 _UBX_MSGIDS.TIM_TM2,
                                                                 _UBX_MSGIDS.TIM_TP,
                                                                 ])
+
+    # EEG stream
+    streams.EEG =                                  EegStream(device='Enobio', streamlabel='EEG', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
     return streams
 

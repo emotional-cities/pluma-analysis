@@ -1,8 +1,10 @@
-import pandas as pd
+from typing import Union, Optional
 
 from pluma.stream import Stream, StreamType
-from pluma.stream.siconversion import SiUnitConversion
-from pluma.io.eeg import load_eeg, _eeg_header, _eeg_header
+from pluma.io.eeg import load_eeg
+from pluma.sync import ClockRefId
+
+from pluma.io._nepy.NedfReader import NedfReader
 
 
 class EegStream(Stream):
@@ -12,33 +14,21 @@ class EegStream(Stream):
 		Stream (_type_): _description_
 	"""
 	def __init__(self,
-              data: pd.DataFrame = pd.DataFrame(
-                  columns=_eeg_header),
-              si_conversion: SiUnitConversion = SiUnitConversion(),
-              **kw):
+			data: Optional[NedfReader] = None,
+			clockreferenceid: ClockRefId = ClockRefId.HARP,
+			**kw):
+
 		super(EegStream, self).__init__(data=data, **kw)
 		self.streamtype = StreamType.EEG
-		self.si_conversion = si_conversion
+		self.clockreferencering.reference = clockreferenceid
 
 		if self.autoload:
 			self.load()
 
-		if self.si_conversion.attempt_conversion:
-			self.convert_to_si()
-
-	def convert_to_si(self, data=None):
-		"""Method to convert data to SI units
-		"""
-		if data is None:  # Default to the instance's data if None is provided
-			self.data = self.si_conversion.convert_to_si(self.data)
-			self.si_conversion.is_si = True
-		else:  # if some other data source is provided...
-			return self.si_conversion.convert_to_si(data)
-
 	def load(self):
-		self.data = load_eeg(root=self.rootfolder)
-		self.si_conversion.is_si = False
+		self.data = load_eeg(
+			filename=None,
+			root=self.rootfolder)
 
 	def __str__(self):
-		return f'EEG stream from device {self.device},\
-      stream {self.streamlabel}'
+		return f'EEG stream from device {self.device}, stream {self.streamlabel}'

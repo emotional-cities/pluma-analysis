@@ -1,7 +1,8 @@
 import os
+import glob
 
 from enum import Enum
-from typing import Union
+from typing import Union, List
 
 class RemoteType (Enum):
     NONE = ''
@@ -90,6 +91,32 @@ class ComplexPath():
 
     def __repr__(self) -> str:
         return f'@({self.remote.value}) --> {self.path}'
+
+    def glob(self, path: str = None) -> List:
+        if path is None:
+            path = self.path
+        if self.iss3f() is True:
+            _list = self.s3fs.glob(path)
+            _list = [(r"s3://" + p) for p in _list]
+            return _list
+        else:
+            return glob.glob(path)
+
+    def isfile(self, path: str = None) -> bool:
+        if path is None:
+            path = self.path
+        if self.iss3f() is True:
+            return self.s3fs.isfile(path)
+        else:
+            return os.path.isfile(path)
+
+    def isdir(self, path: str = None) -> bool:
+        if path is None:
+            path = self.path
+        if self.iss3f() is True:
+            return self.s3fs.isdir(path)
+        else:
+            return os.path.isdir(path)
 
 # ----- Helper functions -----
 

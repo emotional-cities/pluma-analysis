@@ -3,7 +3,7 @@ from __future__ import annotations
 import pickle
 
 from dotmap import DotMap
-from typing import Union
+from typing import Union, Optional, Callable
 
 from pluma.schema.outdoor import build_schema
 
@@ -25,7 +25,9 @@ class Dataset:
     def __init__(self,
                  root: Union[str, ComplexPath],
                  datasetlabel: str = '',
-                 georeference: Georeference = Georeference()):
+                 georeference: Georeference = Georeference(),
+                 schema: Optional[Callable] = build_schema,
+                 ):
         """High level class to represent an entire dataset. Loads and
         contains all the streams and methods for general dataset management.
 
@@ -36,6 +38,7 @@ class Dataset:
         self.rootfolder = ensure_complexpath(root)
         self.datasetlabel = datasetlabel
         self.georeference = georeference
+        self.schema = schema
         self.streams = None
         self.has_calibration = False
 
@@ -179,7 +182,7 @@ class Dataset:
         if isinstance(root, str):
             root = ComplexPath(root)
         root = ensure_complexpath(root)
-        self.streams = build_schema(
+        self.streams = self.schema(
             root=root,
             parent_dataset=self,
             autoload=autoload)

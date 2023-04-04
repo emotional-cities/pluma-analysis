@@ -26,9 +26,10 @@ class EegStream(Stream):
 			self.load()
 
 	def load(self):
-		self.data = load_eeg(
+		self.data, _lsl_timestamp = load_eeg(
 			filename=None,
 			root=self.rootfolder)
+		self.data.server_lsl_marker = _lsl_timestamp
 
 	def __str__(self):
 		return f'EEG stream from device {self.device}, stream {self.streamlabel}'

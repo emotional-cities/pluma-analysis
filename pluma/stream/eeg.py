@@ -6,6 +6,7 @@ from typing import Union, Optional, Tuple
 from pluma.stream import Stream, StreamType
 from pluma.io.eeg import load_eeg, synchronize_eeg_to_harp
 from pluma.sync import ClockRefId
+from pluma.stream.harp import HarpStream
 
 from pluma.io._nepy.NedfReader import NedfReader
 
@@ -26,11 +27,11 @@ class EegStream(Stream):
 		super(EegStream, self).__init__(data=data, **kw)
 		self.streamtype = StreamType.EEG
 		self.clockreferencering.reference = clockreferenceid
-		self.autoalign = autoalign 
+		self.autoalign = autoalign
 		self.server_lsl_marker = server_lsl_marker
 		if self.autoload:
 			self.load()
-		if (self.align_to_harp and (
+		if (self.autoalign and (
 			self.clockreferencering.reference == ClockRefId.HARP)):
 			self.align_to_harp()
 
@@ -43,8 +44,10 @@ class EegStream(Stream):
 
 	def align_to_harp(self):
 		print("Attempting to automatically correct eeg timestamps to harp timestamps...")
-		eeg_to_harp_model = synchronize_eeg_to_harp(self.server_lsl_marker)
-		self.data.np_time = eeg_to_harp_model.predict(self.data.np_time)
+		eeg_to_harp_model = (synchronize_eeg_to_harp(self.server_lsl_marker))
+		self.data.np_time = HarpStream.from_seconds(
+			eeg_to_harp_model.predict(self.data.np_time.reshape(-1, 1))
+			.flatten())
 		print("Done.")
 
 	def __str__(self):

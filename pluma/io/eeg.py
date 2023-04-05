@@ -11,6 +11,7 @@ from pluma.io.harp import _HARP_T0
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 from pluma.io._nepy.NedfReader import NedfReader
+from pluma.stream.harp import HarpStream
 
 
 def get_eeg_file(root: Union[str, ComplexPath] = '',
@@ -106,24 +107,23 @@ def load_server_lsl_markers(
 
 
 def synchronize_eeg_to_harp(
-        server_lsl_markers: pd.DataFrame
+        server_lsl_markers: pd.DataFrame,
+        min_q_r2: float = 0.999
         ) -> LinearRegression:
 
     valid_samples = \
         pd.notna(server_lsl_markers["EegTimestamp"].values)\
         & pd.notna(server_lsl_markers["Seconds"].values)
-    raw_harp_time = (
-        server_lsl_markers["Seconds"].values - np.datetime64(_HARP_T0)
-        ) / np.timedelta64(1, 's')
+    raw_harp_time = HarpStream.to_seconds(server_lsl_markers["Seconds"].values)
     eeg_time = server_lsl_markers["EegTimestamp"].values
+    eeg_time = eeg_time.reshape(-1, 1)
     raw_harp_time = raw_harp_time.reshape(-1, 1)
 
     model = LinearRegression(fit_intercept=True).fit(
-        eeg_time[valid_samples], raw_harp_time[valid_samples])
+        eeg_time[valid_samples], raw_harp_time[valid_samples, :])
     r2 = model.score(
-        eeg_time[valid_samples], raw_harp_time[valid_samples])
-    print(r2)
-    if r2 < 0.999:
+        eeg_time[valid_samples], raw_harp_time[valid_samples, :])
+    if r2 < min_q_r2:
         raise AssertionError(
             f"The quality of the linear fit is lower than expected {r2}")
     else:

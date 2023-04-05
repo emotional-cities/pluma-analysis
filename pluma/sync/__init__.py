@@ -9,6 +9,7 @@ class ClockRefId(Enum):
 	GNSS = 'gnss'
 	HARP = 'harp'
 	CPU = 'cpu'
+	EEG = 'eeg'
 
 
 class ClockReferencering:

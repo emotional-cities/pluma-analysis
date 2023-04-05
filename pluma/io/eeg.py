@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 from typing import Union, List, Optional, Tuple
+from sklearn.linear_model import LinearRegression
 
 from pluma.io.harp import _HARP_T0
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
@@ -102,3 +103,28 @@ def load_server_lsl_markers(
     df['Seconds'] = _HARP_T0 + pd.to_timedelta(
             df['Seconds'].values, 's')
     return df
+
+
+def synchronize_eeg_to_harp(
+        server_lsl_markers: pd.DataFrame
+        ) -> LinearRegression:
+
+    valid_samples = \
+        pd.notna(server_lsl_markers["EegTimestamp"].values)\
+        & pd.notna(server_lsl_markers["Seconds"].values)
+    raw_harp_time = (
+        server_lsl_markers["Seconds"].values - np.datetime64(_HARP_T0)
+        ) / np.timedelta64(1, 's')
+    eeg_time = server_lsl_markers["EegTimestamp"].values
+    raw_harp_time = raw_harp_time.reshape(-1, 1)
+
+    model = LinearRegression(fit_intercept=True).fit(
+        eeg_time[valid_samples], raw_harp_time[valid_samples])
+    r2 = model.score(
+        eeg_time[valid_samples], raw_harp_time[valid_samples])
+    print(r2)
+    if r2 < 0.999:
+        raise AssertionError(
+            f"The quality of the linear fit is lower than expected {r2}")
+    else:
+        return model

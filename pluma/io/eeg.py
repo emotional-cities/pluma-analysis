@@ -95,9 +95,9 @@ def load_server_lsl_markers(
                              names=['Seconds', 'LslTimestamp', 'MarkerIdx'],
                              delimiter=',', header=None, skiprows=1)
     except FileNotFoundError:
-        print(f'Eeg server lsl tags file  {filename} could not be found.')
+        raise FileNotFoundError(f'Eeg server lsl tags file  {filename} could not be found.')
     except FileExistsError:
-        print(f'Eeg server lsl tags file {filename} could not be found.')
+        raise FileExistsError(f'Eeg server lsl tags file {filename} could not be found.')
 
     df['Seconds'] = _HARP_T0 + pd.to_timedelta(
             df['Seconds'].values, 's')

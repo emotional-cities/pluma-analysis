@@ -84,7 +84,7 @@ def load_eeg(filename: Optional[str] = None,
 
 
 def load_server_lsl_markers(
-        filename: Optional[str] = "eeg_markers.csv",
+        filename: str = "eeg_markers.csv",
         root: Union[str, ComplexPath] = '') -> pd.DataFrame:
 
     path = ensure_complexpath(root)
@@ -95,11 +95,9 @@ def load_server_lsl_markers(
                              names=['Seconds', 'LslTimestamp', 'MarkerIdx'],
                              delimiter=',', header=None, skiprows=1)
     except FileNotFoundError:
-        warnings.warn(f'Eeg server lsl tags file  {filename} could not be found.')
-        return
+        raise FileNotFoundError(f'Eeg server lsl tags file  {filename} could not be found.')
     except FileExistsError:
-        warnings.warn(f'Eeg server lsl tags file {filename} could not be found.')
-        return
+        raise FileExistsError(f'Eeg server lsl tags file {filename} could not be found.')
 
     df['Seconds'] = _HARP_T0 + pd.to_timedelta(
             df['Seconds'].values, 's')

@@ -16,7 +16,7 @@ from pluma.stream.harp import HarpStream
 
 def get_eeg_file(root: Union[str, ComplexPath] = '',
                  if_multiple_load_index: int = -1) -> List[str]:
-    """Lists all Empatica files in the root folder.
+    """Lists all EEG files in the root folder.
     If multiple sessions are found, throws a warning and loads
     if_multiple_load_index nth session."""
 

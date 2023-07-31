@@ -4,7 +4,7 @@ from pluma.stream import Stream, StreamType
 from pluma.stream.siconversion import SiUnitConversion
 from pluma.io.accelerometer import load_accelerometer, _accelerometer_header
 from pluma.sync import ClockRefId
-
+from pluma.export.streams import resample_stream
 
 class AccelerometerStream(Stream):
 	"""_summary_
@@ -49,3 +49,5 @@ class AccelerometerStream(Stream):
 		return f'Accelerometer stream from device {self.device},\
       stream {self.streamlabel}'
 
+	def resample(self, **kwargs) -> pd.DataFrame:
+		return resample_stream(self, **kwargs)

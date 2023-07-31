@@ -8,7 +8,7 @@ from pluma.stream.siconversion import SiUnitConversion
 
 from pluma.sync import ClockRefId
 
-from pluma.export.streams import export_stream_to_csv
+from pluma.export.streams import export_stream_to_csv, resample_stream
 
 
 class HarpStream(Stream):
@@ -50,7 +50,6 @@ class HarpStream(Stream):
                                root=self.rootfolder)
 		self.si_conversion.is_si = False
 
-
 	def __str__(self):
 		return (f'Harp stream from device \
 		{self.device}, stream {self.streamlabel}({self.eventcode})')
@@ -67,3 +66,6 @@ class HarpStream(Stream):
 
 	def export_to_csv(self, root_path, **kwargs):
 		export_stream_to_csv(self, root_path, **kwargs)
+
+	def resample(self, **kwargs) -> pd.DataFrame:
+		return resample_stream(self, **kwargs)

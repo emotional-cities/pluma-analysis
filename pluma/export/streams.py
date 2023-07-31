@@ -60,3 +60,10 @@ def export_uniform_table_stream(stream: HarpStream,
                                     **resampling_function_kws)
     resampled.to_csv(f"{outdir}\\{stream.streamlabel}.csv", date_format='%Y-%m-%dT%H:%M:%S.%fZ')
 
+
+def resample_stream(stream: Stream, **kwargs):
+    """returns a resampled dataframe ready for SDI export
+
+    Args:
+        stream (Stream): _description_
+    """    

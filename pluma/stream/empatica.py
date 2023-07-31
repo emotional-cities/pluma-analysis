@@ -1,6 +1,8 @@
+import pandas as pd
 from pluma.stream import Stream, StreamType
 from pluma.io.empatica import load_empatica
 from pluma.sync import ClockRefId
+from pluma.export.streams import resample_stream
 
 
 class EmpaticaStream(Stream):
@@ -24,3 +26,6 @@ class EmpaticaStream(Stream):
 
 	def __str__(self):
 		return f'Empatica stream from device {self.device}, stream {self.streamlabel}'
+
+	def resample(self, **kwargs) -> pd.DataFrame:
+		return resample_stream(self, **kwargs)

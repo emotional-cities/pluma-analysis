@@ -56,6 +56,9 @@ class Stream:
 	def load(self):
 		raise NotImplementedError("load() method is not implemented for the Stream base class.")
 
+	def resample(self):
+		raise NotImplementedError("resample() method is not implemented for the Stream base class.")
+
 	def reload(self):
 		self.load()
 

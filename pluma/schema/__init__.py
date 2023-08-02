@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pickle
+import datetime
 
 from dotmap import DotMap
 from typing import Union, Optional, Callable
@@ -13,6 +14,7 @@ from pluma.sync import ClockRefId
 from pluma.stream import StreamType, Stream
 
 from pluma.export import maps
+from pluma.export.sdi import export_dataset_to_sdi
 
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
@@ -231,3 +233,9 @@ class Dataset:
             self.has_calibration = True
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')
+        
+
+    def export_to_sdi(self,
+                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+                      outdir=None):
+        export_dataset_to_sdi(self, sampling_dt=sampling_dt, outdir=outdir)

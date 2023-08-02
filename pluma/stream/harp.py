@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import datetime
 
 from pluma.stream import Stream, StreamType
 from pluma.io.harp import load_harp_stream, _HARP_T0
@@ -8,7 +9,7 @@ from pluma.stream.siconversion import SiUnitConversion
 
 from pluma.sync import ClockRefId
 
-from pluma.export.streams import export_stream_to_csv, resample_stream
+from pluma.export.streams import export_stream_to_csv, resample_stream_harp
 
 
 class HarpStream(Stream):
@@ -67,5 +68,7 @@ class HarpStream(Stream):
 	def export_to_csv(self, root_path, **kwargs):
 		export_stream_to_csv(self, root_path, **kwargs)
 
-	def resample(self, **kwargs) -> pd.DataFrame:
-		return resample_stream(self, **kwargs)
+	def resample(self,
+	      sampling_dt: datetime.timedelta,
+		  **kwargs) -> pd.DataFrame:
+		return resample_stream_harp(self, sampling_dt, **kwargs)

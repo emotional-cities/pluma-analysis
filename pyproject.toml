@@ -15,6 +15,7 @@ dependencies = [
     "matplotlib",
     "numpy",
     "scipy",
+    "scikit-learn",
     "pandas",
     "s3fs",
     "pyubx2",

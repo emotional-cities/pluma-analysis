@@ -1,5 +1,5 @@
 [project]
-name = "pluma"
+name = "pluma-analysis"
 authors = [
     {name = "Goncalo Lopes", email = "g.lopes@neurogears.org"},
     {name = "Bruno Cruz", email = "b.cruz@neurogears.org"},

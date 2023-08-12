@@ -10,10 +10,9 @@ from pluma.stream import Stream, StreamType
 exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
 
 
-def export_dataset_to_sdi(
+def convert_dataset_to_sdi(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
-        outdir=None
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)
         ):
 
     streams_to_export = {}
@@ -34,6 +33,15 @@ def export_dataset_to_sdi(
         streams_to_export[stream].columns = cols
         out = pd.merge(out, streams_to_export[stream], how='outer')
 
+    return out
+
+def export_dataset_to_sdi_csv(
+        dataset,
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+        outdir=None
+        ):
+    
+    out = convert_dataset_to_sdi(dataset, sampling_dt)
     if outdir is None:
         outdir = dataset.rootfolder.path
     if not os.path.exists(outdir):

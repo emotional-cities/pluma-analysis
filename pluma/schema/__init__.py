@@ -14,7 +14,7 @@ from pluma.sync import ClockRefId
 from pluma.stream import StreamType, Stream
 
 from pluma.export import maps
-from pluma.export.sdi import export_dataset_to_sdi
+from pluma.export.sdi import convert_dataset_to_sdi, export_dataset_to_sdi_csv
 
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
@@ -234,8 +234,11 @@ class Dataset:
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
+    def convert_to_sdi(self,
+                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)):
+        return convert_dataset_to_sdi(self, sampling_dt=sampling_dt)
 
-    def export_to_sdi(self,
+    def export_to_sdi_csv(self,
                       sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
                       outdir=None):
-        export_dataset_to_sdi(self, sampling_dt=sampling_dt, outdir=outdir)
+        export_dataset_to_sdi_csv(self, sampling_dt=sampling_dt, outdir=outdir)

@@ -18,12 +18,10 @@ def convert_dataset_to_sdi(
 
     streams_to_export = {}
     for stream in dataset.streams:
-        _ = recurvise_resample_stream(
+        _ = recursive_resample_stream(
             streams_to_export, dataset.streams[stream], sampling_dt)
 
-    exclude = ['Latitude', 'Longitude']
-    if 'Elevation' in streams_to_export:
-        exclude.append('Elevation')
+    exclude = ['Latitude', 'Longitude', 'Elevation']
 
     out = streams_to_export[list(streams_to_export.keys())[0]].copy()
     out = out.iloc[:, 0:3]
@@ -39,7 +37,7 @@ def convert_dataset_to_sdi(
     geometry = gpd.points_from_xy(
         x=out['Longitude'],
         y=out['Latitude'],
-        z=out.get('Elevation', default=None))
+        z=out['Elevation'])
     out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
     return out
 
@@ -52,11 +50,11 @@ def export_dataset_to_sdi_record(
     out = convert_dataset_to_sdi(dataset, sampling_dt)
     out.to_file(filename, driver='GeoJSON')
 
-def recurvise_resample_stream(acc_dict, stream, sampling_dt):
+def recursive_resample_stream(acc_dict, stream, sampling_dt):
     ret = None
     if isinstance(stream, DotMap):
         for key in stream:
-            recurvise_resample_stream(acc_dict, stream[key], sampling_dt)
+            recursive_resample_stream(acc_dict, stream[key], sampling_dt)
     elif isinstance(stream, Stream):
         if stream.device not in exclude_devices:
             try:

@@ -180,10 +180,9 @@ def read(stream,
         stream,
         protfilter=protfilter,
         quitonerror=quitonerror,
+        errorhandler=errorhandler,
         validate=validate,
         msgmode=msgmode,
         parsebitfield=True,
     )
-    return [parsed_data for (_, parsed_data) in ubr.iterate(
-        quitonerror=quitonerror, errorhandler=errorhandler
-    )]
+    return [parsed_data for (_, parsed_data) in ubr]

@@ -1,0 +1,60 @@
+[project]
+name = "pluma"
+authors = [
+    {name = "Goncalo Lopes", email = "g.lopes@neurogears.org"},
+    {name = "Bruno Cruz", email = "b.cruz@neurogears.org"},
+]
+description = "A low-level interface to data collected with the pluma urban data acquisition system"
+readme = "README.md"
+requires-python = ">=3.9.0"
+dynamic = ["version"]
+license = {text = "MIT License"}
+
+dependencies = [
+    "geopandas",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "pandas",
+    "s3fs",
+    "pyubx2",
+    "tilemapbase",
+    "dotmap",
+    "nepy",
+    "simplekml",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/emotional-cities/pluma-analysis/issues"
+"Source Code" = "https://github.com/emotional-cities/pluma-analysis"
+
+[project.optional-dependencies]
+dev = [
+    "setuptools_scm",
+]
+
+[build-system]
+requires = [
+    "setuptools>=45",
+    "wheel",
+    "setuptools_scm[toml]>=6.2",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["pluma*"]
+
+[tool.setuptools_scm]

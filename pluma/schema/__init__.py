@@ -80,8 +80,8 @@ class Dataset:
         if strip is True:
             self.georeference.strip()
         if calibrate_clock is True:
-            self.georeference.clockreferencing.reference =\
-                ubxstream.clockreferencering.reference
+            self.georeference.clockreference.referenceid =\
+                ubxstream.clockreference.referenceid
 
     def reload_streams(self,
                        schema: Union[DotMap, Stream, None] = None,
@@ -213,7 +213,7 @@ class Dataset:
                 r2_min_qc=r2_min_qc,
                 plot_diagnosis=plot_diagnosis)
 
-        self.streams.UBX.clockreferencering.set_conversion_model(
+        self.streams.UBX.clockreference.set_conversion_model(
             model=model,
             reference_from=ClockRefId.HARP)
         self.has_calibration = True

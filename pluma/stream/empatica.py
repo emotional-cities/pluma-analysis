@@ -18,7 +18,7 @@ class EmpaticaStream(Stream):
               **kw):
 		super(EmpaticaStream, self).__init__(**kw)
 		self.streamtype = StreamType.EMPATICA
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 
 		if self.autoload:
 			self.load()

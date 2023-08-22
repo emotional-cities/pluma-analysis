@@ -6,7 +6,7 @@ from shapely.errors import ShapelyDeprecationWarning
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 from pluma.export.maps import export_kml_line
-from pluma.sync import ClockReferencering, ClockRefId
+from pluma.sync import ClockReference, ClockRefId
 
 
 class Georeference():
@@ -30,7 +30,7 @@ class Georeference():
             self._build_spacetime_from_series()
         else:
             self._refresh_properties()
-        self.clockreferencing = ClockReferencering(referenceid=clockreferenceid)
+        self.clockreference = ClockReference(referenceid=clockreferenceid)
 
     @property
     def spacetime(self):

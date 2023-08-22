@@ -25,7 +25,7 @@ class AccelerometerStream(Stream):
                                             **kw)
 		self.streamtype = StreamType.ACCELEROMETER
 		self.si_conversion = si_conversion
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 
 		if self.autoload:
 			self.load()

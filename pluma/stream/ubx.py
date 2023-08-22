@@ -18,7 +18,7 @@ class UbxStream(Stream):
 		super(UbxStream, self).__init__(data=data, **kw)
 		self.positiondata = None
 		self.streamtype = StreamType.UBX
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 		self.clock_calib_model = None  # Store the model here
 
 		self.autoload_messages = autoload_messages
@@ -71,7 +71,7 @@ class UbxStream(Stream):
 		return NavData
 
 	def calibrate_itow(self, input_itow_array):
-		return self.clockreferencering.conversion_model(input_itow_array)
+		return self.clockreference.conversion_model(input_itow_array)
 
 	def __str__(self):
 		return f'Ubx stream from device {self.device}, stream {self.streamlabel}'

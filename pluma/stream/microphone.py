@@ -24,7 +24,7 @@ class MicrophoneStream (Stream):
 		self.fs = fs
 		self.channels = channels
 		self.si_conversion = si_conversion
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 
 		if self.autoload:
 			self.load()

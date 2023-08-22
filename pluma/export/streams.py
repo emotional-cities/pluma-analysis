@@ -88,9 +88,9 @@ def resample_stream_accelerometer(stream: Stream,
         'Accl.X': resampling.resample_temporospatial,
         'Accl.Y': resampling.resample_temporospatial,
         'Accl.Z': resampling.resample_temporospatial,
-        'Gravitiy.X': resampling.resample_temporospatial,
-        'Gravitiy.Y': resampling.resample_temporospatial,
-        'Gravitiy.Z': resampling.resample_temporospatial}
+        'Gravity.X': resampling.resample_temporospatial,
+        'Gravity.Y': resampling.resample_temporospatial,
+        'Gravity.Z': resampling.resample_temporospatial}
     georef = _get_georef(stream)
     resampled_data = {k: resampling_method(stream.data[k], georef, sampling_dt)
                       for k, resampling_method in col_sampler.items()

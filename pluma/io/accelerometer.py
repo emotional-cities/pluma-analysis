@@ -13,7 +13,7 @@ _accelerometer_header = [
     'LinearAccl.X', 'LinearAccl.Y', 'LinearAccl.Z',
     'Magnetometer.X', 'Magnetometer.Y', 'Magnetometer.Z',
     'Accl.X', 'Accl.Y', 'Accl.Z',
-    'Gravitiy.X', 'Gravitiy.Y', 'Gravitiy.Z',
+    'Gravity.X', 'Gravity.Y', 'Gravity.Z',
     'SysCalibEnabled', 'GyroCalibEnabled',
     'AccCalibEnabled', 'MagCalibEnabled',
     'Temperature', 'Seconds', 'SoftwareTimestamp']

@@ -26,19 +26,21 @@ def convert_dataset_to_sdi(
     out = streams_to_export[list(streams_to_export.keys())[0]].copy()
     out = out.iloc[:, 0:3]
 
+    out_columns = []
     for stream in streams_to_export:
         cols = list(streams_to_export[stream].columns)
         for idx, entry in enumerate(cols):
             if entry not in exclude:
                 cols[idx] = f"{stream}.{entry}"
         streams_to_export[stream].columns = cols
-        out = pd.merge(out, streams_to_export[stream], how='outer')
+        out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
+    out = out.join(out_columns)
 
     geometry = gpd.points_from_xy(
         x=out['Longitude'],
         y=out['Latitude'],
         z=out['Elevation'])
-    out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
+    out = gpd.GeoDataFrame(out.drop(exclude, axis=1).reset_index(names='time'), geometry=geometry)
     return out
 
 def export_dataset_to_sdi_record(

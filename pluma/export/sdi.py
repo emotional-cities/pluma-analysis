@@ -45,7 +45,7 @@ def convert_dataset_to_sdi(
         x=out['Longitude'],
         y=out['Latitude'],
         z=out['Elevation'])
-    out = gpd.GeoDataFrame(out.drop(exclude, axis=1).reset_index(names='time'), geometry=geometry)
+    out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
     return out
 
 def export_dataset_to_sdi_record(

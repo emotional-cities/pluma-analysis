@@ -11,7 +11,7 @@ from pluma.stream import Stream, StreamType
 exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
 
 
-def convert_dataset_to_sdi(
+def convert_dataset_to_geoframe(
         dataset,
         sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
         rereference_to_ubx_time: bool = False
@@ -48,14 +48,14 @@ def convert_dataset_to_sdi(
     out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
     return out
 
-def export_dataset_to_sdi_record(
+def export_dataset_to_geojson(
         dataset,
         sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
         rereference_to_ubx_time: bool = False,
         filename=None
         ):
     
-    out = convert_dataset_to_sdi(dataset, sampling_dt, rereference_to_ubx_time)
+    out = convert_dataset_to_geoframe(dataset, sampling_dt, rereference_to_ubx_time)
     out.to_file(filename, driver='GeoJSON')
 
 def recursive_resample_stream(acc_dict, stream, sampling_dt):

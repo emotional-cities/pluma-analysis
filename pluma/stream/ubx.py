@@ -47,7 +47,8 @@ class UbxStream(Stream):
 
 	def parseposition(self,
                    event: _UBX_MSGIDS = _UBX_MSGIDS.NAV_HPPOSLLH,
-                   calibrate_clock: bool = True):
+                   calibrate_clock: bool = True,
+				   decode_utc_time: bool = True):
 		NavData = self.data[event.value].copy()
 		NavData.insert(NavData.shape[1], "Latitude",
                  NavData.apply(lambda x: x.Message.lat, axis=1),
@@ -67,6 +68,12 @@ class UbxStream(Stream):
 			iTowCorrected = pd.DataFrame(HarpStream.from_seconds(iTowCorrected))
 			iTowCorrected.columns = ["Seconds"]
 			NavData.set_index(iTowCorrected["Seconds"], inplace=True)
+		if decode_utc_time is True:
+			# GPS epoch
+			epoch = pd.Timestamp(1980, 1, 6)
+			reference = self.data["TIM_TM2"].Message[0]
+			offset = epoch + pd.Timedelta(weeks=reference.wnR)
+			NavData["Time_UTC"] = offset + NavData["Time_iTow"].astype('timedelta64[ms]')
 		self.positiondata = NavData
 		return NavData
 

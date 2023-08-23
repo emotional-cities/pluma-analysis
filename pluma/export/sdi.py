@@ -13,7 +13,7 @@ exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
 
 def convert_dataset_to_sdi(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
         rereference_to_ubx_time: bool = False
         ):
 
@@ -50,7 +50,7 @@ def convert_dataset_to_sdi(
 
 def export_dataset_to_sdi_record(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
         rereference_to_ubx_time: bool = False,
         filename=None
         ):

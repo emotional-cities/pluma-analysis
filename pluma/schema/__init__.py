@@ -14,7 +14,7 @@ from pluma.sync import ClockRefId
 from pluma.stream import StreamType, Stream
 
 from pluma.export import maps
-from pluma.export.sdi import convert_dataset_to_sdi, export_dataset_to_sdi_record
+from pluma.export.ogcapi.features import convert_dataset_to_geoframe, export_dataset_to_geojson
 
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
@@ -234,13 +234,13 @@ class Dataset:
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
-    def convert_to_sdi(self,
-                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-                      rereference_to_ubx_time: bool = False):
-        return convert_dataset_to_sdi(self, sampling_dt, rereference_to_ubx_time)
+    def to_geoframe(self,
+                    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+                    rereference_to_ubx_time: bool = False):
+        return convert_dataset_to_geoframe(self, sampling_dt, rereference_to_ubx_time)
 
-    def export_to_sdi_record(self,
-                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-                      rereference_to_ubx_time: bool = False,
-                      filename=None):
-        export_dataset_to_sdi_record(self, sampling_dt, rereference_to_ubx_time, filename=filename)
+    def to_geojson(self,
+                   filename,
+                   sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+                   rereference_to_ubx_time: bool = False):
+        export_dataset_to_geojson(self, sampling_dt, rereference_to_ubx_time, filename=filename)

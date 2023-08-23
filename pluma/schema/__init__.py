@@ -235,10 +235,12 @@ class Dataset:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
     def convert_to_sdi(self,
-                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)):
-        return convert_dataset_to_sdi(self, sampling_dt=sampling_dt)
+                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+                      rereference_to_ubx_time: bool = False):
+        return convert_dataset_to_sdi(self, sampling_dt, rereference_to_ubx_time)
 
     def export_to_sdi_record(self,
                       sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+                      rereference_to_ubx_time: bool = False,
                       filename=None):
-        export_dataset_to_sdi_record(self, sampling_dt=sampling_dt, filename=filename)
+        export_dataset_to_sdi_record(self, sampling_dt, rereference_to_ubx_time, filename=filename)

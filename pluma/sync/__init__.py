@@ -12,29 +12,29 @@ class ClockRefId(Enum):
 	EEG = 'eeg'
 
 
-class ClockReferencering:
+class ClockReference:
 	"""Abstract class that allows synchronization across Streams
 	"""
 
 	def __init__(self,
               referenceid: ClockRefId = ClockRefId.NONE):
 
-		self._clockreference = referenceid  # Tracks the reference clock
-		self._clockreference_history = []
+		self._referenceid = referenceid  # Tracks the reference clock
+		self._referenceid_history = []
 		self._conversion_model = None
 		self._reference_to = ClockRefId.NONE
 		self._reference_from = ClockRefId.NONE
 
 	@property
-	def reference(self):
-		return self._clockreference
+	def referenceid(self):
+		return self._referenceid
 
-	@reference.setter
-	def reference(self, value: ClockRefId):
-		if not(value == self._clockreference):
-			self._clockreference = value
+	@referenceid.setter
+	def referenceid(self, value: ClockRefId):
+		if not(value == self._referenceid):
+			self._referenceid = value
 			self._reference_to = value
-			self._clockreference_history.append(value)
+			self._referenceid_history.append(value)
 
 	@property
 	def conversion_model(self):

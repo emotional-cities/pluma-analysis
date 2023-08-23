@@ -18,7 +18,7 @@ class UbxStream(Stream):
 		super(UbxStream, self).__init__(data=data, **kw)
 		self.positiondata = None
 		self.streamtype = StreamType.UBX
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 		self.clock_calib_model = None  # Store the model here
 
 		self.autoload_messages = autoload_messages
@@ -47,7 +47,8 @@ class UbxStream(Stream):
 
 	def parseposition(self,
                    event: _UBX_MSGIDS = _UBX_MSGIDS.NAV_HPPOSLLH,
-                   calibrate_clock: bool = True):
+                   calibrate_clock: bool = True,
+				   decode_utc_time: bool = True):
 		NavData = self.data[event.value].copy()
 		NavData.insert(NavData.shape[1], "Latitude",
                  NavData.apply(lambda x: x.Message.lat, axis=1),
@@ -67,11 +68,17 @@ class UbxStream(Stream):
 			iTowCorrected = pd.DataFrame(HarpStream.from_seconds(iTowCorrected))
 			iTowCorrected.columns = ["Seconds"]
 			NavData.set_index(iTowCorrected["Seconds"], inplace=True)
+		if decode_utc_time is True:
+			# GPS epoch
+			epoch = pd.Timestamp(1980, 1, 6)
+			reference = self.data["TIM_TM2"].Message[0]
+			offset = epoch + pd.Timedelta(weeks=reference.wnR)
+			NavData["Time_UTC"] = offset + NavData["Time_iTow"].astype('timedelta64[ms]')
 		self.positiondata = NavData
 		return NavData
 
 	def calibrate_itow(self, input_itow_array):
-		return self.clockreferencering.conversion_model(input_itow_array)
+		return self.clockreference.conversion_model(input_itow_array)
 
 	def __str__(self):
 		return f'Ubx stream from device {self.device}, stream {self.streamlabel}'

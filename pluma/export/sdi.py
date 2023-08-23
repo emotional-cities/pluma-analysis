@@ -13,7 +13,8 @@ exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
 
 def convert_dataset_to_sdi(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+        rereference_to_ubx_time: bool = False
         ):
 
     streams_to_export = {}
@@ -26,28 +27,35 @@ def convert_dataset_to_sdi(
     out = streams_to_export[list(streams_to_export.keys())[0]].copy()
     out = out.iloc[:, 0:3]
 
+    out_columns = []
     for stream in streams_to_export:
         cols = list(streams_to_export[stream].columns)
         for idx, entry in enumerate(cols):
             if entry not in exclude:
                 cols[idx] = f"{stream}.{entry}"
         streams_to_export[stream].columns = cols
-        out = pd.merge(out, streams_to_export[stream], how='outer')
+        out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
+    out = out.join(out_columns)
+
+    if rereference_to_ubx_time:
+        offset = dataset.streams.UBX.positiondata['Time_UTC'][0] - out.index[0]
+        out.index += offset
 
     geometry = gpd.points_from_xy(
         x=out['Longitude'],
         y=out['Latitude'],
         z=out['Elevation'])
-    out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
+    out = gpd.GeoDataFrame(out.drop(exclude, axis=1).reset_index(names='time'), geometry=geometry)
     return out
 
 def export_dataset_to_sdi_record(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+        rereference_to_ubx_time: bool = False,
         filename=None
         ):
     
-    out = convert_dataset_to_sdi(dataset, sampling_dt)
+    out = convert_dataset_to_sdi(dataset, sampling_dt, rereference_to_ubx_time)
     out.to_file(filename, driver='GeoJSON')
 
 def recursive_resample_stream(acc_dict, stream, sampling_dt):

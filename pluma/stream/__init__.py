@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from typing import Union, Optional
 
 from pluma.io.path_helper import ComplexPath
-from pluma.sync import ClockReferencering, ClockRefId
+from pluma.sync import ClockReference, ClockRefId
 
 
 class StreamType(Enum):
@@ -24,7 +24,7 @@ class Stream:
               streamlabel: str,
               root: Union[str, ComplexPath] = '',
               data: any = None,
-              clockreferencering: ClockReferencering=ClockReferencering(referenceid=ClockRefId.NONE),
+              clockreference: ClockReference=ClockReference(referenceid=ClockRefId.NONE),
 			  parent_dataset=None,
 			  autoload: bool = True):
 		"""_summary_
@@ -40,7 +40,7 @@ class Stream:
 		self.streamlabel = streamlabel
 		self._rootfolder = self.rootfolder = root
 		self.data = data
-		self.clockreferencering = clockreferencering
+		self.clockreference = clockreference
 		self.parent_dataset = parent_dataset
 		self.autoload = autoload
 		self.streamtype = StreamType.NONE

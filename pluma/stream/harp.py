@@ -29,7 +29,7 @@ class HarpStream(Stream):
 		self.eventcode = eventcode
 		self.streamtype = StreamType.HARP
 		self.si_conversion = si_conversion
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 
 		if self.autoload:
 			self.load()

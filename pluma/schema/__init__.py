@@ -80,8 +80,8 @@ class Dataset:
         if strip is True:
             self.georeference.strip()
         if calibrate_clock is True:
-            self.georeference.clockreferencing.reference =\
-                ubxstream.clockreferencering.reference
+            self.georeference.clockreference.referenceid =\
+                ubxstream.clockreference.referenceid
 
     def reload_streams(self,
                        schema: Union[DotMap, Stream, None] = None,
@@ -213,7 +213,7 @@ class Dataset:
                 r2_min_qc=r2_min_qc,
                 plot_diagnosis=plot_diagnosis)
 
-        self.streams.UBX.clockreferencering.set_conversion_model(
+        self.streams.UBX.clockreference.set_conversion_model(
             model=model,
             reference_from=ClockRefId.HARP)
         self.has_calibration = True
@@ -235,10 +235,12 @@ class Dataset:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
     def convert_to_sdi(self,
-                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)):
-        return convert_dataset_to_sdi(self, sampling_dt=sampling_dt)
+                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+                      rereference_to_ubx_time: bool = False):
+        return convert_dataset_to_sdi(self, sampling_dt, rereference_to_ubx_time)
 
     def export_to_sdi_record(self,
-                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+                      sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
+                      rereference_to_ubx_time: bool = False,
                       filename=None):
-        export_dataset_to_sdi_record(self, sampling_dt=sampling_dt, filename=filename)
+        export_dataset_to_sdi_record(self, sampling_dt, rereference_to_ubx_time, filename=filename)

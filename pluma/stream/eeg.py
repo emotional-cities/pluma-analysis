@@ -26,12 +26,12 @@ class EegStream(Stream):
 
 		super(EegStream, self).__init__(data=data, **kw)
 		self.streamtype = StreamType.EEG
-		self.clockreferencering.reference = clockreferenceid
+		self.clockreference.referenceid = clockreferenceid
 		self.autoalign = autoalign
 		self.server_lsl_marker = server_lsl_marker
 		if self.autoload:
 			self.load()
-			if (self.autoalign and (self.clockreferencering.reference == ClockRefId.HARP)):
+			if (self.autoalign and (self.clockreference.referenceid == ClockRefId.HARP)):
 				self.align_to_harp()
 
 	def load(self):
@@ -40,7 +40,7 @@ class EegStream(Stream):
 			root=self.rootfolder)
 		if self.server_lsl_marker is None:
 			self.server_lsl_marker = _lsl_timestamp
-			if (self.autoalign and (self.clockreferencering.reference == ClockRefId.HARP)):
+			if (self.autoalign and (self.clockreference.referenceid == ClockRefId.HARP)):
 				self.align_to_harp()
 
 	def align_to_harp(self):

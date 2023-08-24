@@ -51,13 +51,15 @@ def convert_dataset_to_geoframe(
 
 def export_dataset_to_geojson(
         dataset,
+        filename,
         sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-        rereference_to_ubx_time: bool = False,
-        filename=None
+        rereference_to_ubx_time: bool = False
         ):
     
     out = convert_dataset_to_geoframe(dataset, sampling_dt, rereference_to_ubx_time)
-    out.to_file(filename, driver='GeoJSON')
+    out = out.reset_index(names='time')
+    out.time = out.time.dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    out.to_file(filename, driver='GeoJSON', index=True)
 
 def recursive_resample_stream(acc_dict, stream, sampling_dt):
     ret = None

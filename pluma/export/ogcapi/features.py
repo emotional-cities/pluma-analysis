@@ -36,6 +36,7 @@ def convert_dataset_to_geoframe(
         streams_to_export[stream].columns = cols
         out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
     out = out.join(out_columns)
+    out.index.name = 'time'
 
     if rereference_to_ubx_time:
         offset = dataset.streams.UBX.positiondata['Time_UTC'][0] - out.index[0]

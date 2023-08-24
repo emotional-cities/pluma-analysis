@@ -58,7 +58,8 @@ def export_dataset_to_geojson(
     
     out = convert_dataset_to_geoframe(dataset, sampling_dt, rereference_to_ubx_time)
     out = out.reset_index(names='time')
-    out.time = out.time.dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    micro_format = '.%f' if sampling_dt.microseconds != 0 else ''
+    out.time = out.time.dt.strftime(f"%Y-%m-%dT%H:%M:%S{micro_format}Z")
     out.index.name = 'id'    
     out.to_file(filename, driver='GeoJSON', index=True)
 

@@ -36,6 +36,7 @@ def convert_dataset_to_geoframe(
         streams_to_export[stream].columns = cols
         out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
     out = out.join(out_columns)
+    out.index.name = 'time'
 
     if rereference_to_ubx_time:
         offset = dataset.streams.UBX.positiondata['Time_UTC'][0] - out.index[0]
@@ -50,13 +51,17 @@ def convert_dataset_to_geoframe(
 
 def export_dataset_to_geojson(
         dataset,
+        filename,
         sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-        rereference_to_ubx_time: bool = False,
-        filename=None
+        rereference_to_ubx_time: bool = False
         ):
     
     out = convert_dataset_to_geoframe(dataset, sampling_dt, rereference_to_ubx_time)
-    out.to_file(filename, driver='GeoJSON')
+    out = out.reset_index(names='time')
+    micro_format = '.%f' if sampling_dt.microseconds != 0 else ''
+    out.time = out.time.dt.strftime(f"%Y-%m-%dT%H:%M:%S{micro_format}Z")
+    out.index.name = 'id'    
+    out.to_file(filename, driver='GeoJSON', index=True)
 
 def recursive_resample_stream(acc_dict, stream, sampling_dt):
     ret = None

@@ -243,4 +243,4 @@ class Dataset:
                    filename,
                    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
                    rereference_to_ubx_time: bool = False):
-        export_dataset_to_geojson(self, sampling_dt, rereference_to_ubx_time, filename=filename)
+        export_dataset_to_geojson(self, filename, sampling_dt, rereference_to_ubx_time)

@@ -47,6 +47,7 @@ def convert_dataset_to_geoframe(
         y=out['Latitude'],
         z=out['Elevation'])
     out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
+    out.crs = 'epsg:4326'
     return out
 
 def export_dataset_to_geojson(

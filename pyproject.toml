@@ -23,7 +23,8 @@ dependencies = [
     "dotmap",
     "nepy",
     "simplekml",
-    "isodate"
+    "isodate",
+    "jinja2"
 ]
 
 classifiers = [

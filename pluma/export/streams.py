@@ -7,7 +7,6 @@ import pandas as pd
 from typing import Union, Optional, Callable, Dict
 
 from pluma.stream import Stream, StreamType
-from pluma.stream.harp import HarpStream
 
 import pluma.preprocessing.resampling as resampling
 
@@ -46,7 +45,7 @@ def export_stream_to_csv(stream: Stream, export_path: str,
                                   {type(stream)} is not yet supported.")
 
 
-def export_uniform_table_stream(stream: HarpStream,
+def export_uniform_table_stream(stream: Stream,
                                 georeference: pd.DataFrame,
                                 outdir: str,
                                 resampling_function: Callable[[pd.DataFrame, pd.DataFrame], pd.DataFrame],

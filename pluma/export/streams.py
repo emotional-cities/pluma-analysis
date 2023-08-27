@@ -7,6 +7,7 @@ import pandas as pd
 from typing import Union, Optional, Callable, Dict
 
 from pluma.stream import Stream, StreamType
+from pluma.stream.harp import HarpStream
 
 import pluma.preprocessing.resampling as resampling
 
@@ -73,24 +74,24 @@ def resample_stream_accelerometer(stream: Stream,
                                   **kwargs) -> pd.DataFrame:
     check_stream_data_integrity(stream)
     col_sampler = {
-        'Orientation.X': resampling.resample_temporospatial_circ,
-        'Orientation.Y': resampling.resample_temporospatial_circ,
-        'Orientation.Z': resampling.resample_temporospatial_circ,
-        'Gyroscope.X': resampling.resample_temporospatial,
-        'Gyroscope.Y': resampling.resample_temporospatial,
-        'Gyroscope.Z': resampling.resample_temporospatial,
-        'LinearAccl.X': resampling.resample_temporospatial,
-        'LinearAccl.Y': resampling.resample_temporospatial,
-        'LinearAccl.Z': resampling.resample_temporospatial,
-        'Magnetometer.X': resampling.resample_temporospatial,
-        'Magnetometer.Y': resampling.resample_temporospatial,
-        'Magnetometer.Z': resampling.resample_temporospatial,
-        'Accl.X': resampling.resample_temporospatial,
-        'Accl.Y': resampling.resample_temporospatial,
-        'Accl.Z': resampling.resample_temporospatial,
-        'Gravity.X': resampling.resample_temporospatial,
-        'Gravity.Y': resampling.resample_temporospatial,
-        'Gravity.Z': resampling.resample_temporospatial}
+        'Orientation_X': resampling.resample_temporospatial_circ,
+        'Orientation_Y': resampling.resample_temporospatial_circ,
+        'Orientation_Z': resampling.resample_temporospatial_circ,
+        'Gyroscope_X': resampling.resample_temporospatial,
+        'Gyroscope_Y': resampling.resample_temporospatial,
+        'Gyroscope_Z': resampling.resample_temporospatial,
+        'LinearAccl_X': resampling.resample_temporospatial,
+        'LinearAccl_Y': resampling.resample_temporospatial,
+        'LinearAccl_Z': resampling.resample_temporospatial,
+        'Magnetometer_X': resampling.resample_temporospatial,
+        'Magnetometer_Y': resampling.resample_temporospatial,
+        'Magnetometer_Z': resampling.resample_temporospatial,
+        'Accl_X': resampling.resample_temporospatial,
+        'Accl_Y': resampling.resample_temporospatial,
+        'Accl_Z': resampling.resample_temporospatial,
+        'Gravity_X': resampling.resample_temporospatial,
+        'Gravity_Y': resampling.resample_temporospatial,
+        'Gravity_Z': resampling.resample_temporospatial}
     georef = _get_georef(stream)
     resampled_data = {k: resampling_method(stream.data[k], georef, sampling_dt)
                       for k, resampling_method in col_sampler.items()

@@ -5,7 +5,7 @@ import pandas as pd
 import geopandas as gpd
 from dotmap import DotMap
 
-from pluma.stream import Stream, StreamType
+from pluma.stream import Stream
 
 
 exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
@@ -31,8 +31,11 @@ def convert_dataset_to_geoframe(
     for stream in streams_to_export:
         cols = list(streams_to_export[stream].columns)
         for idx, entry in enumerate(cols):
-            if entry not in exclude:
-                cols[idx] = f"{stream}.{entry}"
+            if entry in exclude:
+                continue
+
+            cols[idx] = (stream if entry.lower() == "data" else
+                         f"{stream}_{entry}").lower()
         streams_to_export[stream].columns = cols
         out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
     out = out.join(out_columns)
@@ -93,5 +96,5 @@ def recursive_resample_stream(acc_dict, stream, sampling_dt):
         print(type(stream))
 
     if ret is not None:
-        acc_dict[f"{stream.device}.{stream.streamlabel}"] = ret
+        acc_dict[f"{stream.device}_{stream.streamlabel}"] = ret
     return ret

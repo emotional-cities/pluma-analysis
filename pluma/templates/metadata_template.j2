@@ -21,34 +21,36 @@
     "keywords": {{ keywords | tojson(indent=2) | indent(width=4) }},
     "language": "en",
     "contacts": [
+      {%- for contact in contacts %}
       {
-        "name": "{{ contact_name }}",
-        "organization": "{{ contact_institution }}",
+        "name": "{{ contact.name }}",
+        "organization": "{{ contact.institution }}",
         "email": [
-          {"value" : "{{ contact_email }}"}
+          {"value" : "{{ contact.email }}"}
         ]
       }
+      {%- endfor %}
     ],
     "themes": [
+      {%- for theme in themes %}
       {
-        {% for theme in themes %}
         "concepts": [
           {% for concept in theme.concepts %}
           {
-            "id": "{{ concept.scheme_concept }}"
+            "id": "{{ concept }}"
           }
           {% endfor %}
         ],
         "scheme": "{{ theme.scheme_url }}"
-        {% endfor %}
       }
+      {%- endfor %}
     ],
     "formats": [
       "CSV",
       "GeoJSON"
     ],
     "license": "{{ license }}",
-    "dataCollectionTool": "{{ dataCollectionTool }}"
+    "dataCollectionTool": "{{ tool }}"
   },
   "links": [
     {

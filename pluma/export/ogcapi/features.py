@@ -86,12 +86,10 @@ def recursive_resample_stream(acc_dict, stream, sampling_dt):
         if stream.device not in exclude_devices:
             try:
                 ret = stream.resample(sampling_dt)
-            except NotImplementedError as E:
+            except NotImplementedError:
                 pass
-            except:
-                print(f"Failed Stream {stream}")
-        else:
-            pass
+            except Exception as E:
+                print(f"Failed Stream {stream}: {E}")
     else:
         print(type(stream))
 

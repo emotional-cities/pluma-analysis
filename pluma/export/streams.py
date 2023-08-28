@@ -96,7 +96,7 @@ def resample_stream_accelerometer(stream: Stream,
                       for k, resampling_method in col_sampler.items()
                       if k in stream.data.columns}
     out = resampled_data[list(col_sampler.keys())[0]].copy()
-    out.drop(columns=['Data'], axis=1)
+    out.drop(columns=['Data'], axis=1, inplace=True)
 
     for key in resampled_data.keys():
         out[key] = resampled_data[key]["Data"]
@@ -116,7 +116,7 @@ def resample_stream_empatica(stream: Stream,
                       for k, resampling_method in col_sampler.items()
                       if k in stream.data}
     out = resampled_data[list(col_sampler.keys())[0]].copy()
-    out.drop(columns=['Data'], axis=1)
+    out.drop(columns=['Data'], axis=1, inplace=True)
 
     for key in resampled_data.keys():
         out[key] = resampled_data[key]["Data"]

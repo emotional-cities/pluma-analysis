@@ -8,12 +8,12 @@ from pluma.io.harp import _HARP_T0
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 _accelerometer_header = [
-    'Orientation.X', 'Orientation.Y', 'Orientation.Z',
-    'Gyroscope.X', 'Gyroscope.Y', 'Gyroscope.Z',
-    'LinearAccl.X', 'LinearAccl.Y', 'LinearAccl.Z',
-    'Magnetometer.X', 'Magnetometer.Y', 'Magnetometer.Z',
-    'Accl.X', 'Accl.Y', 'Accl.Z',
-    'Gravity.X', 'Gravity.Y', 'Gravity.Z',
+    'Orientation_X', 'Orientation_Y', 'Orientation_Z',
+    'Gyroscope_X', 'Gyroscope_Y', 'Gyroscope_Z',
+    'LinearAccl_X', 'LinearAccl_Y', 'LinearAccl_Z',
+    'Magnetometer_X', 'Magnetometer_Y', 'Magnetometer_Z',
+    'Accl_X', 'Accl_Y', 'Accl_Z',
+    'Gravity_X', 'Gravity_Y', 'Gravity_Z',
     'SysCalibEnabled', 'GyroCalibEnabled',
     'AccCalibEnabled', 'MagCalibEnabled',
     'Temperature', 'Seconds', 'SoftwareTimestamp']

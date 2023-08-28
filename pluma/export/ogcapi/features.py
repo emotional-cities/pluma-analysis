@@ -94,5 +94,8 @@ def recursive_resample_stream(acc_dict, stream, sampling_dt):
         print(type(stream))
 
     if ret is not None:
-        acc_dict[f"{stream.device}_{stream.streamlabel}"] = ret
+        acc_key = stream.device
+        if stream.streamlabel != acc_key:
+            acc_key = f"{acc_key}_{stream.streamlabel}" 
+        acc_dict[acc_key] = ret
     return ret

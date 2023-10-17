@@ -19,7 +19,10 @@
     "title": "{{ title }}",
     "description": "{{ description }}",
     "keywords": {{ keywords | tojson(indent=2) | indent(width=4) }},
-    "language": "en",
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
     "contacts": [
       {%- for contact in contacts %}
       {

@@ -45,10 +45,10 @@ def load_glia(filename: str,
                 unpacked = list(struct.unpack(format_string, chunk))
                 df.loc[len(df.index)] = unpacked
     except FileNotFoundError:
-        warnings.warn(f'Microphone stream file\
+        warnings.warn(f'Glia stream file\
                 {path} could not be found.')
     except FileExistsError:
-        warnings.warn(f'Microphone stream file\
+        warnings.warn(f'Glia stream file\
                 {path} could not be found.')
 
     return df

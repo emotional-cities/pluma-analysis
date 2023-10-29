@@ -14,6 +14,7 @@ class StreamType(Enum):
 	MICROPHONE = 'MicrophoneStream'
 	EMPATICA = 'EmpaticaStream'
 	EEG = 'EegStream'
+	GLIA = 'GliaStream'
 
 
 class Stream:

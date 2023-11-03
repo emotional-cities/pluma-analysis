@@ -9,14 +9,14 @@ from pluma.sync import ClockRefId
 class GliaStream(Stream):
     def __init__(self,
                  filename: str,
-                 dtypes: list[chr],
-                 channel_names: list[str],
+                 dtypes: list[list[chr]],  # list of list of char formats within each frame after topic
+                 channel_names: list[list[str]],  # list of list of string channel names within each frame after topic
                  data: np.array = np.empty(shape=(0, 1)),
                  si_conversion: SiUnitConversion = SiUnitConversion(),
                  clockreferenceid: ClockRefId = ClockRefId.HARP,
                  **kw):
         super(GliaStream, self).__init__(data=data, **kw)
-        self.streamtype = StreamType.GLIA
+        self.streamtype = 'Glia'  # TODO this should be a defined stream type in pluma analysis
         self.filename = filename
         self.dtypes = dtypes
         self.channel_names = channel_names

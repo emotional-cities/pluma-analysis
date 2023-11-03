@@ -88,10 +88,10 @@ def build_schema(root: Union[str, ComplexPath],
     # Glia streams
     streams.Glia.EyeTracking.Timestamps =         HarpStream(215, device='Glia', streamlabel='Glia.EyeTracking.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.Glia.EyeTracking.Data =               GliaStream('Glia/EyeTracking.bin',
-                                                             ['q', 'q', 'q', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f'],
-                                                             ["HardwareTime", "OmniceptTime", "SystemTime", "CombinedGaze.X", "CombinedGaze.Y", "CombinedGaze.Z",
+                                                             [['Q', 'Q', 'Q'], ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']],
+                                                             [["HardwareTime", "OmniceptTime", "SystemTime"],  ["CombinedGaze.X", "CombinedGaze.Y", "CombinedGaze.Z",
                                                               "LeftOpenness", "LeftOpennessConfidence", "LeftDilation", "LeftDilationConfidence", "LeftPosition.X", "LeftPosition.Y",
-                                                              "RightOpenness", "RightOpennessConfidence", "RightDilation", "RightDilationConfidence", "RightPosition.X", "RightPosition.Y"],
+                                                              "RightOpenness", "RightOpennessConfidence", "RightDilation", "RightDilationConfidence", "RightPosition.X", "RightPosition.Y"]],
                                                              device='Glia',
                                                              streamlabel='Glia.EyeTracking.Data',
                                                              root=root, autoload=autoload,
@@ -99,8 +99,8 @@ def build_schema(root: Union[str, ComplexPath],
 
     streams.Glia.HeartRate.Timestamps =           HarpStream(216, device='Glia', streamlabel='Glia.HeartRate.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.Glia.HeartRate.Data =                 GliaStream('Glia/HeartRate.bin',
-                                                             ['q', 'q', 'q', 'I'],
-                                                             ["HardwareTime", "OmniceptTime", "SystemTime", "HeartRate"],
+                                                             [['Q', 'Q', 'Q'], ['I']],
+                                                             [["HardwareTime", "OmniceptTime", "SystemTime"], ["HeartRate"]],
                                                              device='Glia',
                                                              streamlabel='Glia.HeartRate.Data',
                                                              root=root, autoload=autoload,
@@ -108,25 +108,49 @@ def build_schema(root: Union[str, ComplexPath],
 
     streams.Glia.IMU.Timestamps =                 HarpStream(217, device='Glia', streamlabel='Glia.IMU.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.Glia.IMU.Data =                       GliaStream('Glia/IMU.bin',
-                                                             ['q', 'q', 'q', 'f', 'f', 'f', 'f', 'f', 'f'],
-                                                             ["HardwareTime", "OmniceptTime", "SystemTime", "AccelX", "AccelY", "AccelZ", "GyroX", "GyroY", "GyroZ"],
+                                                             [['Q', 'Q', 'Q'], ['f', 'f', 'f', 'f', 'f', 'f']],
+                                                             [["HardwareTime", "OmniceptTime", "SystemTime"], ["AccelX", "AccelY", "AccelZ", "GyroX", "GyroY", "GyroZ"]],
                                                              device='Glia',
                                                              streamlabel='Glia.IMU.Data',
                                                              root=root, autoload=autoload,
                                                              parent_dataset=parent_dataset)
 
-    streams.Glia.Mouth.Timestamp =                HarpStream(218, device='Glia', streamlabel='Glia.Mouth.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.Glia.Mouth.Timestamps =                HarpStream(218, device='Glia', streamlabel='Glia.Mouth.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
-    streams.Unity.Transform.Timestamp =           HarpStream(219, device='Unity', streamlabel='Unity.Transform.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Unity.Transform.Data =                GliaStream('VRTransform.bin',
-                                                             ['q', 'f', 'f', 'f', 'f', 'f', 'f'],
-                                                             ["Timestamp", "Transform.Position.X", "Transform.Position.Y", "Transform.Position.Z",
-                                                              "Transform.Forward.X", "Transform.Forward.Y", "Transform.Forward.Z"],
-                                                             device='Unity',
-                                                             streamlabel='Unity.Transform.Data',
-                                                             root=root, autoload=autoload,
-                                                             parent_dataset=parent_dataset)
+    streams.Unity.Transform.Timestamps =           HarpStream(219, device='Unity', streamlabel='Unity.Transform.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.Unity.Transform.Data =                 GliaStream('VRTransform/Position.bin',
+                                                              [['Q'], ['f', 'f', 'f', 'f', 'f', 'f']],
+                                                              [["Timestamp"], ["Transform.Position.X", "Transform.Position.Y", "Transform.Position.Z",
+                                                               "Transform.Forward.X", "Transform.Forward.Y", "Transform.Forward.Z"]],
+                                                              device='Unity',
+                                                              streamlabel='Unity.Transform.Data',
+                                                              root=root, autoload=autoload,
+                                                              parent_dataset=parent_dataset)
 
-    streams.Unity.Video.Timestamp =               HarpStream(220, device='Unity', streamlabel='Unity.Video.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.Unity.Video.Timestamps =               HarpStream(220, device='Unity', streamlabel='Unity.Video.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+
+    streams.Unity.PointToOriginWorld.Timestamps =  HarpStream(227, device='Unity', streamlabel='Unity.PointToOriginWorld.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.Unity.PointToOriginWorld.Data =        GliaStream('Unity_PointToOriginWorld/PointToOriginWorld.bin',
+                                                              [['Q'], ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f']],
+                                                              [["Timestamp"], ["Origin.Position.X", "Origin.Position.Y", "Origin.Position.Z",
+                                                               "Hand.Position.X", "Hand.Position.Y", "Hand.Position.Z",
+                                                               "HandAxis.Angle.X", "HandAxis.Angle.Y", "HandAxis.Angle.Z",
+                                                               "OriginAxis.Angle.X", "OriginAxis.Angle.Y", "OriginAxis.Angle.Z"]],
+                                                              device='Unity',
+                                                              streamlabel='Unity.PointToOriginWorld.Data',
+                                                              root=root, autoload=autoload,
+                                                              parent_dataset=parent_dataset)
+
+    streams.Unity.PointToOriginMap.Timestamps =    HarpStream(228, device='Unity', streamlabel='Unity.PointToOriginMap.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.Unity.PointToOriginMap.Data =          GliaStream('Unity_PointToOriginMap/PointToOriginMap.bin',
+                                                              [['Q'], ['f', 'f', 'f', 'f', 'f', 'f']],
+                                                              [["Timestamp"], ["Origin.Position.X", "Origin.Position.Y",
+                                                               "Subject.Position.X", "Subject.Position.Y",
+                                                               "Point.Position.X", "Point.Position.Y"]],
+                                                              device='Unity',
+                                                              streamlabel='Unity.PointToOriginMap.Data',
+                                                              root=root, autoload=autoload,
+                                                              parent_dataset=parent_dataset)
 
     return streams
+

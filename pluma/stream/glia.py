@@ -16,7 +16,7 @@ class GliaStream(Stream):
                  clockreferenceid: ClockRefId = ClockRefId.HARP,
                  **kw):
         super(GliaStream, self).__init__(data=data, **kw)
-        self.streamtype = 'Glia'  # TODO this should be a defined stream type in pluma analysis
+        self.streamtype = StreamType.GLIA
         self.filename = filename
         self.dtypes = dtypes
         self.channel_names = channel_names

@@ -6,26 +6,28 @@ from typing import Union
 
 import pandas as pd
 import os
-from pluma.io.path_helper import ComplexPath
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
 def load_glia(filename: str,
               dtypes: list[list[tuple[str, type]]],
               root: Union[str, ComplexPath] = ''
               ) -> pd.DataFrame:
-    path = os.path.join(root._path, filename+'_Frame1.bin')
+    path = ensure_complexpath(root)
+    path.join(filename + '_Frame1.bin')
 
     df_timestamps = pd.DataFrame(columns=[chan[0] for chan in dtypes[0]])
     df_data = pd.DataFrame(columns=[chan[0] for chan in dtypes[1]])
 
     try:
         # unpack timestamps
-        t_data = np.fromfile(path, dtype=np.dtype(dtypes[0]))
+        t_data = np.fromfile(path.path, dtype=np.dtype(dtypes[0]))
         df_timestamps = pd.DataFrame(t_data)
 
         # unpack data
-        path = os.path.join(root._path, filename + '_Frame2.bin')
-        d_data = np.fromfile(path, dtype=np.dtype(dtypes[1]))
+        path = ensure_complexpath(root)
+        path.join(filename + '_Frame2.bin')
+        d_data = np.fromfile(path.path, dtype=np.dtype(dtypes[1]))
         df_data = pd.DataFrame(d_data)
     except FileNotFoundError:
         warnings.warn(f'Glia stream file\

@@ -25,10 +25,10 @@ class CsvStream(Stream):
             self.load()
 
     def load(self):
-        path = ensure_complexpath(self.rootfolder)._path
-        path = os.path.join(path, self.filename)
+        path = ensure_complexpath(self.rootfolder)
+        path.join(self.filename)
         try:
-            self.data = pd.read_csv(path)
+            self.data = pd.read_csv(path.path)
         except FileNotFoundError:
             warnings.warn(f'Glia stream file\
                         {path} could not be found.')

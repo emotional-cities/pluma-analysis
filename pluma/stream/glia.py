@@ -9,8 +9,7 @@ from pluma.sync import ClockRefId
 class GliaStream(Stream):
     def __init__(self,
                  filename: str,
-                 dtypes: list[list[chr]],  # list of list of char formats within each frame after topic
-                 channel_names: list[list[str]],  # list of list of string channel names within each frame after topic
+                 dtypes: list[list[tuple[str, type]]],
                  data: np.array = np.empty(shape=(0, 1)),
                  si_conversion: SiUnitConversion = SiUnitConversion(),
                  clockreferenceid: ClockRefId = ClockRefId.HARP,
@@ -19,17 +18,14 @@ class GliaStream(Stream):
         self.streamtype = StreamType.GLIA
         self.filename = filename
         self.dtypes = dtypes
-        self.channel_names = channel_names
         self.si_conversion = si_conversion
         self.clockreference.referenceid = clockreferenceid
-
-        assert(len(self.dtypes) == len(self.channel_names)), "Number of data types does not match number of channel names."
 
         if self.autoload:
             self.load()
 
     def load(self):
-        self.data = load_glia(self.filename, self.dtypes, self.channel_names, root=self.rootfolder)
+        self.data = load_glia(self.filename, self.dtypes, root=self.rootfolder)
 
     def resample(self):
         pass

@@ -11,7 +11,7 @@ from pluma.io.path_helper import ensure_complexpath
 class CsvStream(Stream):
     def __init__(self,
                  filename: str,
-                 data: np.array = np.empty(shape=(0, 1)),
+                 data: pd.DataFrame = None,
                  si_conversion: SiUnitConversion = SiUnitConversion(),
                  clockreferenceid: ClockRefId = ClockRefId.HARP,
                  **kw):
@@ -42,5 +42,5 @@ class CsvStream(Stream):
     def convert_to_si(self, data=None):
         pass
 
-    def export_to_csv(self):
-        pass
+    def export_to_csv(self, export_path):
+        self.data.to_csv(export_path)

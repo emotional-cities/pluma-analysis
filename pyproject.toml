@@ -22,6 +22,7 @@ dependencies = [
     "tilemapbase",
     "dotmap",
     "nepy",
+    "frost_sta_client",
     "simplekml",
     "isodate",
     "jinja2"

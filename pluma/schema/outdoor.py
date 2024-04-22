@@ -35,11 +35,6 @@ def build_schema(root: Union[str, ComplexPath],
     streams.BioData.Set =                         HarpStream(39, device='BioData', streamlabel='Set', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.BioData.Clear =                       HarpStream(40, device='BioData', streamlabel='Clear', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
-    # PupilLabs streams
-    streams.PupilLabs.LSLSampleTime =             HarpStream(220, device='PupilLabs', streamlabel='LSLSampleTime', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.LSLSampleArray =            HarpStream(221, device='PupilLabs', streamlabel='LSLSampleArray', root=root, autoload=autoload, parent_dataset=parent_dataset)
-
-
     # TinkerForge streams
     streams.TK.AmbientLight.AmbientLight =        HarpStream(223, device='TK', streamlabel='AmbientLight.AmbientLight', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
@@ -104,6 +99,9 @@ def build_schema(root: Union[str, ComplexPath],
 
     # EEG stream
     streams.EEG =                                  EegStream(device='Enobio', streamlabel='EEG', root=root, autoload=autoload, parent_dataset=parent_dataset)
+
+    # Pupil streams
+
 
     return streams
 

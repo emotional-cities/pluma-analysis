@@ -27,6 +27,21 @@ def build_schema(root: Union[str, ComplexPath],
     """
     root = ensure_complexpath(root)
     streams = DotMap()
+
+    # Pupil streams
+    streams.PupilLabs.Counter.DecodedFrames =     HarpStream(209, device='PupilLabs', streamlabel='Counter_DecodedFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.RawFrames =         HarpStream(210, device='PupilLabs', streamlabel='Counter_RawFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.IMU =               HarpStream(211, device='PupilLabs', streamlabel='Counter_IMU', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.Gaze =              HarpStream(212, device='PupilLabs', streamlabel='Counter_Gaze', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Data.Gaze =                 PupilStream('PupilLabs/Gaze',
+                                                              [[('SensorId', np.string_, 36)], [('Timestamp', np.uint64)], [('GazeX', np.single), ('GazeY', np.single)]],
+                                                              device='PupilLabs',
+                                                              streamlabel='PupilLabs.Gaze.Data',
+                                                              root=root, autoload=autoload,
+                                                              parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.Audio =             HarpStream(213, device='PupilLabs', streamlabel='Counter_Audio', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.Key =               HarpStream(214, device='PupilLabs', streamlabel='Counter_Key', root=root, autoload=autoload, parent_dataset=parent_dataset)
+
     # BioData streams
     streams.BioData.EnableStreams =               HarpStream(32, device='BioData', streamlabel='EnableStreams', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.BioData.DisableStreams =              HarpStream(33, device='BioData', streamlabel='DisableStreams', root=root, autoload=autoload, parent_dataset=parent_dataset)
@@ -101,20 +116,6 @@ def build_schema(root: Union[str, ComplexPath],
 
     # EEG stream
     streams.EEG =                                  EegStream(device='Enobio', streamlabel='EEG', root=root, autoload=autoload, parent_dataset=parent_dataset)
-
-    # Pupil streams
-    streams.PupilLabs.Counter.DecodedFrames =     HarpStream(209, device='PupilLabs', streamlabel='Counter_DecodedFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Counter.RawFrames =         HarpStream(210, device='PupilLabs', streamlabel='Counter_RawFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Counter.IMU =               HarpStream(211, device='PupilLabs', streamlabel='Counter_IMU', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Counter.Gaze =              HarpStream(212, device='PupilLabs', streamlabel='Counter_Gaze', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Data.Gaze =                 PupilStream('PupilLabs/Gaze',
-                                                              [[('SensorId', str)], [('Timestamp', np.uint)], [('GazeX', np.single), ('GazeY', np.single)]],
-                                                              device='PupilLabs',
-                                                              streamlabel='PupilLabs.Gaze.Data',
-                                                              root=root, autoload=autoload,
-                                                              parent_dataset=parent_dataset)
-    streams.PupilLabs.Counter.Audio =             HarpStream(213, device='PupilLabs', streamlabel='Counter_Audio', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Counter.Key =               HarpStream(214, device='PupilLabs', streamlabel='Counter_Key', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
     return streams
 

@@ -43,8 +43,6 @@ def load_pupil(filename: str,
         warnings.warn(f'Pupil stream file could not be found.')
 
     if data_df is not None:
-        print(pd.concat([sensor_id_df, data_header_df, data_df], axis=1))
         return pd.concat([sensor_id_df, data_header_df, data_df], axis=1)
     else:
-        print(pd.concat([sensor_id_df, data_header_df], axis=1))
         return pd.concat([sensor_id_df, data_header_df], axis=1)

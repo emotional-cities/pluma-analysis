@@ -22,13 +22,11 @@ class PupilStream(Stream):
         self.dtypes = dtypes
         self.si_conversion = si_conversion
         self.clockreference.referenceid = clockreferenceid
-
         if self.autoload:
             self.load()
 
     def load(self):
         self.data = load_pupil(self.filename, self.dtypes, root=self.rootfolder)
-
     def resample(self):
         pass
 

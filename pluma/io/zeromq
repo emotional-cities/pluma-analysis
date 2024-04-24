@@ -1,0 +1,34 @@
+import struct
+import warnings
+import numpy as np
+
+from typing import Union
+
+import pandas as pd
+import os
+from pluma.io.path_helper import ComplexPath, ensure_complexpath
+
+
+def load_zeromq(filename: list[str],
+                dtypes: list[tuple[str, type]],
+                root: Union[str, ComplexPath] = '') -> pd.DataFrame:
+    
+    assert len(filename) == len(dtypes), "Length of filename and dtypes must be the same."
+
+    path = ensure_complexpath(root)
+    path.join(filename)
+
+    for f, i in enumerate(filename):
+        print(f)
+
+    try:
+        print("try")
+    except FileNotFoundError:
+        warnings.warn(f'Stream file\
+                {path} could not be found.')
+    except FileExistsError:
+        warnings.warn(f'Stream file\
+                {path} could not be found.')
+        
+    return pd.DataFrame()
+        

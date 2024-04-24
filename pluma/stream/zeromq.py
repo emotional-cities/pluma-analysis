@@ -9,7 +9,7 @@ from pluma.sync import ClockRefId
 
 class ZeromqStream(Stream):
     def __init__(self, 
-                 filename: str, 
+                 filenames: str, 
                  dtypes: list[list[tuple[str, type]]],
                  data: pd.DataFrame = None, 
                  si_conversion: SiUnitConversion = SiUnitConversion(),
@@ -18,7 +18,7 @@ class ZeromqStream(Stream):
         super(ZeromqStream, self).__init__(data=data, **kw)
 
         self.streamtype = StreamType.ZEROMQ
-        self.filename = filename
+        self.filenames = filenames
         self.dtypes = dtypes
         self.si_conversion = si_conversion
         self.clockreference.referenceid = clockreferenceid
@@ -27,7 +27,7 @@ class ZeromqStream(Stream):
             self.load()
 
     def load(self):
-        self.data = load_zeromq(self.filename, self.dtypes, root=self.rootfolder)
+        self.data = load_zeromq(self.filenames, self.dtypes, root=self.rootfolder)
 
     def resample(self):
         pass

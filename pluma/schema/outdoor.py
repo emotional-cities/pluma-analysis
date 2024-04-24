@@ -32,9 +32,9 @@ def build_schema(root: Union[str, ComplexPath],
     streams.PupilLabs.Counter.DecodedFrames =     HarpStream(209, device='PupilLabs', streamlabel='Counter_DecodedFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.PupilLabs.Counter.RawFrames =         HarpStream(210, device='PupilLabs', streamlabel='Counter_RawFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
     # N.B. the camera stream has variable length frames in the raw data defined by data bytes in the header. In this schema the raw frame data is not loaded, further processing is needed to extract the full frames.
-    streams.PupilLabs.Data.RawFrames =            PupilStream('PupilLabs/WorldCamera', 
-                                                              [[('SensorId', np.string_, 36)], 
-                                                               [('Format', np.uint32), ('Width', np.uint32), ('Height', np.uint32), ('Sequence', np.uint32), ('Timestamp', np.uint64), ('DataBytes', np.uint32), ('Reserved', np.uint32)]],
+    streams.PupilLabs.Data.RawFrames =            PupilStream('PupilLabs/WorldCamera',
+                                                              frame1 = [('Format', np.uint32), ('Width', np.uint32), ('Height', np.uint32), ('Sequence', np.uint32), ('Timestamp', np.uint64), ('DataBytes', np.uint32), ('Reserved', np.uint32)],
+                                                              frame2 = None,
                                                               device='PupilLabs',
                                                               streamlabel='PupilLabs.WorldCamera.Data',
                                                               root=root, autoload=autoload,
@@ -42,7 +42,6 @@ def build_schema(root: Union[str, ComplexPath],
     streams.PupilLabs.Counter.IMU =               HarpStream(211, device='PupilLabs', streamlabel='Counter_IMU', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.PupilLabs.Counter.Gaze =              HarpStream(212, device='PupilLabs', streamlabel='Counter_Gaze', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.PupilLabs.Data.Gaze =                 PupilStream('PupilLabs/Gaze',
-                                                              [[('SensorId', np.string_, 36)], [('Timestamp', np.uint64)], [('GazeX', np.single), ('GazeY', np.single)]],
                                                               device='PupilLabs',
                                                               streamlabel='PupilLabs.Gaze.Data',
                                                               root=root, autoload=autoload,

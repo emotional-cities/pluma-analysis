@@ -10,15 +10,19 @@ from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
 def load_pupil(filename: str,
-               dtypes: list[list[tuple[str, type]]],
+               frame0: list[tuple[str, type]],
+               frame1: list[tuple[str, type]],
+               frame2: list[tuple[str, type]],
                root: Union[str, ComplexPath] = '') -> pd.DataFrame:
     """Reads data from the specified Pupil binary file set. \
         Assumes data frames have uniform length / data type.
 
     Args:
         filename (str): Input base file name to target.
-        dtypes (list[list[tuple[str, type]]]): List of data types for each frame. Outer list is usually length 3 (for each NetMQ frame). Each inner list contains tuple of channel name and data type.
         root (Union[str, ComplexPath]): Base data location.
+        frame0 (tuple[str, type], optional): Channel name and expected type of first frame of a pupil message. In NDSI spec should be a string of length 36
+        frame1 (list[tuple[str, type]], optional): List of channel names and expected types for frame 1, which should contain the data header. 
+        frame2 (list[tuple[str, type]], optional): List of channel names and expected types for frame 2, which should contain the raw data. Set to None for variable length data types.
 
     Returns:
         pd.DataFrame: Dataframe with pupil stream.
@@ -31,12 +35,12 @@ def load_pupil(filename: str,
     data_path.join(filename + '_Frame2.bin')
 
     try:
-        sensor_id_df = pd.DataFrame(np.fromfile(sensor_id_path.path, dtype=np.dtype(dtypes[0])))
-        data_header_df = pd.DataFrame(np.fromfile(data_header_path.path, dtype=np.dtype(dtypes[1])))
+        sensor_id_df = pd.DataFrame(np.fromfile(sensor_id_path.path, dtype=np.dtype(frame0)))
+        data_header_df = pd.DataFrame(np.fromfile(data_header_path.path, dtype=np.dtype(frame1)))
 
         data_df = None
-        if len(dtypes) > 2:
-            data_df = pd.DataFrame(np.fromfile(data_path.path, dtype=np.dtype(dtypes[2])))
+        if frame2 is not None:
+            data_df = pd.DataFrame(np.fromfile(data_path.path, dtype=np.dtype(frame2)))
     except FileNotFoundError:
         warnings.warn(f'Pupil stream file could not be found.')
     except FileExistsError:

@@ -31,19 +31,17 @@ def build_schema(root: Union[str, ComplexPath],
     # Pupil streams
     streams.PupilLabs.Counter.DecodedFrames =     HarpStream(209, device='PupilLabs', streamlabel='Counter_DecodedFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.PupilLabs.Counter.RawFrames =         HarpStream(210, device='PupilLabs', streamlabel='Counter_RawFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Data.RawFrames =            PupilStream(['PupilLabs/WorldCamera_Frame0.bin', 'PupilLabs/WorldCamera_Frame1.bin', 'PupilLabs/WorldCamera_Frame2.bin'],
-                                                              [('Format', np.uint32), ('Width', np.uint32), ('Height', np.uint32), ('Sequence', np.uint32), ('Timestamp', np.uint64), ('DataBytes', np.uint32), ('Reserved', np.uint32)],
+    streams.PupilLabs.Data.RawFrames =            PupilStream([('Format', np.uint32), ('Width', np.uint32), ('Height', np.uint32), ('Sequence', np.uint32), ('Timestamp', np.uint64), ('DataBytes', np.uint32), ('Reserved', np.uint32)],
                                                               None,
-                                                              device='PupilLabs',
+                                                              device='PupilLabs/WorldCamera',
                                                               streamlabel='PupilLabs.WorldCamera.Data',
                                                               root=root, autoload=autoload,
                                                               parent_dataset=parent_dataset)
     streams.PupilLabs.Counter.IMU =               HarpStream(211, device='PupilLabs', streamlabel='Counter_IMU', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.PupilLabs.Counter.Gaze =              HarpStream(212, device='PupilLabs', streamlabel='Counter_Gaze', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.Data.Gaze =                 PupilStream(['PupilLabs/Gaze_Frame0.bin', 'PupilLabs/Gaze_Frame1.bin', 'PupilLabs/Gaze_Frame2.bin'],
-                                                              [('Timestamp', np.uint64)],
+    streams.PupilLabs.Data.Gaze =                 PupilStream([('Timestamp', np.uint64)],
                                                               [('GazeX', np.single), ('GazeY', np.single)],
-                                                              device='PupilLabs',
+                                                              device='PupilLabs/Gaze',
                                                               streamlabel='PupilLabs.Gaze.Data',
                                                               root=root, autoload=autoload,
                                                               parent_dataset=parent_dataset)

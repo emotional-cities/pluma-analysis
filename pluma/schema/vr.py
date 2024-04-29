@@ -8,7 +8,7 @@ from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.microphone import MicrophoneStream
 from pluma.stream.eeg import EegStream
-from pluma.stream.zeromq import ZmqStream
+from pluma.stream.glia import GliaStream
 from pluma.stream.csv import CsvStream
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
@@ -91,68 +91,62 @@ def build_schema(root: Union[str, ComplexPath],
 
     # Glia streams
     streams.Glia.EyeTracking.Timestamps =         HarpStream(215, device='Glia', streamlabel='Glia.EyeTracking.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Glia.EyeTracking.Data =               ZmqStream(['Glia/EyeTracking_Frame1.bin', 'Glia/EyeTracking_Frame2.bin'],
-                                                               [glia_t_types,
-                                                               [('CombinedGaze.X', np.single), ('CombinedGaze.Y', np.single), ('CombinedGaze.Z', np.single), ('LeftOpenness', np.single), ('LeftOpennessConfidence', np.single), ('LeftDilation', np.single), ('LeftDilationConfidence', np.single), ('LeftPosition.X', np.single), ('LeftPosition.Y', np.single), ('RightOpenness', np.single), ('RightOpennessConfidence', np.single), ('RightDilation', np.single), ('RightDilationConfidence', np.single), ('RightPosition.X', np.single), ('RightPosition.Y', np.single)]],
-                                                               device='Glia',
-                                                               streamlabel='Glia.EyeTracking.Data',
-                                                               root=root, autoload=autoload,
-                                                               parent_dataset=parent_dataset)
+    streams.Glia.EyeTracking.Data =               GliaStream(glia_t_types,
+                                                            [('CombinedGaze.X', np.single), ('CombinedGaze.Y', np.single), ('CombinedGaze.Z', np.single), ('LeftOpenness', np.single), ('LeftOpennessConfidence', np.single), ('LeftDilation', np.single), ('LeftDilationConfidence', np.single), ('LeftPosition.X', np.single), ('LeftPosition.Y', np.single), ('RightOpenness', np.single), ('RightOpennessConfidence', np.single), ('RightDilation', np.single), ('RightDilationConfidence', np.single), ('RightPosition.X', np.single), ('RightPosition.Y', np.single)],
+                                                            device='Glia/EyeTracking',
+                                                            streamlabel='Glia.EyeTracking.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Glia.HeartRate.Timestamps =           HarpStream(216, device='Glia', streamlabel='Glia.HeartRate.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Glia.HeartRate.Data =                 ZmqStream(['Glia/HeartRate_Frame1.bin', 'Glia/HeartRate_Frame2.bin'],
-                                                               [glia_t_types, 
-                                                               [('HardwareTime', np.uintc)]],
-                                                               device='Glia',
-                                                               streamlabel='Glia.HeartRate.Data',
-                                                               root=root, autoload=autoload,
-                                                               parent_dataset=parent_dataset)
+    streams.Glia.HeartRate.Data =                 GliaStream(glia_t_types, 
+                                                            [('HardwareTime', np.uintc)],
+                                                            device='Glia/HeartRate',
+                                                            streamlabel='Glia.HeartRate.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Glia.IMU.Timestamps =                 HarpStream(217, device='Glia', streamlabel='Glia.IMU.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Glia.IMU.Data =                       ZmqStream(['Glia/IMU_Frame1.bin', 'Glia/IMU_Frame2.bin'],
-                                                               [glia_t_types, 
-                                                               [('AccelX', np.single), ('AccelY', np.single), ('AccelZ', np.single), ('GyroX', np.single), ('GyroY', np.single), ('GyroZ', np.single)]],
-                                                               device='Glia',
-                                                               streamlabel='Glia.IMU.Data',
-                                                               root=root, autoload=autoload,
-                                                               parent_dataset=parent_dataset)
+    streams.Glia.IMU.Data =                       GliaStream(glia_t_types, 
+                                                            [('AccelX', np.single), ('AccelY', np.single), ('AccelZ', np.single), ('GyroX', np.single), ('GyroY', np.single), ('GyroZ', np.single)],
+                                                            device='Glia/IMU',
+                                                            streamlabel='Glia.IMU.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Glia.Mouth.Timestamps =                HarpStream(218, device='Glia', streamlabel='Glia.Mouth.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
     streams.Unity.Transform.Timestamps =           HarpStream(219, device='Unity', streamlabel='Unity.Transform.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Unity.Transform.Data =                 ZmqStream(['VRTransform/Position_Frame1.bin', 'VRTransform/Position_Frame2.bin'],
-                                                                [[('Timestamp', np.ulonglong)], 
-                                                                [('Transform.Position.X', np.single), ('Transform.Position.Y', np.single), ('Transform.Position.Z', np.single),
-                                                                ('Transform.Forward.X', np.single), ('Transform.Forward.Y', np.single), ('Transform.Forward.Z', np.single)]],
-                                                                device='Unity',
-                                                                streamlabel='Unity.Transform.Data',
-                                                                root=root, autoload=autoload,
-                                                                parent_dataset=parent_dataset)
+    streams.Unity.Transform.Data =                 GliaStream([('Timestamp', np.ulonglong)], 
+                                                            [('Transform.Position.X', np.single), ('Transform.Position.Y', np.single), ('Transform.Position.Z', np.single),
+                                                            ('Transform.Forward.X', np.single), ('Transform.Forward.Y', np.single), ('Transform.Forward.Z', np.single)],
+                                                            device='VRTransform/Position',
+                                                            streamlabel='Unity.Transform.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Unity.Video.Timestamps =               HarpStream(220, device='Unity', streamlabel='Unity.Video.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
 
     streams.Unity.PointToOriginWorld.Timestamps =  HarpStream(227, device='Unity', streamlabel='Unity.PointToOriginWorld.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Unity.PointToOriginWorld.Data =        ZmqStream(['Unity_PointToOriginWorld/PointToOriginWorld_Frame1.bin', 'Unity_PointToOriginWorld/PointToOriginWorld_Frame2.bin'],
-                                                                [[('Timestamp', np.ulonglong)], 
-                                                                [('Origin.Position.X', np.single), ('Origin.Position.Y', np.single), ('Origin.Position.Z', np.single),
-                                                                ('Hand.Position.X', np.single), ('Hand.Position.Y', np.single), ('Hand.Position.Z', np.single),
-                                                                ('HandAxis.Angle.X', np.single), ('HandAxis.Angle.Y', np.single), ('HandAxis.Angle.Z', np.single),
-                                                                ('OriginAxis.Angle.X', np.single), ('Transform.Angle.Y', np.single), ('Transform.Angle.Z', np.single)]],
-                                                                device='Unity',
-                                                                streamlabel='Unity.PointToOriginWorld.Data',
-                                                                root=root, autoload=autoload,
-                                                                parent_dataset=parent_dataset)
+    streams.Unity.PointToOriginWorld.Data =        GliaStream([('Timestamp', np.ulonglong)], 
+                                                            [('Origin.Position.X', np.single), ('Origin.Position.Y', np.single), ('Origin.Position.Z', np.single),
+                                                            ('Hand.Position.X', np.single), ('Hand.Position.Y', np.single), ('Hand.Position.Z', np.single),
+                                                            ('HandAxis.Angle.X', np.single), ('HandAxis.Angle.Y', np.single), ('HandAxis.Angle.Z', np.single),
+                                                            ('OriginAxis.Angle.X', np.single), ('Transform.Angle.Y', np.single), ('Transform.Angle.Z', np.single)],
+                                                            device='Unity_PointToOriginWorld/PointToOriginWorld',
+                                                            streamlabel='Unity.PointToOriginWorld.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Unity.PointToOriginMap.Timestamps =    HarpStream(228, device='Unity', streamlabel='Unity.PointToOriginMap.Timestamps', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.Unity.PointToOriginMap.Data =          ZmqStream(['Unity_PointToOriginMap/PointToOriginMap_Frame1.bin', 'Unity_PointToOriginMap/PointToOriginMap_Frame2.bin'],
-                                                                [[('Timestamp', np.ulonglong)], 
-                                                                [('Origin.Position.X', np.single), ('Origin.Position.Y', np.single),
-                                                                ('Subject.Position.X', np.single), ('Subject.Position.Y', np.single),
-                                                                ('Point.Position.X', np.single), ('Point.Position.Y', np.single)]],
-                                                                device='Unity',
-                                                                streamlabel='Unity.PointToOriginMap.Data',
-                                                                root=root, autoload=autoload,
-                                                                parent_dataset=parent_dataset)
+    streams.Unity.PointToOriginMap.Data =          GliaStream([('Timestamp', np.ulonglong)], 
+                                                            [('Origin.Position.X', np.single), ('Origin.Position.Y', np.single),
+                                                            ('Subject.Position.X', np.single), ('Subject.Position.Y', np.single),
+                                                            ('Point.Position.X', np.single), ('Point.Position.Y', np.single)],
+                                                            device='Unity_PointToOriginMap/PointToOriginMap',
+                                                            streamlabel='Unity.PointToOriginMap.Data',
+                                                            root=root, autoload=autoload,
+                                                            parent_dataset=parent_dataset)
 
     streams.Unity.SceneSequence =                  CsvStream('Unity_SceneSequence.csv', device='Unity',
                                                              streamlabel='Unity.SceneSequence',

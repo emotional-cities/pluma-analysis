@@ -7,7 +7,7 @@ from pluma.io.zeromq import load_zeromq
 from pluma.sync import ClockRefId
 
 
-class ZeromqStream(Stream):
+class ZmqStream(Stream):
     def __init__(self, 
                  filenames: str, 
                  dtypes: list[list[tuple[str, type]]],
@@ -15,9 +15,9 @@ class ZeromqStream(Stream):
                  si_conversion: SiUnitConversion = SiUnitConversion(),
                  clockreferenceid: ClockRefId = ClockRefId.HARP,
                  **kw):
-        super(ZeromqStream, self).__init__(data=data, **kw)
+        super(ZmqStream, self).__init__(data=data, **kw)
 
-        self.streamtype = StreamType.ZEROMQ
+        self.streamtype = StreamType.ZMQ
         self.filenames = filenames
         self.dtypes = dtypes
         self.si_conversion = si_conversion

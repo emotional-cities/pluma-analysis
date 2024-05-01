@@ -16,6 +16,8 @@ class StreamType(Enum):
 	EEG = 'EegStream'
 	GLIA = 'GliaStream'
 	CSV = 'CsvStream'
+	PUPIL = 'PupilStream'
+	UNITY = 'UnityStream'
 
 
 class Stream:

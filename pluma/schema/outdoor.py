@@ -1,5 +1,6 @@
 from dotmap import DotMap
 from typing import Union
+import numpy as np
 
 from pluma.stream.harp import HarpStream
 from pluma.stream.accelerometer import AccelerometerStream
@@ -7,6 +8,7 @@ from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.microphone import MicrophoneStream
 from pluma.stream.eeg import EegStream
+from pluma.stream.zeromq import PupilGazeStream, PupilWorldCameraStream
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
@@ -25,6 +27,23 @@ def build_schema(root: Union[str, ComplexPath],
     """
     root = ensure_complexpath(root)
     streams = DotMap()
+
+    # Pupil streams
+    streams.PupilLabs.Counter.DecodedFrames =     HarpStream(209, device='PupilLabs', streamlabel='Counter_DecodedFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.RawFrames =         HarpStream(210, device='PupilLabs', streamlabel='Counter_RawFrames', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Data.RawFrames =            PupilWorldCameraStream(device='PupilLabs',
+                                                                        streamlabel='PupilLabs.WorldCamera.Data',
+                                                                        root=root, autoload=True,
+                                                                        parent_dataset=None)
+    streams.PupilLabs.Counter.IMU =               HarpStream(211, device='PupilLabs', streamlabel='Counter_IMU', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.Gaze =              HarpStream(212, device='PupilLabs', streamlabel='Counter_Gaze', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Data.Gaze =                 PupilGazeStream(device='PupilLabs',
+                                                                streamlabel='PupilLabs.Gaze.Data',
+                                                                root=root, autoload=True,
+                                                                parent_dataset=None)
+    streams.PupilLabs.Counter.Audio =             HarpStream(213, device='PupilLabs', streamlabel='Counter_Audio', root=root, autoload=autoload, parent_dataset=parent_dataset)
+    streams.PupilLabs.Counter.Key =               HarpStream(214, device='PupilLabs', streamlabel='Counter_Key', root=root, autoload=autoload, parent_dataset=parent_dataset)
+
     # BioData streams
     streams.BioData.EnableStreams =               HarpStream(32, device='BioData', streamlabel='EnableStreams', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.BioData.DisableStreams =              HarpStream(33, device='BioData', streamlabel='DisableStreams', root=root, autoload=autoload, parent_dataset=parent_dataset)
@@ -34,11 +53,6 @@ def build_schema(root: Union[str, ComplexPath],
     streams.BioData.DigitalIn =                   HarpStream(38, device='BioData', streamlabel='DigitalIn', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.BioData.Set =                         HarpStream(39, device='BioData', streamlabel='Set', root=root, autoload=autoload, parent_dataset=parent_dataset)
     streams.BioData.Clear =                       HarpStream(40, device='BioData', streamlabel='Clear', root=root, autoload=autoload, parent_dataset=parent_dataset)
-
-    # PupilLabs streams
-    streams.PupilLabs.LSLSampleTime =             HarpStream(220, device='PupilLabs', streamlabel='LSLSampleTime', root=root, autoload=autoload, parent_dataset=parent_dataset)
-    streams.PupilLabs.LSLSampleArray =            HarpStream(221, device='PupilLabs', streamlabel='LSLSampleArray', root=root, autoload=autoload, parent_dataset=parent_dataset)
-
 
     # TinkerForge streams
     streams.TK.AmbientLight.AmbientLight =        HarpStream(223, device='TK', streamlabel='AmbientLight.AmbientLight', root=root, autoload=autoload, parent_dataset=parent_dataset)

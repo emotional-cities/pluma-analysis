@@ -14,10 +14,10 @@ class StreamType(Enum):
 	MICROPHONE = 'MicrophoneStream'
 	EMPATICA = 'EmpaticaStream'
 	EEG = 'EegStream'
-	ZMQ = 'ZmqStream'
 	GLIA = 'GliaStream'
 	CSV = 'CsvStream'
 	PUPIL = 'PupilStream'
+	UNITY = 'UnityStream'
 
 
 class Stream:

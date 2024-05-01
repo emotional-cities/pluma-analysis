@@ -4,26 +4,38 @@ import pandas as pd
 from pluma.stream import StreamType
 from pluma.stream.siconversion import SiUnitConversion
 from pluma.sync import ClockRefId
-from pluma.stream.zeromq import ZmqStream
+from pluma.stream import Stream
 from pluma.io.zeromq import load_zeromq
 
 
-class PupilStream(ZmqStream):
-    def __init__(self,
-                 frame1_dtypes: list[tuple[str, type]],
-                 frame2_dtypes: list[tuple[str, type]],  
-                 data: pd.DataFrame = None, 
-                 si_conversion: SiUnitConversion = ..., 
-                 clockreferenceid: ClockRefId = ClockRefId.HARP, 
-                 **kw):
-        super(PupilStream,self).__init__(
-                         [[('SensorId', np.string_, 36)], frame1_dtypes, frame2_dtypes], 
-                         data, 
-                         si_conversion, 
-                         clockreferenceid,
-                        **kw)
+class PupilStream(Stream):
+    def __init__(self, **kw):
+        super(PupilStream, self).__init__(**kw)
+
         self.streamtype = StreamType.PUPIL
+        if self.autoload:
+            self.load()
+
+
+class PupilGazeStream(PupilStream):
+    def __init__(self, **kw):
+        super(PupilGazeStream, self).__init__(**kw)
 
     def load(self):
-        self.data = load_zeromq([self.device + '_Frame0.bin', self.device + '_Frame1.bin', self.device + '_Frame2.bin'], 
-                                self.dtypes, root=self.rootfolder)
+        self.data = load_zeromq(
+            ['PupilLabs/Gaze_Frame0.bin', 'PupilLabs/Gaze_Frame1.bin', 'PupilLabs/Gaze_Frame2.bin'],
+            [[('SensorId', np.string_, 36)], [('Timestamp', np.uint64)], [('GazeX', np.single), ('GazeY', np.single)]],
+            root=self.rootfolder
+        )
+
+
+class PupilWorldCameraStream(PupilStream):
+    def __init__(self, **kw):
+        super(PupilWorldCameraStream, self).__init__(**kw)
+
+    def load(self):
+        self.data = load_zeromq(
+            ['PupilLabs/WorldCamera_Frame0.bin', 'PupilLabs/WorldCamera_Frame1.bin', 'PupilLabs/WorldCamera_Frame2.bin'],
+            [[('SensorId', np.string_, 36)], [('Format', np.uint32), ('Width', np.uint32), ('Height', np.uint32), ('Sequence', np.uint32), ('Timestamp', np.uint64), ('DataBytes', np.uint32), ('Reserved', np.uint32)], None],
+            root=self.rootfolder
+        )

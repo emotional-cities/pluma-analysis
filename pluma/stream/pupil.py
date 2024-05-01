@@ -16,6 +16,15 @@ class PupilStream(Stream):
         if self.autoload:
             self.load()
 
+    def resample(self):
+        pass
+
+    def convert_to_si(self, data=None):
+        pass
+
+    def export_to_csv(self, export_path):
+        self.data.to_csv(export_path)
+
 
 class PupilGazeStream(PupilStream):
     def __init__(self, **kw):

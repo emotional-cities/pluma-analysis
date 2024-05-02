@@ -3,6 +3,7 @@ name = "pluma-analysis"
 authors = [
     {name = "Goncalo Lopes", email = "g.lopes@neurogears.org"},
     {name = "Bruno Cruz", email = "b.cruz@neurogears.org"},
+    {name = "Andrew Erskine", email = "a.erskine@neurogears.org"},
 ]
 description = "A low-level interface to data collected with the pluma urban data acquisition system"
 readme = "README.md"

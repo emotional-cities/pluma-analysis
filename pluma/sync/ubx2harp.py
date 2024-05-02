@@ -1,4 +1,5 @@
 import numpy as np
+from dataclasses import dataclass
 import matplotlib.pyplot as plt
 
 from matplotlib.ticker import MaxNLocator
@@ -79,6 +80,11 @@ class SyncTimestamp:
     def __str__(self) -> str:
         return str(self.ts_array)
 
+@dataclass
+class SyncLookup:
+    ubx_ts: SyncTimestamp
+    harp_ts: SyncTimestamp
+    align_lookup: np.ndarray
 
 def align_ubx_to_harp(
         ubx_SyncTimestamp: SyncTimestamp,
@@ -147,13 +153,12 @@ def align_ubx_to_harp(
 
     return pulses_lookup
 
-
-def get_clockcalibration_ubx_to_harp_clock(ubx_stream: UbxStream,
-                                           harp_sync: HarpStream,
-                                           dt_error: float = 0.002,
-                                           plot_diagnosis: bool = False,
-                                           r2_min_qc: float = 0.99) -> LinearRegression:
-
+def get_clockcalibration_ubx_to_harp_lookup(
+        ubx_stream: UbxStream,
+        harp_sync: HarpStream,
+        dt_error: float = 0.002,
+        plot_diagnosis: bool = False) -> SyncLookup:
+    
     # Get the TIM_TM2 Message that timestamps the incoming TTL
     if not(ubx_stream.has_event(_UBX_MSGIDS.TIM_TM2)):
         raise KeyError(f"UbxStream does not contain \
@@ -173,19 +178,36 @@ def get_clockcalibration_ubx_to_harp_clock(ubx_stream: UbxStream,
     harp_sync_out = harp_sync.copy()
     harp_sync_out = harp_sync_out[harp_sync_out["Value"].values & 3 > 0]
 
-    gps_ts = SyncTimestamp(risingEdgeEvents,
+    ubx_ts = SyncTimestamp(risingEdgeEvents,
                            seconds_conversion=lambda x: x*1e-3)
     harp_ts = SyncTimestamp(harp_sync_out.index.values,
                             seconds_conversion=lambda x: x /
                             np.timedelta64(1, 's'))
 
-    align_lookup = align_ubx_to_harp(gps_ts,
+    align_lookup = align_ubx_to_harp(ubx_ts,
                                      harp_ts,
                                      dt_error=dt_error,
                                      plot_diagnosis=plot_diagnosis)
+    return SyncLookup(ubx_ts, harp_ts, align_lookup)
+
+def get_clockcalibration_ubx_to_harp_clock(ubx_stream: UbxStream,
+                                           harp_sync: HarpStream,
+                                           dt_error: float = 0.002,
+                                           plot_diagnosis: bool = False,
+                                           r2_min_qc: float = 0.99) -> LinearRegression:
+    
+    sync_lookup = get_clockcalibration_ubx_to_harp_lookup(
+        ubx_stream=ubx_stream,
+        harp_sync=harp_sync,
+        dt_error=dt_error,
+        plot_diagnosis=plot_diagnosis
+    )
+    ubx_ts = sync_lookup.ubx_ts
+    harp_ts = sync_lookup.harp_ts
+    align_lookup = sync_lookup.align_lookup
 
     harp_ts_seconds = HarpStream.to_seconds(harp_ts.raw_ts_array)
-    x_gps_time = gps_ts.raw_ts_array[align_lookup[:, 0]].reshape(-1, 1)
+    x_gps_time = ubx_ts.raw_ts_array[align_lookup[:, 0]].reshape(-1, 1)
     y_harp_time = harp_ts_seconds[align_lookup[:, 1]]
     model = LinearRegression().fit(x_gps_time, y_harp_time)
     r2 = model.score(x_gps_time, y_harp_time)

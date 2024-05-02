@@ -225,9 +225,9 @@ class Dataset:
         fig = maps.showmap(temp_df, **kwargs)
         return fig
 
-    def add_georeference_and_calibrate(self):
+    def add_georeference_and_calibrate(self, plot_diagnosis=True):
         if self.has_calibration is False:
-            self.calibrate_ubx_to_harp(plot_diagnosis=True, dt_error=1)
+            self.calibrate_ubx_to_harp(plot_diagnosis=plot_diagnosis, dt_error=1)
             self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH,
                                     calibrate_clock=True)
             self.has_calibration = True

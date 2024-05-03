@@ -129,7 +129,7 @@ def align_ubx_to_harp(
 
     return pulses_lookup
 
-def get_clockcalibration_ubx_to_harp_lookup(
+def get_clockcalibration_lookup(
         ubx_stream: UbxStream,
         harp_sync: HarpStream,
         dt_error: float = 0.002,
@@ -166,18 +166,9 @@ def get_clockcalibration_ubx_to_harp_lookup(
                                      plot_diagnosis=plot_diagnosis)
     return SyncLookup(ubx_ts, harp_ts, align_lookup)
 
-def get_clockcalibration_ubx_to_harp_clock(ubx_stream: UbxStream,
-                                           harp_sync: HarpStream,
-                                           dt_error: float = 0.002,
-                                           plot_diagnosis: bool = False,
-                                           r2_min_qc: float = 0.99) -> LinearRegression:
+def get_clockcalibration_model(sync_lookup: SyncLookup,
+                               r2_min_qc: float = 0.99) -> LinearRegression:
     
-    sync_lookup = get_clockcalibration_ubx_to_harp_lookup(
-        ubx_stream=ubx_stream,
-        harp_sync=harp_sync,
-        dt_error=dt_error,
-        plot_diagnosis=plot_diagnosis
-    )
     ubx_ts = sync_lookup.ubx_ts
     harp_ts = sync_lookup.harp_ts
     align_lookup = sync_lookup.align_lookup

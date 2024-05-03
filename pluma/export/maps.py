@@ -13,7 +13,7 @@ def showmap(NavData,
             ax=None,
             figsize=(20, 20),
             with_scaling=0.6,
-            to_aspect=(4/3),
+            to_aspect=None,
             tiles=tmb.tiles.build_OSM(),
             cmap='jet',
             markersize=15,
@@ -34,7 +34,10 @@ def showmap(NavData,
         np.max(NavData['Longitude'].values),
         np.min(NavData['Latitude'].values),
         np.max(NavData['Latitude'].values))
-    extent = extent.to_aspect(to_aspect).with_scaling(with_scaling)
+    if to_aspect is not None:
+        extent = extent.to_aspect(to_aspect)
+    if with_scaling is not None:
+        extent = extent.with_scaling(with_scaling)
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
     ax.set_ylabel("Value")

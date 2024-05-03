@@ -13,8 +13,7 @@ exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
 
 def convert_dataset_to_geoframe(
         dataset,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-        rereference_to_ubx_time: bool = False
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
         ):
 
     streams_to_export = {}
@@ -41,10 +40,6 @@ def convert_dataset_to_geoframe(
     out = out.join(out_columns)
     out.index.name = 'time'
 
-    if rereference_to_ubx_time:
-        offset = dataset.streams.UBX.positiondata['Time_UTC'][0] - out.index[0]
-        out.index += offset
-
     geometry = gpd.points_from_xy(
         x=out['Longitude'],
         y=out['Latitude'],
@@ -56,11 +51,10 @@ def convert_dataset_to_geoframe(
 def export_dataset_to_geojson(
         dataset,
         filename,
-        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-        rereference_to_ubx_time: bool = False
+        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
         ):
     
-    out = convert_dataset_to_geoframe(dataset, sampling_dt, rereference_to_ubx_time)
+    out = convert_dataset_to_geoframe(dataset, sampling_dt)
     export_geoframe_to_geojson(out, filename)
 
 def export_geoframe_to_geojson(

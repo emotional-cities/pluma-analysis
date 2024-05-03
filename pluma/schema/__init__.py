@@ -83,9 +83,19 @@ class Dataset:
             self.georeference.clockreference.referenceid =\
                 ubxstream.clockreference.referenceid
 
-    def reload_streams(self,
-                       schema: Union[DotMap, Stream, None] = None,
-                       force_load: bool = False) -> None:
+    @staticmethod    
+    def _iter_schema_streams(schema: Union[DotMap, Stream, None] = None):
+        if isinstance(schema, Stream):
+            yield schema
+        elif isinstance(schema, DotMap):
+            for _stream in schema.values():
+                for _nested in Dataset._iter_schema_streams(_stream):
+                    yield _nested
+        else:
+            raise TypeError(f"Invalid type was found. Must be of \
+                            {Union[DotMap, Stream]}")
+
+    def reload_streams(self, force_load: bool = False) -> None:
         """Recursively loads, from disk , all available streams in the streams' schema
 
         Args:
@@ -97,21 +107,12 @@ class Dataset:
             TypeError: An error is raised if a not allowed type is passed.
         """
 
-        if schema is None:
-            schema = self.streams
-
-        if isinstance(schema, Stream):
+        for stream in self._iter_schema_streams(self.streams):
             if force_load is True:
-                schema.load()
+                stream.load()
             else:
-                if schema.autoload is True:
-                    schema.load()
-        elif isinstance(schema, DotMap):
-            for _stream in schema.values():
-                self.reload_streams(_stream, force_load=force_load)
-        else:
-            raise TypeError(f"Invalid type was found. Must be of \
-                            {Union[DotMap, Stream]}")
+                if stream.autoload is True:
+                    stream.load()
 
     @staticmethod
     def import_dataset(filename: Union[str, ComplexPath]) -> Dataset:
@@ -240,13 +241,33 @@ class Dataset:
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
+    @staticmethod
+    def _offset_data_index(data, offset):
+        if isinstance(data, DotMap):
+            for frame in data.values():
+                Dataset._offset_data_index(frame, offset)
+        else:
+            data.index += offset - data.index[0]
+        
+    def reference_harp_to_ubx_time(self):
+        if self.has_calibration is False:
+            raise AssertionError('Dataset is not calibrated to UBX time.')
+
+        utc_offset = self.streams.UBX.positiondata['Time_UTC'][0]
+        Dataset._offset_data_index(self.georeference.spacetime, utc_offset)
+        Dataset._offset_data_index(self.georeference.time, utc_offset)
+        for stream in self._iter_schema_streams(self.streams):
+            if len(stream.data) == 0:
+                continue
+            if stream.clockreference.referenceid == ClockRefId.HARP:
+                Dataset._offset_data_index(stream.data, utc_offset)
+                stream.clockreference.referenceid = ClockRefId.GNSS
+        
     def to_geoframe(self,
-                    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-                    rereference_to_ubx_time: bool = False):
-        return convert_dataset_to_geoframe(self, sampling_dt, rereference_to_ubx_time)
+                    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
+        return convert_dataset_to_geoframe(self, sampling_dt)
 
     def to_geojson(self,
                    filename,
-                   sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1),
-                   rereference_to_ubx_time: bool = False):
-        export_dataset_to_geojson(self, filename, sampling_dt, rereference_to_ubx_time)
+                   sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
+        export_dataset_to_geojson(self, filename, sampling_dt)

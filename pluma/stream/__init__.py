@@ -28,7 +28,7 @@ class Stream:
               streamlabel: str,
               root: Union[str, ComplexPath] = '',
               data: any = None,
-              clockreference: ClockReference=ClockReference(referenceid=ClockRefId.NONE),
+              clockreference: ClockReference = None,
 			  parent_dataset=None,
 			  autoload: bool = True):
 		"""_summary_
@@ -39,6 +39,9 @@ class Stream:
 			data (any, optional): Data to initially populate the stream. Defaults to None.
    			autoload (bool, optional): If True, it will attempt to automatically load the data when instantiated. Defaults to True.
 		"""
+
+		if clockreference is None:
+			clockreference = ClockReference(referenceid=ClockRefId.NONE)
 
 		self.device = device
 		self.streamlabel = streamlabel

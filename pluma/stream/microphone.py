@@ -17,7 +17,7 @@ class MicrophoneStream (Stream):
               fs: float = None,
               channels: int = 2,
               si_conversion: SiUnitConversion = SiUnitConversion(),
-              clockreferenceid: ClockRefId = ClockRefId.HARP,
+              clockreferenceid: ClockRefId = ClockRefId.NONE,
               **kw):
 		super(MicrophoneStream, self).__init__(data=data, **kw)
 		self.streamtype = StreamType.MICROPHONE

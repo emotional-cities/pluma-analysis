@@ -1,14 +1,9 @@
 import numpy as np
 from dataclasses import dataclass
-import matplotlib.pyplot as plt
-
-from matplotlib.ticker import MaxNLocator
-
 from sklearn.linear_model import LinearRegression
 
 from pluma.stream.harp import HarpStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS, _UBX_CLASSES
-
 
 class SyncTimestamp:
     def __init__(self,
@@ -126,34 +121,15 @@ def align_ubx_to_harp(
         min_pair_index = dyad[1]
 
     if plot_diagnosis is True:
-        plt.figure(figsize=(12, 8))
-        plt.subplot(211)
-        plt.plot(pulses_lookup[:, 0], pulses_lookup[:, 1], '.')
-        plt.xlabel('ubx_index')
-        plt.ylabel('Harp_index')
-        plt.title('Index correspondence between streams')
-
-        plt.subplot(212)
-
-        plt.scatter(
-            np.arange(len(ubx_ts.ts_array[pulses_lookup[:, 0]])-1),
-            np.diff(ubx_ts.ts_array[pulses_lookup[:, 0]]),
-            100, label="ubx")
-        plt.scatter(
-            np.arange(len(harp_ts.ts_array[pulses_lookup[:, 1]])-1),
-            np.diff(harp_ts.ts_array[pulses_lookup[:, 1]]),
-            label="HARP")
-
-        ax = plt.gca()
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        plt.ylabel('$\Delta t$ (s)')
-        plt.xlabel('Trial number')
-        plt.legend()
-        plt.show()
+        import pluma.sync.plotting as plotting
+        plotting.plot_clockcalibration_diagnosis(
+            ubx_ts=ubx_ts,
+            harp_ts=harp_ts,
+            pulses_lookup=pulses_lookup)
 
     return pulses_lookup
 
-def get_clockcalibration_ubx_to_harp_lookup(
+def get_clockcalibration_lookup(
         ubx_stream: UbxStream,
         harp_sync: HarpStream,
         dt_error: float = 0.002,
@@ -190,18 +166,9 @@ def get_clockcalibration_ubx_to_harp_lookup(
                                      plot_diagnosis=plot_diagnosis)
     return SyncLookup(ubx_ts, harp_ts, align_lookup)
 
-def get_clockcalibration_ubx_to_harp_clock(ubx_stream: UbxStream,
-                                           harp_sync: HarpStream,
-                                           dt_error: float = 0.002,
-                                           plot_diagnosis: bool = False,
-                                           r2_min_qc: float = 0.99) -> LinearRegression:
+def get_clockcalibration_model(sync_lookup: SyncLookup,
+                               r2_min_qc: float = 0.99) -> LinearRegression:
     
-    sync_lookup = get_clockcalibration_ubx_to_harp_lookup(
-        ubx_stream=ubx_stream,
-        harp_sync=harp_sync,
-        dt_error=dt_error,
-        plot_diagnosis=plot_diagnosis
-    )
     ubx_ts = sync_lookup.ubx_ts
     harp_ts = sync_lookup.harp_ts
     align_lookup = sync_lookup.align_lookup

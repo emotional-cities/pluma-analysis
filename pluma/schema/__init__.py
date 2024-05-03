@@ -8,7 +8,7 @@ from typing import Union, Optional, Callable
 
 from pluma.schema.outdoor import build_schema
 
-from pluma.sync.ubx2harp import get_clockcalibration_ubx_to_harp_clock
+from pluma.sync.ubx2harp import SyncLookup, get_clockcalibration_model, get_clockcalibration_lookup
 from pluma.sync import ClockRefId
 
 from pluma.stream import StreamType, Stream
@@ -46,7 +46,7 @@ class Dataset:
 
     def add_ubx_georeference(self,
                              ubxstream: UbxStream = None,
-                             event: str = "NAV-HPPOSLLH",
+                             event: str = _UBX_MSGIDS.NAV_HPPOSLLH,
                              calibrate_clock: bool = True,
                              strip=True):
         """_summary_
@@ -192,7 +192,7 @@ class Dataset:
     def calibrate_ubx_to_harp(self,
                               dt_error: float = 0.002,
                               plot_diagnosis: bool = False,
-                              r2_min_qc: float = 0.99):
+                              r2_min_qc: float = 0.99) -> SyncLookup:
         """Attempts to calibrate the ubx clock to harp clock using\
             the synchronization pulses as a reference.
 
@@ -206,17 +206,23 @@ class Dataset:
                 results from an automatic correction procedure. Defaults to 0.99.
         """
 
-        model = get_clockcalibration_ubx_to_harp_clock(
-                ubx_stream=self.streams.UBX,
-                harp_sync=self.streams.BioData.Set.data,
-                dt_error=dt_error,
-                r2_min_qc=r2_min_qc,
-                plot_diagnosis=plot_diagnosis)
+        sync_lookup = get_clockcalibration_lookup(
+            ubx_stream=self.streams.UBX,
+            harp_sync=self.streams.BioData.Set.data,
+            dt_error=dt_error,
+            plot_diagnosis=plot_diagnosis
+        )
+
+        model = get_clockcalibration_model(
+            sync_lookup=sync_lookup,
+            r2_min_qc=r2_min_qc
+        )
 
         self.streams.UBX.clockreference.set_conversion_model(
             model=model,
             reference_from=ClockRefId.HARP)
         self.has_calibration = True
+        return sync_lookup
 
     def showmap(self, **kwargs):
         """Overload to export.showmap that shows spatial information color-coded by time.
@@ -225,9 +231,9 @@ class Dataset:
         fig = maps.showmap(temp_df, **kwargs)
         return fig
 
-    def add_georeference_and_calibrate(self):
+    def add_georeference_and_calibrate(self, plot_diagnosis=True):
         if self.has_calibration is False:
-            self.calibrate_ubx_to_harp(plot_diagnosis=True, dt_error=1)
+            self.calibrate_ubx_to_harp(plot_diagnosis=plot_diagnosis, dt_error=1)
             self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH,
                                     calibrate_clock=True)
             self.has_calibration = True

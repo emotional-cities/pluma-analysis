@@ -18,7 +18,7 @@ def showmap(NavData,
             cmap='jet',
             markersize=15,
             colorscale_override=None,
-            **figkwargs):
+            **cbarkwargs):
 
     if 'Data' not in NavData.columns:
         raise ValueError(
@@ -61,7 +61,7 @@ def showmap(NavData,
         cmap=cmap)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    fig.colorbar(im, cax=cax)
+    fig.colorbar(im, cax=cax, **cbarkwargs)
     return fig
 
 

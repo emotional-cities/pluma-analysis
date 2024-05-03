@@ -9,6 +9,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def showmap(NavData,
+            fig=None,
+            ax=None,
             figsize=(20, 20),
             with_scaling=0.6,
             to_aspect=(4/3),
@@ -23,8 +25,10 @@ def showmap(NavData,
             'NavData input must have a "Data" Column.\
                 See Stream.resample_temporospatial() for an example.')
 
-    fig, ax = plt.subplots(1, 1)
-    fig.set_size_inches(figsize)
+    if fig is None:
+        fig, ax = plt.subplots(1, 1)
+        fig.set_size_inches(figsize)
+    
     extent = tmb.Extent.from_lonlat(
         np.min(NavData['Longitude'].values),
         np.max(NavData['Longitude'].values),

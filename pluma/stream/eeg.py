@@ -49,5 +49,8 @@ class EegStream(Stream):
 			.flatten())
 		print("Done.")
 
+	def rereference_clock_origin(self, origin):
+		self.data.np_time += origin - self.data.np_time[0]
+
 	def __str__(self):
 		return f'EEG stream from device {self.device}, stream {self.streamlabel}'

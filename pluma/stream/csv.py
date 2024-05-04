@@ -6,6 +6,7 @@ from pluma.stream import Stream, StreamType
 from pluma.stream.siconversion import SiUnitConversion
 from pluma.sync import ClockRefId
 from pluma.io.path_helper import ensure_complexpath
+from pluma.export.streams import rereference_stream_index_origin
 
 
 class CsvStream(Stream):
@@ -44,3 +45,6 @@ class CsvStream(Stream):
 
     def export_to_csv(self, export_path):
         self.data.to_csv(export_path)
+
+    def rereference_clock_origin(self, origin):
+        rereference_stream_index_origin(self.data, origin)

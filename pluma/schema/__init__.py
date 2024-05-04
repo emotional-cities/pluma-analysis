@@ -6,6 +6,7 @@ import datetime
 from dotmap import DotMap
 from typing import Union, Optional, Callable
 
+from pluma.export.streams import rereference_stream_index_origin
 from pluma.schema.outdoor import build_schema
 
 from pluma.sync.ubx2harp import SyncLookup, get_clockcalibration_model, get_clockcalibration_lookup
@@ -241,26 +242,18 @@ class Dataset:
         else:
             raise AssertionError('Dataset is already been automatically calibrated.')
         
-    @staticmethod
-    def _offset_data_index(data, offset):
-        if isinstance(data, DotMap):
-            for frame in data.values():
-                Dataset._offset_data_index(frame, offset)
-        else:
-            data.index += offset - data.index[0]
-        
     def reference_harp_to_ubx_time(self):
         if self.has_calibration is False:
             raise AssertionError('Dataset is not calibrated to UBX time.')
 
         utc_offset = self.streams.UBX.positiondata['Time_UTC'][0]
-        Dataset._offset_data_index(self.georeference.spacetime, utc_offset)
-        Dataset._offset_data_index(self.georeference.time, utc_offset)
+        rereference_stream_index_origin(self.georeference.spacetime, utc_offset)
+        rereference_stream_index_origin(self.georeference.time, utc_offset)
         for stream in self._iter_schema_streams(self.streams):
             if stream.data is None:
                 continue
             if stream.clockreference.referenceid == ClockRefId.HARP:
-                Dataset._offset_data_index(stream.data, utc_offset)
+                stream.rereference_clock_origin(utc_offset)
                 stream.clockreference.referenceid = ClockRefId.GNSS
         
     def to_geoframe(self,

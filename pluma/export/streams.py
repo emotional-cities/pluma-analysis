@@ -139,3 +139,9 @@ def _get_georef(stream: Stream) -> pd.DataFrame:
                 Calibrate the Dataset before exporting the stream by\
                     calling Dataset.add_georeference_and_calibrate()")
     return stream.parent_dataset.georeference
+
+
+def rereference_stream_index_origin(data, origin):
+    """Rebases the origin of the specified stream data index."""
+    if len(data) > 0:
+        data.index += origin - data.index[0]

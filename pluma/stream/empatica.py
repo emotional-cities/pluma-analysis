@@ -4,7 +4,7 @@ import datetime
 from pluma.stream import Stream, StreamType
 from pluma.io.empatica import load_empatica
 from pluma.sync import ClockRefId
-from pluma.export.streams import resample_stream_empatica
+from pluma.export.streams import rereference_stream_index_origin, resample_stream_empatica
 
 
 class EmpaticaStream(Stream):
@@ -33,3 +33,7 @@ class EmpaticaStream(Stream):
 	      sampling_dt: datetime.timedelta,
 	      **kwargs) -> pd.DataFrame:
 		return resample_stream_empatica(self, sampling_dt, **kwargs)
+	
+	def rereference_clock_origin(self, origin):
+		for stream in self.data.values():
+			rereference_stream_index_origin(stream, origin)

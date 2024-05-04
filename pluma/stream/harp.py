@@ -9,7 +9,7 @@ from pluma.stream.siconversion import SiUnitConversion
 
 from pluma.sync import ClockRefId
 
-from pluma.export.streams import export_stream_to_csv, resample_stream_harp
+from pluma.export.streams import export_stream_to_csv, resample_stream_harp, rereference_stream_index_origin
 
 
 class HarpStream(Stream):
@@ -72,3 +72,6 @@ class HarpStream(Stream):
 	      sampling_dt: datetime.timedelta,
 		  **kwargs) -> pd.DataFrame:
 		return resample_stream_harp(self, sampling_dt, **kwargs)
+	
+	def rereference_clock_origin(self, origin):
+		rereference_stream_index_origin(self.data, origin)

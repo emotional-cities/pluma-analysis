@@ -26,7 +26,8 @@ def get_eeg_file(root: Union[str, ComplexPath] = '',
 
     expected_files = filename.glob(filename.path)
     if len(expected_files) == 0:
-        raise FileNotFoundError(f"No *.nedf files found in {root}.")
+        warnings.warn(f"No *.nedf files found in {root}.")
+        ret = None
     elif len(expected_files) > 1:
         warnings.warn(f"Multiple *.nedf files found in {root}. "
                       f"Loading {expected_files[if_multiple_load_index]}.")
@@ -62,6 +63,8 @@ def load_eeg(filename: Optional[str] = None,
     root = ensure_complexpath(root)
     if filename is None:
         filename = get_eeg_file(root)
+        if filename is None:
+            return (None, None)
     else:
         root.join(filename)
         filename = root

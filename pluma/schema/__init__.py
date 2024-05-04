@@ -257,7 +257,7 @@ class Dataset:
         Dataset._offset_data_index(self.georeference.spacetime, utc_offset)
         Dataset._offset_data_index(self.georeference.time, utc_offset)
         for stream in self._iter_schema_streams(self.streams):
-            if len(stream.data) == 0:
+            if stream.data is None:
                 continue
             if stream.clockreference.referenceid == ClockRefId.HARP:
                 Dataset._offset_data_index(stream.data, utc_offset)

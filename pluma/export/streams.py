@@ -141,7 +141,7 @@ def _get_georef(stream: Stream) -> pd.DataFrame:
     return stream.parent_dataset.georeference
 
 
-def rereference_stream_index_origin(data, origin):
-    """Rebases the origin of the specified stream data index."""
+def offset_stream_index(data, offset):
+    """Offsets the specified stream data index."""
     if len(data) > 0:
-        data.index += origin - data.index[0]
+        data.index += offset

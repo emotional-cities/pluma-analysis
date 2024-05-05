@@ -4,7 +4,7 @@ import pandas as pd
 from pluma.stream import StreamType
 from pluma.stream import Stream
 from pluma.io.zeromq import load_zeromq
-from pluma.export.streams import rereference_stream_index_origin
+from pluma.export.streams import offset_stream_index
 
 
 class PupilStream(Stream):
@@ -24,8 +24,8 @@ class PupilStream(Stream):
     def export_to_csv(self, export_path):
         self.data.to_csv(export_path)
 
-    def rereference_clock_origin(self, origin):
-        rereference_stream_index_origin(self.data, origin)
+    def offset_clock(self, offset):
+        offset_stream_index(self.data, offset)
 
 
 class GliaStream(Stream):
@@ -45,8 +45,8 @@ class GliaStream(Stream):
     def export_to_csv(self, export_path):
         self.data.to_csv(export_path)
 
-    def rereference_clock_origin(self, origin):
-        rereference_stream_index_origin(self.data, origin)
+    def offset_clock(self, offset):
+        offset_stream_index(self.data, offset)
 
 
 class UnityStream(Stream):
@@ -66,8 +66,8 @@ class UnityStream(Stream):
     def export_to_csv(self, export_path):
         self.data.to_csv(export_path)
 
-    def rereference_clock_origin(self, origin):
-        rereference_stream_index_origin(self.data, origin)
+    def offset_clock(self, offset):
+        offset_stream_index(self.data, offset)
 
 
 class PupilGazeStream(PupilStream):

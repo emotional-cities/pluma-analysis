@@ -66,8 +66,8 @@ class Stream:
 	def resample(self):
 		raise NotImplementedError("resample() method is not implemented for the Stream base class.")
 	
-	def rereference_clock_origin(self, offset):
-		raise NotImplementedError("offset_time() method is not implemented for the Stream base class.")
+	def add_clock_offset(self, offset):
+		raise NotImplementedError("add_clock_offset() method is not implemented for the Stream base class.")
 
 	def reload(self):
 		self.load()

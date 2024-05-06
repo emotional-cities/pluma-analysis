@@ -3,11 +3,13 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 
+from typing import Union
 from scipy.stats import circmean
+from pluma.stream.georeference import Georeference
 
 
 def resample_temporospatial(data: pd.DataFrame,
-                            georeference: pd.DataFrame,
+                            georeference: Union[Georeference, pd.DataFrame],
                             sampling_dt: datetime.timedelta
                                 = datetime.timedelta(seconds=2),
                             aggregate_func=None)\
@@ -27,10 +29,14 @@ def resample_temporospatial(data: pd.DataFrame,
     """
     if data.empty:
         raise ValueError("Input dataframe is empty.")
+    
+    if isinstance(georeference, Georeference):
+        georeference = georeference.spacetime
 
-    resampled = georeference.spacetime.loc\
-        [:, "Latitude":"Elevation"].resample(
-            sampling_dt, origin='start').mean()
+    if sampling_dt is None:
+        resampled = georeference
+    else:
+        resampled = resample_georeference(georeference, sampling_dt)
     resampled_data_index = resampled.index[resampled.index.searchsorted(data.index)]
     resampled_data = data.groupby(resampled_data_index)
 
@@ -47,6 +53,12 @@ def resample_temporospatial_circ(data,
                                  georeference,
                                  sampling_dt=datetime.timedelta(seconds=2)):
     return resample_temporospatial(data, georeference, sampling_dt, circular_mean)
+
+
+def resample_georeference(georeference: pd.DataFrame,
+                          sampling_dt: datetime.timedelta):
+    return georeference.loc[:, "Latitude":"Elevation"].resample(
+        sampling_dt, origin='start').mean()
 
 
 def _create_geodataframe(data, spacetime):

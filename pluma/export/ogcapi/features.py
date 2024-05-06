@@ -9,7 +9,7 @@ from dotmap import DotMap
 from pluma.stream import Stream
 
 
-exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
+exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "Enobio", "UBX"]
 
 
 def convert_dataset_to_geoframe(

@@ -29,10 +29,8 @@ class EmpaticaStream(Stream):
 	def __str__(self):
 		return f'Empatica stream from device {self.device}, stream {self.streamlabel}'
 
-	def resample(self,
-	      sampling_dt: datetime.timedelta,
-	      **kwargs) -> pd.DataFrame:
-		return resample_stream_empatica(self, sampling_dt, **kwargs)
+	def resample(self, sampling_dt: datetime.timedelta) -> pd.DataFrame:
+		return resample_stream_empatica(self, sampling_dt)
 	
 	def add_clock_offset(self, offset):
 		for stream in self.data.values():

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import datetime
 import pandas as pd
+import geopandas as gpd
 
 from typing import Union, Optional, Callable, Dict
 
@@ -62,15 +63,14 @@ def export_uniform_table_stream(stream: Stream,
 
 def resample_stream_harp(stream: Stream,
                          sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
-                         sampler: Callable = resampling.resample_temporospatial,
-                         **kwargs) -> pd.DataFrame:
+                         sampler: Callable = resampling.resample_temporospatial) -> gpd.GeoDataFrame:
     check_stream_data_integrity(stream)
-    return sampler(stream.data, _get_georef(stream), sampling_dt)
+    return sampler(stream.data, _get_resampled_georef(stream, sampling_dt), sampling_dt=None)
 
 
 def resample_stream_accelerometer(stream: Stream,
-                                  sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
-                                  **kwargs) -> pd.DataFrame:
+                                  sampling_dt: Union[pd.DataFrame, datetime.timedelta]
+                                  ) -> gpd.GeoDataFrame:
     check_stream_data_integrity(stream)
     col_sampler = {
         'Orientation_X': resampling.resample_temporospatial_circ,
@@ -91,36 +91,32 @@ def resample_stream_accelerometer(stream: Stream,
         'Gravity_X': resampling.resample_temporospatial,
         'Gravity_Y': resampling.resample_temporospatial,
         'Gravity_Z': resampling.resample_temporospatial}
-    georef = _get_georef(stream)
-    resampled_data = {k: resampling_method(stream.data[k], georef, sampling_dt)
-                      for k, resampling_method in col_sampler.items()
-                      if k in stream.data.columns}
-    out = resampled_data[list(col_sampler.keys())[0]].copy()
-    out.drop(columns=['Data'], axis=1, inplace=True)
-
-    for key in resampled_data.keys():
-        out[key] = resampled_data[key]["Data"]
-    return out
+    return _resample_multistream(stream, col_sampler, sampling_dt)
 
 
 def resample_stream_empatica(stream: Stream,
-                            sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
-                             **kwargs) -> pd.DataFrame:
-    check_stream_data_integrity(stream)
+                             sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)
+                             ) -> gpd.GeoDataFrame:
     col_sampler = {
         'E4_Gsr': resampling.resample_temporospatial,
         'E4_Hr': resampling.resample_temporospatial,
         'E4_Ibi': resampling.resample_temporospatial}
-    georef = _get_georef(stream)
-    resampled_data = {k: resampling_method(stream.data[k]["Value"], georef, sampling_dt)
-                      for k, resampling_method in col_sampler.items()
-                      if k in stream.data}
-    out = resampled_data[list(col_sampler.keys())[0]].copy()
-    out.drop(columns=['Data'], axis=1, inplace=True)
+    return _resample_multistream(stream, col_sampler, sampling_dt)
 
-    for key in resampled_data.keys():
-        out[key] = resampled_data[key]["Data"]
-    return out
+
+def _resample_multistream(
+        stream: Stream,
+        col_sampler: dict[str, Callable],
+        sampling_dt: Union[pd.DataFrame, datetime.timedelta]) -> gpd.GeoDataFrame:
+    check_stream_data_integrity(stream)
+    resampled = _get_resampled_georef(stream, sampling_dt)
+    resampled_data = [sampler(stream.data[key], resampled, sampling_dt=None)
+                      for key, sampler in col_sampler.items()
+                      if key in stream.data]
+    geometry = resampled_data[0].geometry
+    return gpd.GeoDataFrame(pd.concat([d.drop('geometry', axis=1)
+                                       for d in resampled_data], axis=1),
+                                       geometry=geometry)
 
 
 def check_stream_data_integrity(stream: Stream):
@@ -128,7 +124,10 @@ def check_stream_data_integrity(stream: Stream):
         raise ValueError("The stream does not have valid data.")
 
 
-def _get_georef(stream: Stream) -> pd.DataFrame:
+def _get_resampled_georef(stream: Stream, sampler: Union[pd.DataFrame, datetime.timedelta]) -> pd.DataFrame:
+    if isinstance(sampler, pd.DataFrame):
+        return sampler
+    
     if hasattr(stream, "parent_dataset") is False:
         raise AttributeError("The stream does not have a valid parent Dataset.")
     if stream.parent_dataset is None:
@@ -138,7 +137,8 @@ def _get_georef(stream: Stream) -> pd.DataFrame:
             "The stream's parent Dataset does not have a valid calibration.\
                 Calibrate the Dataset before exporting the stream by\
                     calling Dataset.add_georeference_and_calibrate()")
-    return stream.parent_dataset.georeference
+    georef = stream.parent_dataset.georeference.spacetime
+    return resampling.resample_georeference(georef, sampler)
 
 
 def shift_stream_index(data, offset):

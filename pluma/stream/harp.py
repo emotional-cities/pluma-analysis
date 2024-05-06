@@ -68,10 +68,8 @@ class HarpStream(Stream):
 	def export_to_csv(self, root_path, **kwargs):
 		export_stream_to_csv(self, root_path, **kwargs)
 
-	def resample(self,
-	      sampling_dt: datetime.timedelta,
-		  **kwargs) -> pd.DataFrame:
-		return resample_stream_harp(self, sampling_dt, **kwargs)
+	def resample(self, sampling_dt: datetime.timedelta) -> pd.DataFrame:
+		return resample_stream_harp(self, sampling_dt)
 	
 	def add_clock_offset(self, offset):
 		shift_stream_index(self.data, offset)

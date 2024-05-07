@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import tilemapbase as tmb
 import numpy as np
 
@@ -9,7 +10,8 @@ import simplekml
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def showmap(NavData,
+def showmap(path,
+            color=None,
             fig=None,
             ax=None,
             figsize=(20, 20),
@@ -18,28 +20,30 @@ def showmap(NavData,
             tiles=tmb.tiles.build_OSM(),
             cmap='jet',
             markersize=15,
-            colorscale_override=None,
             **cbarkwargs):
 
     if fig is None:
         fig, ax = plt.subplots(1, 1)
         fig.set_size_inches(figsize)
 
-    if isinstance(NavData, gpd.GeoDataFrame):
-        extent = tmb.extent_from_frame(NavData)
-        coords = NavData.get_coordinates()
+    if isinstance(color, str):
+        cmap = None
+
+    if isinstance(path, gpd.GeoDataFrame):
+        extent = tmb.extent_from_frame(path)
+        coords = path.get_coordinates()
         path = coords.apply(lambda p: tmb.project(p.x, p.y), axis=1)
     else:
         extent = tmb.Extent.from_lonlat(
-            np.min(NavData['Longitude'].values),
-            np.max(NavData['Longitude'].values),
-            np.min(NavData['Latitude'].values),
-            np.max(NavData['Latitude'].values))
+            np.min(path['Longitude'].values),
+            np.max(path['Longitude'].values),
+            np.min(path['Latitude'].values),
+            np.max(path['Latitude'].values))
         path = [tmb.project(x, y)
                 for x, y in
                 zip(
-                    NavData['Longitude'].values,
-                    NavData['Latitude'].values)]
+                    path['Longitude'].values,
+                    path['Latitude'].values)]
     x, y = zip(*path)
 
     if to_aspect is not None:
@@ -53,16 +57,23 @@ def showmap(NavData,
     plotter = tmb.Plotter(extent, tiles, width=600)
     plotter.plot(ax)
 
-    if colorscale_override is None:
-        colorscale_override = NavData['Data'].values
+    if color is None:
+        color = mdates.date2num(path.index)
+        if len(cbarkwargs) == 0:
+            loc = mdates.AutoDateLocator()
+            cbarkwargs['ticks'] = loc
+            cbarkwargs['format'] = mdates.ConciseDateFormatter(loc)
+            cbarkwargs['label'] = 'time'
+
     im = ax.scatter(
         x, y,
-        c=colorscale_override,
+        c=color,
         s=markersize,
         cmap=cmap)
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    fig.colorbar(im, cax=cax, **cbarkwargs)
+    if cmap is not None:
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        fig.colorbar(im, cax=cax, **cbarkwargs)
     return fig
 
 

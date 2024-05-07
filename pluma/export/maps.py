@@ -77,6 +77,17 @@ def showmap(path,
     return fig
 
 
+def exploremap(data: gpd.GeoDataFrame, **kwargs):
+    index = data.index
+    data = data.reset_index(drop=True)
+    if not 'column' in kwargs:
+        minutes = (index - index[0]).to_series(index=data.index).dt.total_seconds() / 60
+        kwargs['column'] = minutes
+    if not 'cmap' in kwargs:
+        kwargs['cmap'] = 'jet'
+    return data.explore(**kwargs)
+
+
 def export_kml_line(df: pd.DataFrame,
                     output_path: str = "walk.kml",
                     **kwargs):

@@ -229,9 +229,7 @@ class Dataset:
     def showmap(self, **kwargs):
         """Overload to export.showmap that shows spatial information color-coded by time.
         """
-        temp_df = self.georeference.spacetime.assign(Data=1)
-        fig = maps.showmap(temp_df, **kwargs)
-        return fig
+        return maps.showmap(self.georeference.spacetime, **kwargs)
 
     def add_georeference_and_calibrate(self, plot_diagnosis=True):
         if self.has_calibration is False:

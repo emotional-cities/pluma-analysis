@@ -14,6 +14,8 @@ license = {text = "MIT License"}
 dependencies = [
     "geopandas",
     "matplotlib",
+    "mapclassify",
+    "folium",
     "numpy",
     "scipy",
     "scikit-learn",

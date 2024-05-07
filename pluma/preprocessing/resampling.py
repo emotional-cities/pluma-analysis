@@ -37,8 +37,11 @@ def resample_temporospatial(data: pd.DataFrame,
         resampled = georeference
     else:
         resampled = resample_georeference(georeference, sampling_dt)
-    resampled_data_index = resampled.index[resampled.index.searchsorted(data.index)]
-    resampled_data = data.groupby(resampled_data_index)
+
+    resampled_indices = resampled.index.searchsorted(data.index) - 1
+    valid_data_values = resampled_indices >= 0
+    resampled_data_index = resampled.index[resampled_indices[valid_data_values]]
+    resampled_data = data[valid_data_values].groupby(resampled_data_index)
 
     if (aggregate_func is None):
         resampled_data = resampled_data.mean()

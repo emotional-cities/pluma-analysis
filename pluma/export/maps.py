@@ -3,6 +3,7 @@ import tilemapbase as tmb
 import numpy as np
 
 import pandas as pd
+import geopandas as gpd
 import simplekml
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -20,20 +21,27 @@ def showmap(NavData,
             colorscale_override=None,
             **cbarkwargs):
 
-    if 'Data' not in NavData.columns:
-        raise ValueError(
-            'NavData input must have a "Data" Column.\
-                See Stream.resample_temporospatial() for an example.')
-
     if fig is None:
         fig, ax = plt.subplots(1, 1)
         fig.set_size_inches(figsize)
-    
-    extent = tmb.Extent.from_lonlat(
-        np.min(NavData['Longitude'].values),
-        np.max(NavData['Longitude'].values),
-        np.min(NavData['Latitude'].values),
-        np.max(NavData['Latitude'].values))
+
+    if isinstance(NavData, gpd.GeoDataFrame):
+        extent = tmb.extent_from_frame(NavData)
+        coords = NavData.get_coordinates()
+        path = coords.apply(lambda p: tmb.project(p.x, p.y), axis=1)
+    else:
+        extent = tmb.Extent.from_lonlat(
+            np.min(NavData['Longitude'].values),
+            np.max(NavData['Longitude'].values),
+            np.min(NavData['Latitude'].values),
+            np.max(NavData['Latitude'].values))
+        path = [tmb.project(x, y)
+                for x, y in
+                zip(
+                    NavData['Longitude'].values,
+                    NavData['Latitude'].values)]
+    x, y = zip(*path)
+
     if to_aspect is not None:
         extent = extent.to_aspect(to_aspect)
     if with_scaling is not None:
@@ -44,13 +52,6 @@ def showmap(NavData,
     ax.set_xlabel("Time")
     plotter = tmb.Plotter(extent, tiles, width=600)
     plotter.plot(ax)
-
-    path = [tmb.project(x, y)
-            for x, y in
-            zip(
-                NavData['Longitude'].values,
-                NavData['Latitude'].values)]
-    x, y = zip(*path)
 
     if colorscale_override is None:
         colorscale_override = NavData['Data'].values

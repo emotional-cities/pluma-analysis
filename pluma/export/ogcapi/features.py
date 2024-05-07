@@ -3,12 +3,13 @@ import os
 import datetime
 import pandas as pd
 import geopandas as gpd
-from dotmap import DotMap
+import pluma.preprocessing.resampling as resampling
 
+from dotmap import DotMap
 from pluma.stream import Stream
 
 
-exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "UBX"]
+exclude_devices = ["PupilLabs", "Microphone", "Empatica", "BioData", "Enobio", "UBX"]
 
 
 def convert_dataset_to_geoframe(
@@ -16,16 +17,13 @@ def convert_dataset_to_geoframe(
         sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
         ):
 
+    georef = resampling.resample_georeference(dataset.georeference.spacetime, sampling_dt)
     streams_to_export = {}
     for stream in dataset.streams:
         _ = recursive_resample_stream(
-            streams_to_export, dataset.streams[stream], sampling_dt)
+            streams_to_export, dataset.streams[stream], georef)
 
     exclude = ['Latitude', 'Longitude', 'Elevation']
-
-    out = streams_to_export[list(streams_to_export.keys())[0]].copy()
-    out = out.iloc[:, 0:3]
-
     out_columns = []
     for stream in streams_to_export:
         cols = list(streams_to_export[stream].columns)
@@ -36,16 +34,13 @@ def convert_dataset_to_geoframe(
             cols[idx] = (stream if entry.lower() == "data" else
                          f"{stream}_{entry}").lower()
         streams_to_export[stream].columns = cols
-        out_columns.append(streams_to_export[stream].drop(exclude, axis=1))
-    out = out.join(out_columns)
-    out.index.name = 'time'
+        out_columns.append(streams_to_export[stream])
 
-    geometry = gpd.points_from_xy(
-        x=out['Longitude'],
-        y=out['Latitude'],
-        z=out['Elevation'])
-    out = gpd.GeoDataFrame(out.drop(exclude, axis=1), geometry=geometry)
-    out.crs = 'epsg:4326'
+    geometry = out_columns[0][out_columns[0].columns[-1]]
+    out = gpd.GeoDataFrame(pd.concat([d.drop(d.columns[-1], axis=1)
+                                      for d in out_columns], axis=1),
+                                      geometry=geometry)
+    out.index.name = 'time'
     return out
 
 def export_dataset_to_geojson(

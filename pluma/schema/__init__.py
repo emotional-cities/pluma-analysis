@@ -247,6 +247,9 @@ class Dataset:
         utc_offset = self.streams.UBX.positiondata['Time_UTC'][0] - self.georeference.time[0]
         shift_stream_index(self.georeference.spacetime, utc_offset)
         shift_stream_index(self.georeference.time, utc_offset)
+        shift_stream_index(self.georeference.latitude, utc_offset)
+        shift_stream_index(self.georeference.longitude, utc_offset)
+        shift_stream_index(self.georeference.elevation, utc_offset)
         for stream in self._iter_schema_streams(self.streams):
             if stream.data is None:
                 continue

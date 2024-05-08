@@ -49,7 +49,7 @@ def resample_temporospatial(data: pd.DataFrame,
         resampled_data = resampled_data.apply(aggregate_func)
         
     resampled_data = resampled_data.reindex(resampled.index)
-    return _create_geodataframe(resampled_data, resampled)
+    return gpd.GeoDataFrame(resampled_data, geometry=resampled.geometry)
 
 
 def resample_temporospatial_circ(data,
@@ -59,17 +59,14 @@ def resample_temporospatial_circ(data,
 
 
 def resample_georeference(georeference: pd.DataFrame,
-                          sampling_dt: datetime.timedelta):
-    return georeference.loc[:, "Latitude":"Elevation"].resample(
+                          sampling_dt: datetime.timedelta) -> gpd.GeoDataFrame:
+    georeference = georeference.loc[:, "Latitude":"Elevation"].resample(
         sampling_dt, origin='start').mean()
-
-
-def _create_geodataframe(data, spacetime):
     geometry = gpd.points_from_xy(
-        x=spacetime['Longitude'],
-        y=spacetime['Latitude'],
-        z=spacetime['Elevation'])
-    gdf = gpd.GeoDataFrame(data, geometry=geometry)
+        x=georeference['Longitude'],
+        y=georeference['Latitude'],
+        z=georeference['Elevation'])
+    gdf = gpd.GeoDataFrame(georeference, geometry=geometry)
     gdf.crs = 'epsg:4326'
     return gdf
 

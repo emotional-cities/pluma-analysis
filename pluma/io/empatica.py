@@ -1,4 +1,5 @@
 import warnings
+import datetime
 
 import pandas as pd
 from dotmap import DotMap
@@ -7,6 +8,7 @@ from typing import Union
 from pluma.io.harp import _HARP_T0
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
+_EMPATICA_T0 = datetime.datetime(1970, 1, 1)
 
 def load_empatica(filename: str = 'empatica_harp_ts.csv',
                   root: Union[str, ComplexPath] = '') -> DotMap:
@@ -59,7 +61,7 @@ def parse_empatica_stream(empatica_stream: pd.DataFrame) -> pd.DataFrame:
         df.columns = df_labels
         df[['AccX', 'AccY', 'AccZ']] =\
             df[['AccX', 'AccY', 'AccZ']].astype(float)
-        df['E4_Seconds'] = _HARP_T0 + \
+        df['E4_Seconds'] = _EMPATICA_T0 + \
             pd.to_timedelta(df['E4_Seconds'].values.astype(float), 's')
 
     elif stream_id in \
@@ -72,7 +74,7 @@ def parse_empatica_stream(empatica_stream: pd.DataFrame) -> pd.DataFrame:
         df_labels = ['Stream', 'E4_Seconds', 'Value']
         df.columns = df_labels
         df[['Value']] = df[['Value']].astype(float)
-        df['E4_Seconds'] = _HARP_T0 +\
+        df['E4_Seconds'] = _EMPATICA_T0 +\
             pd.to_timedelta(df['E4_Seconds'].values.astype(float), 's')
     elif stream_id == 'R':
         df = pd.DataFrame(index=empatica_stream.index.copy())

@@ -101,22 +101,28 @@ def resample_stream_empatica(stream: Stream,
         'E4_Gsr': resampling.resample_temporospatial,
         'E4_Hr': resampling.resample_temporospatial,
         'E4_Ibi': resampling.resample_temporospatial}
-    return _resample_multistream(stream, col_sampler, sampling_dt)
+    return _resample_multistream(
+        stream,
+        col_sampler,
+        sampling_dt,
+        data_selector = lambda x: x['Value'])
 
 
 def _resample_multistream(
         stream: Stream,
         col_sampler: dict[str, Callable],
-        sampling_dt: Union[pd.DataFrame, datetime.timedelta]) -> gpd.GeoDataFrame:
+        sampling_dt: Union[gpd.GeoDataFrame, datetime.timedelta],
+        data_selector: Callable = lambda x: x) -> gpd.GeoDataFrame:
     check_stream_data_integrity(stream)
     resampled = _get_resampled_georef(stream, sampling_dt)
-    resampled_data = [sampler(stream.data[key], resampled, sampling_dt=None)
+    resampled_data = {key: sampler(data_selector(stream.data[key]), resampled, sampling_dt=None)
                       for key, sampler in col_sampler.items()
-                      if key in stream.data]
-    geometry = resampled_data[0].geometry
-    return gpd.GeoDataFrame(pd.concat([d.drop('geometry', axis=1)
-                                       for d in resampled_data], axis=1),
-                                       geometry=geometry)
+                      if key in stream.data}
+                      
+    df = pd.DataFrame(index=resampled.index)
+    for key, value in resampled_data.items():
+        df[key] = value.drop('geometry', axis=1)
+    return gpd.GeoDataFrame(df, geometry=resampled.geometry)
 
 
 def check_stream_data_integrity(stream: Stream):
@@ -124,8 +130,8 @@ def check_stream_data_integrity(stream: Stream):
         raise ValueError("The stream does not have valid data.")
 
 
-def _get_resampled_georef(stream: Stream, sampler: Union[pd.DataFrame, datetime.timedelta]) -> pd.DataFrame:
-    if isinstance(sampler, pd.DataFrame):
+def _get_resampled_georef(stream: Stream, sampler: Union[gpd.GeoDataFrame, datetime.timedelta]):
+    if isinstance(sampler, gpd.GeoDataFrame):
         return sampler
     
     if hasattr(stream, "parent_dataset") is False:

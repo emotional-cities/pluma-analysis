@@ -90,7 +90,7 @@ def exploremap(data: gpd.GeoDataFrame, **kwargs):
             legend_kwds['caption'] = 'time (minutes)'
         kwargs['legend_kwds'] = legend_kwds
     elif isinstance(column, pd.Series):
-        data[column.name] = column.reset_index()
+        data[column.name] = column.reset_index(drop=True)
         kwargs['column'] = column.name
 
     if not 'cmap' in kwargs:

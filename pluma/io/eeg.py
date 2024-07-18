@@ -1,6 +1,5 @@
 from __future__ import annotations
 import warnings
-import nepy
 import pandas as pd
 import numpy as np
 
@@ -10,7 +9,8 @@ from sklearn.linear_model import LinearRegression
 from pluma.io.harp import _HARP_T0
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
-from pluma.io._nepy.NedfReader import NedfReader
+import mne
+from mne.io import Raw, read_raw_nedf
 from pluma.stream.harp import HarpStream
 
 
@@ -41,7 +41,7 @@ def get_eeg_file(root: Union[str, ComplexPath] = '',
 def load_eeg(filename: Optional[str] = None,
              root: Union[str, ComplexPath] = '',
              **kwargs
-             ) -> Tuple[NedfReader, pd.DataFrame]:
+             ) -> Tuple[Raw, pd.DataFrame]:
     """_summary_
     Args:
         filename (Optional[str], optional): The name of the file to be loaded.
@@ -53,10 +53,10 @@ def load_eeg(filename: Optional[str] = None,
     Raises:
         ValueError: Wrong file_extension was given. Must be .nedf.
     Returns:
-        Tuple[NedfReader, pd.DataFrame]: where:
+        Tuple[mne.io.Raw, pd.DataFrame]: where:
 
-        - NedfReader: returns the loaded file as a reader
-        object from the nepy package.
+        - mne.io.Raw: returns the loaded file as a Raw object containing
+        NEDF data.
         - pd.DataFrame: returns a dataframe with the server lsl markers
     """
 
@@ -69,7 +69,19 @@ def load_eeg(filename: Optional[str] = None,
         root.join(filename)
         filename = root
 
-    _out = NedfReader(filename, **kwargs)
+    _out = read_raw_nedf(filename, **kwargs)
+    _marker_picks = mne.pick_types(_out.info, stim=True, exclude='bads')
+    _eeg_picks = mne.pick_types(_out.info, eeg=True, exclude='bads')
+    _marker_data, _marker_times = _out[_marker_picks]
+    _eeg_data, _ = _out[_eeg_picks]
+
+    # recover nepy-like attributes
+    # NB: MNE does their own scaling from raw data so numbers are not identical to nepy
+    # NB: MNE standardizes measurements in Volts rather than uV and matrix is transposed
+    _out.np_eeg = _eeg_data.T * 10e6
+    _out.np_markers = _marker_data[0]
+    _out.np_time = _marker_times
+
     _server_lsl_markers = load_server_lsl_markers(root=root)
     _server_lsl_markers["EegSample"] = -1
     _server_lsl_markers["EegTimestamp"] = np.nan

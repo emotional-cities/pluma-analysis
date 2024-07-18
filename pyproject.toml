@@ -24,7 +24,8 @@ dependencies = [
     "pyubx2",
     "tilemapbase",
     "dotmap",
-    "nepy",
+    "mne",
+    "eeglabio",
     "simplekml",
     "isodate",
     "jinja2"

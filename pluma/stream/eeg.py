@@ -8,7 +8,7 @@ from pluma.io.eeg import load_eeg, synchronize_eeg_to_harp
 from pluma.sync import ClockRefId
 from pluma.stream.harp import HarpStream
 
-from pluma.io._nepy.NedfReader import NedfReader
+from mne.io import Raw
 
 
 class EegStream(Stream):
@@ -18,7 +18,7 @@ class EegStream(Stream):
 		Stream (_type_): _description_
 	"""
 	def __init__(self,
-	    	data: Optional[NedfReader] = None,
+	    	data: Optional[Raw] = None,
 			server_lsl_marker: Optional[pd.DataFrame] = None,
 			clockreferenceid: ClockRefId = ClockRefId.HARP,
 			autoalign: bool = True,

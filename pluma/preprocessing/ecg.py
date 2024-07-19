@@ -1,29 +1,31 @@
 import numpy as np
 import pandas as pd
+import heartpy as hp
 from typing import Union
-
-from scipy import signal
-
-from pluma.preprocessing import utils
 from pluma.stream import Stream
 
 def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
-                       fs : float = 250, skip_slice : int = 4, max_heartrate_bpm : float = 200.0,
-                       peak_height : float = 800, smooth_win : int = 10, invert : bool = False) -> tuple:
+                       sample_rate : float = 50,
+                       skip_slice : int = 20,
+                       bpmmax : float = 200.0,
+                       highpass_cutoff : float = 5,
+                       invert : bool = False,
+                       bpm_method : str = 'heartpy') -> tuple:
     ## Load biodata
     """Calculates heart rate from the raw ECG waveform signal
 
     Args:
         ecg_data (Stream or DataFrame): ECG input data
-        fs (float, optional): ECG sampling rate (Hz). Defaults to 250.
+        sample_rate (float, optional): ECG sampling rate (Hz). Defaults to 50.
         skip_slice (int, optional): How to slice the incoming raw array. Fs corresponds to the sampling rate post-slicing. Defaults to 4.
-        max_heartrate_bpm (float, optional): Maximum theoretical heartrate. Defaults to 200.0.
-        peak_height (float, optional): Height of ECG peaks. Defaults to 800.
-        smooth_win (int, optional): Smoothing window size (in samples) used to convolve the data. Defaults to 10.
+        bpmmax (float, optional): Maximum theoretical heartrate. Defaults to 200.0.
+        highpass_cutoff (float, optional): Cutoff frequency of the high-pass filter (Hz). Defaults to 5.
+        segment_width (int, optional): Segment window size (in seconds) over which to compute heartrate. Defaults to 5.
         invert (bool, optional): If True, it will invert the raw signal (i.e. Signal * -1 ). Defaults to False.
 
     Returns:
-        tuple: Tuple with a DataFrame containing timestamped heartbeats, and an array with the processed waveform signal, respectively.
+        tuple: Tuple with a DataFrame containing timestamped heartbeats, an array with
+        the processed waveform signal, and the heartpy working_data and measures, respectively.
     """
 
     if isinstance(ecg, Stream):
@@ -31,16 +33,29 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
 
     if invert:
         ecg = ecg * (-1.0)
-    ecg = ecg["Value0"].iloc[np.arange(len(ecg))[::skip_slice]].astype(np.float64) # sensor acquires at 250hz but saves at 1khz
 
-    filtered = utils.butter_highpass_filter(ecg,5,fs)
+    # sensor acquires at 50hz but saves at 1khz
+    ecg = ecg.Value0[::skip_slice].astype(np.float64)
 
-    #Assume maximum heartrate of max_heartrate_bpm
-    peaks, _  = signal.find_peaks(filtered, height = peak_height, distance = (1.0/(max_heartrate_bpm/60.0)) * fs )
-    heartrate = (fs/np.diff(peaks)) * 60
-    heartrate = np.convolve(heartrate, np.ones(smooth_win), 'same') / smooth_win
-    heartrate[0:int(smooth_win/2)+1] = np.NaN # pad the invalid portion of the conv with NaN
-    heartrate[-int(smooth_win/2)-1:-1] = np.NaN
-    df = pd.DataFrame(index = ecg.index[peaks[1:]], copy = True)
-    df['Bpm'] = heartrate
-    return (df, filtered, peaks)
+    # high-pass filter seems to give consistently less rejected peaks than notch
+    filtered = hp.filter_signal(ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype='highpass')
+
+    # find peaks and compute overall beat statistics
+    working_data, measures = hp.process(ecg, sample_rate=sample_rate, bpmmax=bpmmax)
+    
+    if bpm_method == 'heartpy':
+        heartrate = 60000 / np.array(working_data['RR_list_cor'])
+        peak_index = np.array(working_data['RR_indices'])[:, 1] # align to end peak
+        peak_mask = np.array(working_data['RR_masklist']) == 0
+        peak_index = ecg.index[peak_index][peak_mask]
+    elif bpm_method == 'rolling':
+        peaklist = working_data['peaklist']
+        peak_index = ecg.index[peaklist]
+        ibi = peak_index.to_series().diff().dt.total_seconds()
+        heartrate = 60 / ibi.rolling(window=pd.to_timedelta(60, 's')).mean()
+    else:
+        raise ValueError("The specified heartrate calculation method is not supported.")
+
+    bpm = pd.DataFrame(index = peak_index, copy = True)
+    bpm['Bpm'] = heartrate
+    return (bpm, filtered, working_data, measures)

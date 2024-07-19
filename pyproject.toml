@@ -25,6 +25,7 @@ dependencies = [
     "tilemapbase",
     "dotmap",
     "mne",
+    "heartpy",
     "simplekml",
     "isodate",
     "jinja2"

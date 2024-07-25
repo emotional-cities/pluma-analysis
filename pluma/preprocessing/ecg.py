@@ -41,7 +41,7 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
     filtered = hp.filter_signal(ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype='highpass')
 
     # find peaks and compute overall beat statistics
-    working_data, measures = hp.process(ecg, sample_rate=sample_rate, bpmmax=bpmmax)
+    working_data, measures = hp.process(filtered, sample_rate=sample_rate, bpmmax=bpmmax)
     
     if bpm_method == 'heartpy':
         heartrate = 60000 / np.array(working_data['RR_list_cor'])

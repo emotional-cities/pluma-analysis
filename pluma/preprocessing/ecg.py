@@ -56,6 +56,7 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
     else:
         raise ValueError("The specified heartrate calculation method is not supported.")
 
+    filtered = pd.DataFrame(filtered, index=ecg.index, columns=['Ecg'])
     bpm = pd.DataFrame(index = peak_index, copy = True)
     bpm['Bpm'] = heartrate
     return (bpm, filtered, working_data, measures)

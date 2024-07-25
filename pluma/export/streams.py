@@ -109,6 +109,17 @@ def resample_stream_empatica(stream: Stream,
         data_selector = lambda x: x['Value'])
 
 
+def resample_stream_ecg(stream: Stream,
+                        sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)
+                        ) -> gpd.GeoDataFrame:
+    col_sampler = { 'HeartRate': resampling.resample_temporospatial }
+    return _resample_multistream(
+        stream,
+        col_sampler,
+        sampling_dt,
+        data_selector = lambda x: x['Bpm'])
+
+
 def _resample_multistream(
         stream: Stream,
         col_sampler: dict[str, Callable],

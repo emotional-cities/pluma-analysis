@@ -45,6 +45,7 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
     
     if bpm_method == 'heartpy':
         heartrate = 60000 / np.array(working_data['RR_list_cor'])
+        heartrate = np.clip(heartrate, None, bpmmax)
         peak_index = np.array(working_data['RR_indices'])[:, 1] # align to end peak
         peak_mask = np.array(working_data['RR_masklist']) == 0
         peak_index = ecg.index[peak_index][peak_mask]
@@ -53,6 +54,7 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
         peak_index = ecg.index[peaklist]
         ibi = peak_index.to_series().diff().dt.total_seconds()
         heartrate = 60 / ibi.rolling(window=pd.to_timedelta(60, 's')).mean()
+        heartrate = heartrate.clip(None, bpmmax)
     else:
         raise ValueError("The specified heartrate calculation method is not supported.")
 

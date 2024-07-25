@@ -26,7 +26,7 @@ class EcgStream(HarpStream):
 
     def load(self):
         ecg = load_harp_stream(self.eventcode, root=self.rootfolder)
-        heartrate, _, _ = heartrate_from_ecg(ecg)
+        heartrate, _, _, _ = heartrate_from_ecg(ecg)
         self.data = DotMap({
             'Raw': ecg,
             'HeartRate': heartrate

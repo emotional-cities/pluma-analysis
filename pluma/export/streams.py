@@ -100,7 +100,8 @@ def resample_stream_empatica(stream: Stream,
     col_sampler = {
         'E4_Gsr': resampling.resample_temporospatial,
         'E4_Hr': resampling.resample_temporospatial,
-        'E4_Ibi': resampling.resample_temporospatial}
+        'E4_Ibi': resampling.resample_temporospatial,
+        'E4_Temperature': resampling.resample_temporospatial}
     return _resample_multistream(
         stream,
         col_sampler,

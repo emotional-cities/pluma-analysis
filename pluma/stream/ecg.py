@@ -26,11 +26,12 @@ class EcgStream(HarpStream):
 
     def load(self):
         ecg = load_harp_stream(self.eventcode, root=self.rootfolder)
-        heartrate, filtered, _, _ = heartrate_from_ecg(ecg)
+        heartrate, filtered, working_data, measures = heartrate_from_ecg(ecg)
         self.data = DotMap({
             'Raw': ecg,
             'Filtered': filtered,
-            'HeartRate': heartrate
+            'Processed': (working_data, measures),
+            'HeartRate': heartrate,
         })
         self.si_conversion.is_si = False
 
@@ -42,4 +43,5 @@ class EcgStream(HarpStream):
     
     def add_clock_offset(self, offset):
         for stream in self.data.values():
-            shift_stream_index(stream, offset)
+            if isinstance(stream, pd.DataFrame):
+                shift_stream_index(stream, offset)

@@ -190,6 +190,7 @@ class UnityPointToOriginMapStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityPointToOriginMapStream, self).__init__(
             eventcode,
+            streamtype=StreamType.UNITY,
             filenames=[
                 'Unity_PointToOriginMap/PointToOriginMap_Frame1.bin',
                 'Unity_PointToOriginMap/PointToOriginMap_Frame2.bin'],

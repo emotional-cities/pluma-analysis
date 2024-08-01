@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from pluma.stream import StreamType
 from pluma.stream.harp import HarpStream
@@ -26,7 +27,10 @@ class ZmqStream(HarpStream):
 
     def load(self):
         super(ZmqStream, self).load()
-        self.data.rename(columns={'Value': 'Counter'}, inplace=True)
+        self.data = pd.DataFrame(
+            np.arange(len(self.data)),
+            index=self.data.index,
+            columns=['Counter'])
         zmq_data = load_zeromq(self.filenames, self.dtypes, root=self.rootfolder)
         self.data = self.data.join(zmq_data, on='Counter')
 

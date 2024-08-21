@@ -207,3 +207,17 @@ class UnityPointToOriginMapStream(ZmqStream):
                  ('Point.Position.X', np.single),
                  ('Point.Position.Y', np.single)]],
             **kw)
+class UnityNewSceneStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(UnityNewSceneStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Unity_NewScene/NewScene_Frame1.bin',
+                'Unity_NewScene/NewScene_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('SceneType', np.intc),
+                 ('SpawnID', np.intc),
+                 ('SecondsDuration', np.intc)]],
+            **kw)

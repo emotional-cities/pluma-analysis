@@ -121,7 +121,7 @@ class GliaHeartRateStream(ZmqStream):
                 [('HardwareTime', np.ulonglong),
                  ('OmniceptTime', np.ulonglong),
                  ('SystemTime', np.ulonglong)],
-                [('HardwareTime', np.uintc)]],
+                [('HeartRate', np.uintc)]],
             **kw)
 
 

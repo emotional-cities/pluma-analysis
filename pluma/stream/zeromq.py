@@ -152,8 +152,8 @@ class UnityTransformStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'VRTransform/Position_Frame1.bin',
-                'VRTransform/Position_Frame2.bin'],
+                'Unity_VRTransform/Position_Frame1.bin',
+                'Unity_VRTransform/Position_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Transform.Position.X', np.single),
@@ -220,4 +220,16 @@ class UnityNewSceneStream(ZmqStream):
                 [('SceneType', np.intc),
                  ('SpawnID', np.intc),
                  ('SecondsDuration', np.intc)]],
+            **kw)
+class UnityITIStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(UnityITIStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Unity_ITI/ITI_Frame1.bin',
+                'Unity_ITI/ITI_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('SecondsInterTrialInterval', np.single)]],
             **kw)

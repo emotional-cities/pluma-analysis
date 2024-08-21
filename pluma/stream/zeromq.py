@@ -233,3 +233,21 @@ class UnityITIStream(ZmqStream):
                 [('Timestamp', np.ulonglong)],
                 [('SecondsInterTrialInterval', np.single)]],
             **kw)
+class UnityGeoreferenceStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(UnityGeoreferenceStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Unity_GeoReference/Georeference_Frame1.bin',
+                'Unity_GeoReference/Georeference_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('TargetPositionX', np.single),
+                 ('TargetPositionY', np.single),
+                 ('TargetPositionZ', np.single),
+                 ('TargetLongitude', np.double),
+                 ('TargetLatitude', np.double),
+                 ('TargetAltitude', np.double)
+                 ]],
+            **kw)

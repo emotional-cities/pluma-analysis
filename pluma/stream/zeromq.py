@@ -219,7 +219,7 @@ class UnityNewSceneStream(ZmqStream):
                 [('Timestamp', np.ulonglong)],
                 [('SceneType', np.intc),
                  ('SpawnID', np.intc),
-                 ('SecondsDuration', np.intc)]],
+                 ('SceneDuration', np.intc)]],
             **kw)
 class UnityITIStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):

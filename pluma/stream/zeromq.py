@@ -165,7 +165,27 @@ class UnityTransformStream(ZmqStream):
             **kw)
 
 
-class UnityPointToOriginWorldStream(ZmqStream):
+class UnityGeoreferenceStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(UnityGeoreferenceStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Unity/Georeference_Frame1.bin',
+                'Unity/Georeference_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('TargetPositionX', np.single),
+                 ('TargetPositionY', np.single),
+                 ('TargetPositionZ', np.single),
+                 ('TargetLongitude', np.double),
+                 ('TargetLatitude', np.double),
+                 ('TargetAltitude', np.double)
+                 ]],
+            **kw)
+
+
+class ProtocolPointToOriginWorldStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityPointToOriginWorldStream, self).__init__(
             eventcode,
@@ -190,7 +210,7 @@ class UnityPointToOriginWorldStream(ZmqStream):
             **kw)
 
 
-class UnityPointToOriginMapStream(ZmqStream):
+class ProtocolPointToOriginMapStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityPointToOriginMapStream, self).__init__(
             eventcode,
@@ -207,7 +227,7 @@ class UnityPointToOriginMapStream(ZmqStream):
                  ('Point.Position.X', np.single),
                  ('Point.Position.Y', np.single)]],
             **kw)
-class UnityNewSceneStream(ZmqStream):
+class ProtocolNewSceneStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityNewSceneStream, self).__init__(
             eventcode,
@@ -221,7 +241,7 @@ class UnityNewSceneStream(ZmqStream):
                  ('SpawnID', np.intc),
                  ('SceneDuration', np.intc)]],
             **kw)
-class UnityITIStream(ZmqStream):
+class ProtocolITIStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityITIStream, self).__init__(
             eventcode,
@@ -232,22 +252,4 @@ class UnityITIStream(ZmqStream):
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('InterTrialInterval', np.single)]],
-            **kw)
-class UnityGeoreferenceStream(ZmqStream):
-    def __init__(self, eventcode: int, **kw):
-        super(UnityGeoreferenceStream, self).__init__(
-            eventcode,
-            streamtype=StreamType.UNITY,
-            filenames=[
-                'Unity/Georeference_Frame1.bin',
-                'Unity/Georeference_Frame2.bin'],
-            dtypes=[
-                [('Timestamp', np.ulonglong)],
-                [('TargetPositionX', np.single),
-                 ('TargetPositionY', np.single),
-                 ('TargetPositionZ', np.single),
-                 ('TargetLongitude', np.double),
-                 ('TargetLatitude', np.double),
-                 ('TargetAltitude', np.double)
-                 ]],
             **kw)

@@ -231,7 +231,7 @@ class UnityITIStream(ZmqStream):
                 'Unity_ITI/ITI_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
-                [('SecondsInterTrialInterval', np.single)]],
+                [('InterTrialInterval', np.single)]],
             **kw)
 class UnityGeoreferenceStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):

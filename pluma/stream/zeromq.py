@@ -152,8 +152,8 @@ class UnityTransformStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity/Position_Frame1.bin',
-                'Unity/Position_Frame2.bin'],
+                'Unity/VRTransform_Frame1.bin',
+                'Unity/VRTransform_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Transform.Position.X', np.single),

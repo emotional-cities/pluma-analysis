@@ -152,8 +152,8 @@ class UnityTransformStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_VRTransform/Position_Frame1.bin',
-                'Unity_VRTransform/Position_Frame2.bin'],
+                'Unity/Position_Frame1.bin',
+                'Unity/Position_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Transform.Position.X', np.single),
@@ -171,8 +171,8 @@ class UnityPointToOriginWorldStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_PointToOriginWorld/PointToOriginWorld_Frame1.bin',
-                'Unity_PointToOriginWorld/PointToOriginWorld_Frame2.bin'],
+                'Protocol/PointToOriginWorld_Frame1.bin',
+                'Protocol/PointToOriginWorld_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Origin.Position.X', np.single),
@@ -196,8 +196,8 @@ class UnityPointToOriginMapStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_PointToOriginMap/PointToOriginMap_Frame1.bin',
-                'Unity_PointToOriginMap/PointToOriginMap_Frame2.bin'],
+                'Protocol/PointToOriginMap_Frame1.bin',
+                'Protocol/PointToOriginMap_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Origin.Position.X', np.single),
@@ -213,8 +213,8 @@ class UnityNewSceneStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_NewScene/NewScene_Frame1.bin',
-                'Unity_NewScene/NewScene_Frame2.bin'],
+                'Protocol/NewScene_Frame1.bin',
+                'Protocol/NewScene_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('SceneType', np.intc),
@@ -227,8 +227,8 @@ class UnityITIStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_ITI/ITI_Frame1.bin',
-                'Unity_ITI/ITI_Frame2.bin'],
+                'Protocol/ITI_Frame1.bin',
+                'Protocol/ITI_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('InterTrialInterval', np.single)]],
@@ -239,8 +239,8 @@ class UnityGeoreferenceStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_GeoReference/Georeference_Frame1.bin',
-                'Unity_GeoReference/Georeference_Frame2.bin'],
+                'Unity/Georeference_Frame1.bin',
+                'Unity/Georeference_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('TargetPositionX', np.single),

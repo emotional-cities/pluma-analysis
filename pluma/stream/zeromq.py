@@ -243,6 +243,8 @@ class ProtocolNewSceneStream(ZmqStream):
                  ('SpawnID', np.intc),
                  ('SceneDuration', np.intc)]],
             **kw)
+
+
 class ProtocolItiStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(ProtocolItiStream, self).__init__(

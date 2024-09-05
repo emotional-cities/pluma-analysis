@@ -187,7 +187,7 @@ class UnityGeoreferenceStream(ZmqStream):
 
 class ProtocolPointToOriginWorldStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityPointToOriginWorldStream, self).__init__(
+        super(ProtocolPointToOriginWorldStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
@@ -212,7 +212,7 @@ class ProtocolPointToOriginWorldStream(ZmqStream):
 
 class ProtocolPointToOriginMapStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityPointToOriginMapStream, self).__init__(
+        super(ProtocolPointToOriginMapStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
@@ -231,7 +231,7 @@ class ProtocolPointToOriginMapStream(ZmqStream):
 
 class ProtocolNewSceneStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityNewSceneStream, self).__init__(
+        super(ProtocolNewSceneStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
@@ -245,7 +245,7 @@ class ProtocolNewSceneStream(ZmqStream):
             **kw)
 class ProtocolITIStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityITIStream, self).__init__(
+        super(ProtocolITIStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[

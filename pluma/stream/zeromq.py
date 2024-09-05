@@ -121,7 +121,7 @@ class GliaHeartRateStream(ZmqStream):
                 [('HardwareTime', np.ulonglong),
                  ('OmniceptTime', np.ulonglong),
                  ('SystemTime', np.ulonglong)],
-                [('HardwareTime', np.uintc)]],
+                [('HeartRate', np.uintc)]],
             **kw)
 
 
@@ -152,8 +152,8 @@ class UnityTransformStream(ZmqStream):
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'VRTransform/Position_Frame1.bin',
-                'VRTransform/Position_Frame2.bin'],
+                'Unity/VRTransform_Frame1.bin',
+                'Unity/VRTransform_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Transform.Position.X', np.single),
@@ -165,14 +165,34 @@ class UnityTransformStream(ZmqStream):
             **kw)
 
 
-class UnityPointToOriginWorldStream(ZmqStream):
+class UnityGeoreferenceStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityPointToOriginWorldStream, self).__init__(
+        super(UnityGeoreferenceStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_PointToOriginWorld/PointToOriginWorld_Frame1.bin',
-                'Unity_PointToOriginWorld/PointToOriginWorld_Frame2.bin'],
+                'Unity/Georeference_Frame1.bin',
+                'Unity/Georeference_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('TargetPositionX', np.single),
+                 ('TargetPositionY', np.single),
+                 ('TargetPositionZ', np.single),
+                 ('TargetLongitude', np.double),
+                 ('TargetLatitude', np.double),
+                 ('TargetAltitude', np.double)
+                 ]],
+            **kw)
+
+
+class ProtocolPointToOriginWorldStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(ProtocolPointToOriginWorldStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Protocol/PointToOriginWorld_Frame1.bin',
+                'Protocol/PointToOriginWorld_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Origin.Position.X', np.single),
@@ -190,14 +210,14 @@ class UnityPointToOriginWorldStream(ZmqStream):
             **kw)
 
 
-class UnityPointToOriginMapStream(ZmqStream):
+class ProtocolPointToOriginMapStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(UnityPointToOriginMapStream, self).__init__(
+        super(ProtocolPointToOriginMapStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[
-                'Unity_PointToOriginMap/PointToOriginMap_Frame1.bin',
-                'Unity_PointToOriginMap/PointToOriginMap_Frame2.bin'],
+                'Protocol/PointToOriginMap_Frame1.bin',
+                'Protocol/PointToOriginMap_Frame2.bin'],
             dtypes=[
                 [('Timestamp', np.ulonglong)],
                 [('Origin.Position.X', np.single),
@@ -206,4 +226,34 @@ class UnityPointToOriginMapStream(ZmqStream):
                  ('Subject.Position.Y', np.single),
                  ('Point.Position.X', np.single),
                  ('Point.Position.Y', np.single)]],
+            **kw)
+
+
+class ProtocolNewSceneStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(ProtocolNewSceneStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Protocol/NewScene_Frame1.bin',
+                'Protocol/NewScene_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('SceneType', np.intc),
+                 ('SpawnID', np.intc),
+                 ('SceneDuration', np.intc)]],
+            **kw)
+
+
+class ProtocolItiStream(ZmqStream):
+    def __init__(self, eventcode: int, **kw):
+        super(ProtocolItiStream, self).__init__(
+            eventcode,
+            streamtype=StreamType.UNITY,
+            filenames=[
+                'Protocol/ITI_Frame1.bin',
+                'Protocol/ITI_Frame2.bin'],
+            dtypes=[
+                [('Timestamp', np.ulonglong)],
+                [('InterTrialInterval', np.single)]],
             **kw)

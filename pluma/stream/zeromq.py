@@ -243,9 +243,9 @@ class ProtocolNewSceneStream(ZmqStream):
                  ('SpawnID', np.intc),
                  ('SceneDuration', np.intc)]],
             **kw)
-class ProtocolITIStream(ZmqStream):
+class ProtocolItiStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
-        super(ProtocolITIStream, self).__init__(
+        super(ProtocolItiStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
             filenames=[

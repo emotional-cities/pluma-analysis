@@ -227,6 +227,8 @@ class ProtocolPointToOriginMapStream(ZmqStream):
                  ('Point.Position.X', np.single),
                  ('Point.Position.Y', np.single)]],
             **kw)
+
+
 class ProtocolNewSceneStream(ZmqStream):
     def __init__(self, eventcode: int, **kw):
         super(UnityNewSceneStream, self).__init__(

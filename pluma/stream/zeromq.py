@@ -105,7 +105,10 @@ class GliaEyeTrackingStream(ZmqStream):
                  ('RightDilation', np.single),
                  ('RightDilationConfidence', np.single),
                  ('RightPosition.X', np.single),
-                 ('RightPosition.Y', np.single)]],
+                 ('RightPosition.Y', np.single),
+                 ('Raycast.X', np.single),
+                 ('Raycast.Y', np.single),
+                 ('Raycast.Z', np.single)]],
             **kw)
 
 

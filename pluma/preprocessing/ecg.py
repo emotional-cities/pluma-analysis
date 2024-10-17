@@ -4,13 +4,16 @@ import heartpy as hp
 from typing import Union
 from pluma.stream import Stream
 
-def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
-                       sample_rate : float = 50,
-                       skip_slice : int = 20,
-                       bpmmax : float = 200.0,
-                       highpass_cutoff : float = 5,
-                       invert : bool = False,
-                       bpm_method : str = 'heartpy') -> tuple:
+
+def heartrate_from_ecg(
+    ecg: Union[Stream, pd.DataFrame],
+    sample_rate: float = 50,
+    skip_slice: int = 20,
+    bpmmax: float = 200.0,
+    highpass_cutoff: float = 5,
+    invert: bool = False,
+    bpm_method: str = "heartpy",
+) -> tuple:
     ## Load biodata
     """Calculates heart rate from the raw ECG waveform signal
 
@@ -38,27 +41,27 @@ def heartrate_from_ecg(ecg : Union[Stream, pd.DataFrame],
     ecg = ecg.Value0[::skip_slice].astype(np.float64)
 
     # high-pass filter seems to give consistently less rejected peaks than notch
-    filtered = hp.filter_signal(ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype='highpass')
+    filtered = hp.filter_signal(ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype="highpass")
 
     # find peaks and compute overall beat statistics
     working_data, measures = hp.process(filtered, sample_rate=sample_rate, bpmmax=bpmmax)
-    
-    if bpm_method == 'heartpy':
-        heartrate = 60000 / np.array(working_data['RR_list_cor'])
+
+    if bpm_method == "heartpy":
+        heartrate = 60000 / np.array(working_data["RR_list_cor"])
         heartrate = np.clip(heartrate, None, bpmmax)
-        peak_index = np.array(working_data['RR_indices'])[:, 1] # align to end peak
-        peak_mask = np.array(working_data['RR_masklist']) == 0
+        peak_index = np.array(working_data["RR_indices"])[:, 1]  # align to end peak
+        peak_mask = np.array(working_data["RR_masklist"]) == 0
         peak_index = ecg.index[peak_index][peak_mask]
-    elif bpm_method == 'rolling':
-        peaklist = working_data['peaklist']
+    elif bpm_method == "rolling":
+        peaklist = working_data["peaklist"]
         peak_index = ecg.index[peaklist]
         ibi = peak_index.to_series().diff().dt.total_seconds()
-        heartrate = 60 / ibi.rolling(window=pd.to_timedelta(60, 's')).mean()
+        heartrate = 60 / ibi.rolling(window=pd.to_timedelta(60, "s")).mean()
         heartrate = heartrate.clip(None, bpmmax)
     else:
         raise ValueError("The specified heartrate calculation method is not supported.")
 
-    filtered = pd.DataFrame(filtered, index=ecg.index, columns=['Ecg'])
-    bpm = pd.DataFrame(index = peak_index, copy = True)
-    bpm['Bpm'] = heartrate
+    filtered = pd.DataFrame(filtered, index=ecg.index, columns=["Ecg"])
+    bpm = pd.DataFrame(index=peak_index, copy=True)
+    bpm["Bpm"] = heartrate
     return (bpm, filtered, working_data, measures)

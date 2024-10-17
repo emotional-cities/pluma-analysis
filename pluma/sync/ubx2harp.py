@@ -3,12 +3,11 @@ from dataclasses import dataclass
 from sklearn.linear_model import LinearRegression
 
 from pluma.stream.harp import HarpStream
-from pluma.stream.ubx import UbxStream, _UBX_MSGIDS, _UBX_CLASSES
+from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
+
 
 class SyncTimestamp:
-    def __init__(self,
-                 ts_array,
-                 seconds_conversion=(lambda x: x)) -> None:
+    def __init__(self, ts_array, seconds_conversion=(lambda x: x)) -> None:
         self.raw_ts_array = ts_array
         self.ts_array = ts_array
         self.seconds_conversion_factor = seconds_conversion
@@ -27,10 +26,11 @@ class SyncTimestamp:
         if pair_idx > self.max_pairs + (order - 1):
             raise ValueError("Pair index is larger than the size of the array")
         else:
-            return \
-        self.ts_array[pair_idx],\
-        self.ts_array[pair_idx + order],\
-        self.ts_array[pair_idx + order] - self.ts_array[pair_idx]
+            return (
+                self.ts_array[pair_idx],
+                self.ts_array[pair_idx + order],
+                self.ts_array[pair_idx + order] - self.ts_array[pair_idx],
+            )
 
     def get_diff(self):
         return np.diff(self.ts_array)
@@ -40,29 +40,31 @@ class SyncTimestamp:
         #  Consider using "return np.tril(d, k = 0)"
         return d.transpose()
 
-    def find_closest_pair(self,
-                          pair_diff_seconds: float,
-                          dt_error: float = 0.001,
-                          method: str = 'leq',
-                          return_first: bool = True,
-                          min_pair_index: int = 0):
-        available_methods = ('leq', 'eq')
+    def find_closest_pair(
+        self,
+        pair_diff_seconds: float,
+        dt_error: float = 0.001,
+        method: str = "leq",
+        return_first: bool = True,
+        min_pair_index: int = 0,
+    ):
+        available_methods = ("leq", "eq")
 
         diff_mat = np.abs(self.compute_diff_matrix() - pair_diff_seconds)
         diff_mat = diff_mat[min_pair_index:, min_pair_index:]
         if dt_error is not None:
             if not np.any(diff_mat < dt_error):
-                raise ValueError(
-                    "All values above the minimum allowed dt_error.")
+                raise ValueError("All values above the minimum allowed dt_error.")
 
-        if method == 'leq':
+        if method == "leq":
             arg_min = np.argwhere(diff_mat < dt_error)
-        elif method == 'eq':
+        elif method == "eq":
             arg_min = np.argwhere(diff_mat == np.min(diff_mat))
         else:
             raise ValueError(
                 f"Method not known.\
-                    Available methods are: {available_methods}")
+                    Available methods are: {available_methods}"
+            )
 
         if return_first:
             return arg_min[0] + min_pair_index
@@ -75,18 +77,20 @@ class SyncTimestamp:
     def __str__(self) -> str:
         return str(self.ts_array)
 
+
 @dataclass
 class SyncLookup:
     ubx_ts: SyncTimestamp
     harp_ts: SyncTimestamp
     align_lookup: np.ndarray
 
-def align_ubx_to_harp(
-        ubx_SyncTimestamp: SyncTimestamp,
-        harp_SyncTimestamp: SyncTimestamp,
-        dt_error: float = 0.002,
-        plot_diagnosis: bool = False):
 
+def align_ubx_to_harp(
+    ubx_SyncTimestamp: SyncTimestamp,
+    harp_SyncTimestamp: SyncTimestamp,
+    dt_error: float = 0.002,
+    plot_diagnosis: bool = False,
+):
     """Matches sync pulse indices from the ubx to the harp stream. First step to correct alignment drift.
 
     Args:
@@ -114,61 +118,55 @@ def align_ubx_to_harp(
     pulses_lookup = np.empty((ubx_ts.max_pairs, 2), dtype=np.int16)
     for pair in np.arange(ubx_ts.max_pairs):
         dyad = harp_ts.find_closest_pair(
-            ubx_ts.get_pair(pair)[-1],
-            dt_error=dt_error,
-            min_pair_index=min_pair_index)
+            ubx_ts.get_pair(pair)[-1], dt_error=dt_error, min_pair_index=min_pair_index
+        )
         pulses_lookup[pair, :] = [pair, dyad[0]]
         min_pair_index = dyad[1]
 
     if plot_diagnosis is True:
         import pluma.sync.plotting as plotting
-        plotting.plot_clockcalibration_diagnosis(
-            ubx_ts=ubx_ts,
-            harp_ts=harp_ts,
-            pulses_lookup=pulses_lookup)
+
+        plotting.plot_clockcalibration_diagnosis(ubx_ts=ubx_ts, harp_ts=harp_ts, pulses_lookup=pulses_lookup)
 
     return pulses_lookup
 
+
 def get_clockcalibration_lookup(
-        ubx_stream: UbxStream,
-        harp_sync: HarpStream,
-        dt_error: float = 0.002,
-        plot_diagnosis: bool = False) -> SyncLookup:
-    
+    ubx_stream: UbxStream,
+    harp_sync: HarpStream,
+    dt_error: float = 0.002,
+    plot_diagnosis: bool = False,
+) -> SyncLookup:
     # Get the TIM_TM2 Message that timestamps the incoming TTL
-    if not(ubx_stream.has_event(_UBX_MSGIDS.TIM_TM2)):
+    if not (ubx_stream.has_event(_UBX_MSGIDS.TIM_TM2)):
         raise KeyError(f"UbxStream does not contain \
             {_UBX_MSGIDS.TIM_TM2.value}\
                 event. Try to load it?")
 
     tim_tm2 = ubx_stream.data.TIM_TM2.copy()  # TTL
-    tim_tm2.insert(tim_tm2.shape[1], "RisingEdge",
-                   tim_tm2.apply(
-                       lambda x: x.loc["Message"].towMsR,
-                       axis=1),
-                   False)
-    risingEdgeEvents = tim_tm2["RisingEdge"].drop_duplicates(
-        keep='first').values.astype(float)
+    tim_tm2.insert(
+        tim_tm2.shape[1],
+        "RisingEdge",
+        tim_tm2.apply(lambda x: x.loc["Message"].towMsR, axis=1),
+        False,
+    )
+    risingEdgeEvents = tim_tm2["RisingEdge"].drop_duplicates(keep="first").values.astype(float)
 
     #  From Harp, get the second output channel
     harp_sync_out = harp_sync.copy()
     harp_sync_out = harp_sync_out[harp_sync_out["Value"].values & 3 > 0]
 
-    ubx_ts = SyncTimestamp(risingEdgeEvents,
-                           seconds_conversion=lambda x: x*1e-3)
-    harp_ts = SyncTimestamp(harp_sync_out.index.values,
-                            seconds_conversion=lambda x: x /
-                            np.timedelta64(1, 's'))
+    ubx_ts = SyncTimestamp(risingEdgeEvents, seconds_conversion=lambda x: x * 1e-3)
+    harp_ts = SyncTimestamp(
+        harp_sync_out.index.values,
+        seconds_conversion=lambda x: x / np.timedelta64(1, "s"),
+    )
 
-    align_lookup = align_ubx_to_harp(ubx_ts,
-                                     harp_ts,
-                                     dt_error=dt_error,
-                                     plot_diagnosis=plot_diagnosis)
+    align_lookup = align_ubx_to_harp(ubx_ts, harp_ts, dt_error=dt_error, plot_diagnosis=plot_diagnosis)
     return SyncLookup(ubx_ts, harp_ts, align_lookup)
 
-def get_clockcalibration_model(sync_lookup: SyncLookup,
-                               r2_min_qc: float = 0.99) -> LinearRegression:
-    
+
+def get_clockcalibration_model(sync_lookup: SyncLookup, r2_min_qc: float = 0.99) -> LinearRegression:
     ubx_ts = sync_lookup.ubx_ts
     harp_ts = sync_lookup.harp_ts
     align_lookup = sync_lookup.align_lookup
@@ -179,7 +177,6 @@ def get_clockcalibration_model(sync_lookup: SyncLookup,
     model = LinearRegression().fit(x_gps_time, y_harp_time)
     r2 = model.score(x_gps_time, y_harp_time)
     if r2 < r2_min_qc:
-        raise AssertionError(
-            f"The quality of the linear fit is lower than expected {r2}")
+        raise AssertionError(f"The quality of the linear fit is lower than expected {r2}")
     else:
         return model

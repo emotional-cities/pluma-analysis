@@ -48,6 +48,7 @@ classifiers = [
 [project.optional-dependencies]
 dev = [
     "setuptools_scm",
+    "ruff",
 ]
 
 [build-system]
@@ -65,3 +66,6 @@ include-package-data = true
 include = ["pluma*"]
 
 [tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 110

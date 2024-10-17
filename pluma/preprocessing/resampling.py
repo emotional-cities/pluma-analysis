@@ -8,12 +8,12 @@ from scipy.stats import circmean
 from pluma.stream.georeference import Georeference
 
 
-def resample_temporospatial(data: pd.DataFrame,
-                            georeference: Union[Georeference, pd.DataFrame],
-                            sampling_dt: datetime.timedelta
-                                = datetime.timedelta(seconds=2),
-                            aggregate_func=None)\
-                                    -> gpd.GeoDataFrame:
+def resample_temporospatial(
+    data: pd.DataFrame,
+    georeference: Union[Georeference, pd.DataFrame],
+    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2),
+    aggregate_func=None,
+) -> gpd.GeoDataFrame:
     """Temporally resamples a temporally indexed data stream and aligns it to a spatial reference.
 
     Args:
@@ -29,7 +29,7 @@ def resample_temporospatial(data: pd.DataFrame,
     """
     if data.empty:
         raise ValueError("Input dataframe is empty.")
-    
+
     if isinstance(georeference, Georeference):
         georeference = georeference.spacetime
 
@@ -43,31 +43,28 @@ def resample_temporospatial(data: pd.DataFrame,
     resampled_data_index = resampled.index[resampled_indices[valid_data_values]]
     resampled_data = data[valid_data_values].groupby(resampled_data_index)
 
-    if (aggregate_func is None):
+    if aggregate_func is None:
         resampled_data = resampled_data.mean()
     else:
         resampled_data = resampled_data.apply(aggregate_func)
-        
+
     resampled_data = resampled_data.reindex(resampled.index)
     return gpd.GeoDataFrame(resampled_data, geometry=resampled.geometry)
 
 
-def resample_temporospatial_circ(data,
-                                 georeference,
-                                 sampling_dt=datetime.timedelta(seconds=2)):
+def resample_temporospatial_circ(data, georeference, sampling_dt=datetime.timedelta(seconds=2)):
     return resample_temporospatial(data, georeference, sampling_dt, circular_mean)
 
 
-def resample_georeference(georeference: pd.DataFrame,
-                          sampling_dt: datetime.timedelta) -> gpd.GeoDataFrame:
-    georeference = georeference.loc[:, "Latitude":"Elevation"].resample(
-        sampling_dt, origin='start').mean()
+def resample_georeference(georeference: pd.DataFrame, sampling_dt: datetime.timedelta) -> gpd.GeoDataFrame:
+    georeference = georeference.loc[:, "Latitude":"Elevation"].resample(sampling_dt, origin="start").mean()
     geometry = gpd.points_from_xy(
-        x=georeference['Longitude'],
-        y=georeference['Latitude'],
-        z=georeference['Elevation'])
+        x=georeference["Longitude"],
+        y=georeference["Latitude"],
+        z=georeference["Elevation"],
+    )
     gdf = gpd.GeoDataFrame(georeference, geometry=geometry)
-    gdf.crs = 'epsg:4326'
+    gdf.crs = "epsg:4326"
     return gdf
 
 

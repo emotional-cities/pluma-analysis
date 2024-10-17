@@ -8,13 +8,13 @@ from datetime import datetime
 from pluma.schema import Dataset
 from dataclasses import dataclass, field, fields
 
-_env = jinja2.Environment(
-    loader=jinja2.PackageLoader("pluma"),
-    autoescape=jinja2.select_autoescape)
+_env = jinja2.Environment(loader=jinja2.PackageLoader("pluma"), autoescape=jinja2.select_autoescape)
 _template = _env.get_template("metadata_template.j2")
+
 
 def _format_timestamp(time_utc: datetime) -> str:
     return f"{time_utc.isoformat()}Z"
+
 
 @dataclass
 class Contact:
@@ -22,10 +22,12 @@ class Contact:
     institution: str
     email: str
 
+
 @dataclass
 class Theme:
     scheme_url: str
     concepts: list[str] = field(default_factory=lambda: [])
+
 
 @dataclass
 class RecordProperties:
@@ -36,6 +38,7 @@ class RecordProperties:
     keywords: list[str] = field(default_factory=lambda: [])
     contacts: list[Contact] = field(default_factory=lambda: [])
     themes: list[Theme] = field(default_factory=lambda: [])
+
 
 class DatasetRecord:
     def __init__(self, dataset: Dataset, gdf: GeoDataFrame, properties: RecordProperties) -> None:
@@ -58,13 +61,15 @@ class DatasetRecord:
             created_timestamp=_format_timestamp(self.created_timestamp),
             updated_timestamp=_format_timestamp(self.updated_timestamp),
             resolution=self.resolution,
-            coordinates=[[
-                [self.bounds[0], self.bounds[1]],
-                [self.bounds[0], self.bounds[3]],
-                [self.bounds[2], self.bounds[3]],
-                [self.bounds[2], self.bounds[1]],
-                [self.bounds[0], self.bounds[1]]
-            ]],
+            coordinates=[
+                [
+                    [self.bounds[0], self.bounds[1]],
+                    [self.bounds[0], self.bounds[3]],
+                    [self.bounds[2], self.bounds[3]],
+                    [self.bounds[2], self.bounds[1]],
+                    [self.bounds[0], self.bounds[1]],
+                ]
+            ],
             crs=self.crs.to_string(),
-            **(dict((field.name, getattr(self.properties, field.name))
-                    for field in fields(self.properties))))
+            **(dict((field.name, getattr(self.properties, field.name)) for field in fields(self.properties))),
+        )

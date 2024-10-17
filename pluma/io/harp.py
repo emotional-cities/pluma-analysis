@@ -20,12 +20,11 @@ _payloadtypes = {
     130: np.dtype(np.int16),
     132: np.dtype(np.int32),
     136: np.dtype(np.int64),
-    68: np.dtype(np.float32)
+    68: np.dtype(np.float32),
 }
 
 
-def read_harp_bin(file: Union[str, ComplexPath],
-                  time_offset: float = 0) -> pd.DataFrame:
+def read_harp_bin(file: Union[str, ComplexPath], time_offset: float = 0) -> pd.DataFrame:
     """Reads data from the specified Harp binary file. \
         Expects a stable message format.
 
@@ -38,15 +37,15 @@ def read_harp_bin(file: Union[str, ComplexPath],
     """
     path = ensure_complexpath(file)
     try:
-        with path.open('rb') as stream:
+        with path.open("rb") as stream:
             data = np.frombuffer(stream.read(), dtype=np.uint8)
     except FileNotFoundError:
-        warnings.warn(f'Harp stream file\
-            {path} could not be found.')
+        warnings.warn(f"Harp stream file\
+            {path} could not be found.")
         return pd.DataFrame()
     except FileExistsError:
-        warnings.warn(f'Harp stream file\
-            {path} could not be found.')
+        warnings.warn(f"Harp stream file\
+            {path} could not be found.")
         return pd.DataFrame()
     if len(data) == 0:
         return None
@@ -57,39 +56,39 @@ def read_harp_bin(file: Union[str, ComplexPath],
     payloadtype = _payloadtypes[data[4] & ~0x10]
     elementsize = payloadtype.itemsize
     payloadshape = (length, payloadsize // elementsize)
-    seconds = np.ndarray(length, dtype=np.uint32,
-                         buffer=data, offset=5, strides=stride)
-    ticks = np.ndarray(length, dtype=np.uint16,
-                       buffer=data, offset=9, strides=stride)
+    seconds = np.ndarray(length, dtype=np.uint32, buffer=data, offset=5, strides=stride)
+    ticks = np.ndarray(length, dtype=np.uint16, buffer=data, offset=9, strides=stride)
 
     seconds = ticks * _SECONDS_PER_TICK + seconds
     seconds += time_offset
-    seconds = _HARP_T0 + pd.to_timedelta(seconds, 's')
-    seconds.name = 'Seconds'
+    seconds = _HARP_T0 + pd.to_timedelta(seconds, "s")
+    seconds.name = "Seconds"
 
     payload = np.ndarray(
         payloadshape,
         dtype=payloadtype,
-        buffer=data, offset=11,
-        strides=(stride, elementsize))
+        buffer=data,
+        offset=11,
+        strides=(stride, elementsize),
+    )
 
     if payload.shape[1] == 1:
-        return pd.DataFrame(
-            payload,
-            index=seconds,
-            columns=['Value'])
+        return pd.DataFrame(payload, index=seconds, columns=["Value"])
 
     else:
         return pd.DataFrame(
             payload,
             index=seconds,
-            columns=['Value' + str(x) for x in np.arange(payload.shape[1])])
+            columns=["Value" + str(x) for x in np.arange(payload.shape[1])],
+        )
 
 
-def load_harp_stream(streamID: int,
-                     root: Union[str, ComplexPath] = '',
-                     suffix: str = 'Streams_',
-                     ext: str = '') -> pd.DataFrame:
+def load_harp_stream(
+    streamID: int,
+    root: Union[str, ComplexPath] = "",
+    suffix: str = "Streams_",
+    ext: str = "",
+) -> pd.DataFrame:
     """Helper function that runs assembles the expected path to the\
         binary harp file.
 
@@ -104,5 +103,5 @@ def load_harp_stream(streamID: int,
         pd.DataFrame: Dataframe with data stream indexed by time (Seconds)
     """
     path = ensure_complexpath(root)
-    path.join(f'{suffix}{streamID}{ext}')
+    path.join(f"{suffix}{streamID}{ext}")
     return read_harp_bin(path)

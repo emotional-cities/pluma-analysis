@@ -82,17 +82,13 @@ class Dataset:
         if not (ubxstream.streamtype == StreamType.UBX):
             raise TypeError("Reference must be a UBX Stream")
         else:
-            navdata = ubxstream.parseposition(
-                event=event, calibrate_clock=calibrate_clock
-            )
+            navdata = ubxstream.parseposition(event=event, calibrate_clock=calibrate_clock)
 
         self.georeference.from_dataframe(navdata)
         if strip is True:
             self.georeference.strip()
         if calibrate_clock is True:
-            self.georeference.clockreference.referenceid = (
-                ubxstream.clockreference.referenceid
-            )
+            self.georeference.clockreference.referenceid = ubxstream.clockreference.referenceid
 
     @staticmethod
     def _iter_schema_streams(schema: Union[DotMap, Stream, None] = None):
@@ -180,9 +176,7 @@ class Dataset:
         with path.open("rb") as handle:
             self.streams = pickle.load(handle)
 
-    def populate_streams(
-        self, root: Union[str, ComplexPath, None] = None, autoload: bool = False
-    ):
+    def populate_streams(self, root: Union[str, ComplexPath, None] = None, autoload: bool = False):
         """Populates the streams property with all the schema information.
 
         Args:
@@ -226,9 +220,7 @@ class Dataset:
 
         model = get_clockcalibration_model(sync_lookup=sync_lookup, r2_min_qc=r2_min_qc)
 
-        self.streams.UBX.clockreference.set_conversion_model(
-            model=model, reference_from=ClockRefId.HARP
-        )
+        self.streams.UBX.clockreference.set_conversion_model(model=model, reference_from=ClockRefId.HARP)
         self.has_calibration = True
         return sync_lookup
 
@@ -239,9 +231,7 @@ class Dataset:
     def add_georeference_and_calibrate(self, plot_diagnosis=True):
         if self.has_calibration is False:
             self.calibrate_ubx_to_harp(plot_diagnosis=plot_diagnosis, dt_error=1)
-            self.add_ubx_georeference(
-                event=_UBX_MSGIDS.NAV_HPPOSLLH, calibrate_clock=True
-            )
+            self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH, calibrate_clock=True)
             self.has_calibration = True
         else:
             raise AssertionError("Dataset is already been automatically calibrated.")
@@ -250,9 +240,7 @@ class Dataset:
         if self.has_calibration is False:
             raise AssertionError("Dataset is not calibrated to UBX time.")
 
-        utc_offset = (
-            self.streams.UBX.positiondata["Time_UTC"][0] - self.georeference.time[0]
-        )
+        utc_offset = self.streams.UBX.positiondata["Time_UTC"][0] - self.georeference.time[0]
         shift_stream_index(self.georeference.spacetime, utc_offset)
         shift_stream_index(self.georeference.time, utc_offset)
         shift_stream_index(self.georeference.latitude, utc_offset)
@@ -265,12 +253,8 @@ class Dataset:
                 stream.add_clock_offset(utc_offset)
                 stream.clockreference.referenceid = ClockRefId.GNSS
 
-    def to_geoframe(
-        self, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
-    ):
+    def to_geoframe(self, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
         return convert_dataset_to_geoframe(self, sampling_dt)
 
-    def to_geojson(
-        self, filename, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
-    ):
+    def to_geojson(self, filename, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
         export_dataset_to_geojson(self, filename, sampling_dt)

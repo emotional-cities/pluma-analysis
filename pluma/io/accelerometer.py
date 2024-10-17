@@ -60,8 +60,6 @@ def load_accelerometer(
         return
 
     acc_df["Seconds"] = _HARP_T0 + pd.to_timedelta(acc_df["Seconds"].values, "s")
-    acc_df["SoftwareTimestamp"] = _HARP_T0 + pd.to_timedelta(
-        acc_df["SoftwareTimestamp"].values, "s"
-    )
+    acc_df["SoftwareTimestamp"] = _HARP_T0 + pd.to_timedelta(acc_df["SoftwareTimestamp"].values, "s")
     acc_df.set_index("Seconds", inplace=True)
     return acc_df

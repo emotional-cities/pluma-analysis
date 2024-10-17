@@ -41,14 +41,10 @@ def heartrate_from_ecg(
     ecg = ecg.Value0[::skip_slice].astype(np.float64)
 
     # high-pass filter seems to give consistently less rejected peaks than notch
-    filtered = hp.filter_signal(
-        ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype="highpass"
-    )
+    filtered = hp.filter_signal(ecg, cutoff=highpass_cutoff, sample_rate=sample_rate, filtertype="highpass")
 
     # find peaks and compute overall beat statistics
-    working_data, measures = hp.process(
-        filtered, sample_rate=sample_rate, bpmmax=bpmmax
-    )
+    working_data, measures = hp.process(filtered, sample_rate=sample_rate, bpmmax=bpmmax)
 
     if bpm_method == "heartpy":
         heartrate = 60000 / np.array(working_data["RR_list_cor"])

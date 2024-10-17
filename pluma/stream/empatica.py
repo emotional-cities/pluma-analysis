@@ -29,9 +29,7 @@ class EmpaticaStream(Stream):
             self.load()
 
     def load(self):
-        self.data = load_empatica(
-            root=self.rootfolder, align_timestamps=self.align_timestamps
-        )
+        self.data = load_empatica(root=self.rootfolder, align_timestamps=self.align_timestamps)
 
     def __str__(self):
         return f"Empatica stream from device {self.device}, stream {self.streamlabel}"

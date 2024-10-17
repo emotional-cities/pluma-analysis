@@ -38,17 +38,11 @@ class EegStream(Stream):
         self.data, _lsl_timestamp = load_eeg(filename=None, root=self.rootfolder)
         if self.server_lsl_marker is None:
             self.server_lsl_marker = _lsl_timestamp
-        if (
-            self.data is not None
-            and self.autoalign
-            and (self.clockreference.referenceid == ClockRefId.HARP)
-        ):
+        if self.data is not None and self.autoalign and (self.clockreference.referenceid == ClockRefId.HARP):
             self.align_to_harp()
 
     def align_to_harp(self):
-        print(
-            "Attempting to automatically correct eeg timestamps to harp timestamps..."
-        )
+        print("Attempting to automatically correct eeg timestamps to harp timestamps...")
         eeg_to_harp_model = synchronize_eeg_to_harp(self.server_lsl_marker)
         self.data.np_time = HarpStream.from_seconds(
             eeg_to_harp_model.predict(self.data.np_time.reshape(-1, 1)).flatten()

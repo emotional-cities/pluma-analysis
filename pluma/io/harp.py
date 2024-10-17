@@ -24,9 +24,7 @@ _payloadtypes = {
 }
 
 
-def read_harp_bin(
-    file: Union[str, ComplexPath], time_offset: float = 0
-) -> pd.DataFrame:
+def read_harp_bin(file: Union[str, ComplexPath], time_offset: float = 0) -> pd.DataFrame:
     """Reads data from the specified Harp binary file. \
         Expects a stable message format.
 

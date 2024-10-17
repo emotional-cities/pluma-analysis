@@ -8,9 +8,7 @@ from datetime import datetime
 from pluma.schema import Dataset
 from dataclasses import dataclass, field, fields
 
-_env = jinja2.Environment(
-    loader=jinja2.PackageLoader("pluma"), autoescape=jinja2.select_autoescape
-)
+_env = jinja2.Environment(loader=jinja2.PackageLoader("pluma"), autoescape=jinja2.select_autoescape)
 _template = _env.get_template("metadata_template.j2")
 
 
@@ -43,9 +41,7 @@ class RecordProperties:
 
 
 class DatasetRecord:
-    def __init__(
-        self, dataset: Dataset, gdf: GeoDataFrame, properties: RecordProperties
-    ) -> None:
+    def __init__(self, dataset: Dataset, gdf: GeoDataFrame, properties: RecordProperties) -> None:
         root_path = Path(dataset.rootfolder.path)
         self.id = f"{root_path.name.lower()}"
         self.start_date = gdf.index[0]
@@ -75,10 +71,5 @@ class DatasetRecord:
                 ]
             ],
             crs=self.crs.to_string(),
-            **(
-                dict(
-                    (field.name, getattr(self.properties, field.name))
-                    for field in fields(self.properties)
-                )
-            ),
+            **(dict((field.name, getattr(self.properties, field.name)) for field in fields(self.properties))),
         )

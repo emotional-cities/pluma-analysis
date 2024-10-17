@@ -66,3 +66,6 @@ include-package-data = true
 include = ["pluma*"]
 
 [tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 110

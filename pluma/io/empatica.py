@@ -31,9 +31,7 @@ def load_empatica(
     path.join(filename)
     try:
         with path.open("rb") as stream:
-            df = pd.read_csv(
-                stream, names=["Message", "Seconds"], delimiter=",", header=1
-            )
+            df = pd.read_csv(stream, names=["Message", "Seconds"], delimiter=",", header=1)
     except FileNotFoundError:
         warnings.warn(f"Empatica stream file {filename} could not be found.")
         return
@@ -44,13 +42,9 @@ def load_empatica(
     clock_offset = None
     df["Seconds"] = _HARP_T0 + pd.to_timedelta(df["Seconds"].values, "s")
     if align_timestamps:
-        first_ts = next(
-            (x for _, x in df.iterrows() if x["Message"].startswith("E4_")), None
-        )
+        first_ts = next((x for _, x in df.iterrows() if x["Message"].startswith("E4_")), None)
         if first_ts is not None:
-            reference_ts = _EMPATICA_T0 + pd.to_timedelta(
-                float(first_ts["Message"].split(" ")[1]), "s"
-            )
+            reference_ts = _EMPATICA_T0 + pd.to_timedelta(float(first_ts["Message"].split(" ")[1]), "s")
             clock_offset = first_ts["Seconds"] - reference_ts
 
     df.set_index("Seconds", inplace=True)
@@ -61,9 +55,7 @@ def load_empatica(
     return DotMap(_dict)
 
 
-def parse_empatica_stream(
-    empatica_stream: pd.DataFrame, clock_offset: pd.Timedelta = None
-) -> pd.DataFrame:
+def parse_empatica_stream(empatica_stream: pd.DataFrame, clock_offset: pd.Timedelta = None) -> pd.DataFrame:
     """Helper function to parse the messages from various empatica message types.
 
     Args:
@@ -79,13 +71,9 @@ def parse_empatica_stream(
         df_labels = ["Stream", "E4_Seconds", "AccX", "AccY", "AccZ"]
         df.columns = df_labels
         df[["AccX", "AccY", "AccZ"]] = df[["AccX", "AccY", "AccZ"]].astype(float)
-        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(
-            df["E4_Seconds"].values.astype(float), "s"
-        )
+        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(df["E4_Seconds"].values.astype(float), "s")
         if clock_offset is not None:
-            df.index = pd.DatetimeIndex(
-                df["E4_Seconds"] + clock_offset, name=df.index.name
-            )
+            df.index = pd.DatetimeIndex(df["E4_Seconds"] + clock_offset, name=df.index.name)
 
     elif stream_id in [
         "E4_Hr",
@@ -100,13 +88,9 @@ def parse_empatica_stream(
         df_labels = ["Stream", "E4_Seconds", "Value"]
         df.columns = df_labels
         df[["Value"]] = df[["Value"]].astype(float)
-        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(
-            df["E4_Seconds"].values.astype(float), "s"
-        )
+        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(df["E4_Seconds"].values.astype(float), "s")
         if clock_offset is not None:
-            df.index = pd.DatetimeIndex(
-                df["E4_Seconds"] + clock_offset, name=df.index.name
-            )
+            df.index = pd.DatetimeIndex(df["E4_Seconds"] + clock_offset, name=df.index.name)
     elif stream_id == "R":
         df = pd.DataFrame(index=empatica_stream.index.copy())
         df["Message"] = empatica_stream["Message"].apply(lambda a: a[2:])

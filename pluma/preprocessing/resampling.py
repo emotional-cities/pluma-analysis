@@ -52,20 +52,12 @@ def resample_temporospatial(
     return gpd.GeoDataFrame(resampled_data, geometry=resampled.geometry)
 
 
-def resample_temporospatial_circ(
-    data, georeference, sampling_dt=datetime.timedelta(seconds=2)
-):
+def resample_temporospatial_circ(data, georeference, sampling_dt=datetime.timedelta(seconds=2)):
     return resample_temporospatial(data, georeference, sampling_dt, circular_mean)
 
 
-def resample_georeference(
-    georeference: pd.DataFrame, sampling_dt: datetime.timedelta
-) -> gpd.GeoDataFrame:
-    georeference = (
-        georeference.loc[:, "Latitude":"Elevation"]
-        .resample(sampling_dt, origin="start")
-        .mean()
-    )
+def resample_georeference(georeference: pd.DataFrame, sampling_dt: datetime.timedelta) -> gpd.GeoDataFrame:
+    georeference = georeference.loc[:, "Latitude":"Elevation"].resample(sampling_dt, origin="start").mean()
     geometry = gpd.points_from_xy(
         x=georeference["Longitude"],
         y=georeference["Latitude"],

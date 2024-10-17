@@ -118,9 +118,7 @@ def load_ubx_harp_ts(path: Union[str, ComplexPath] = "") -> pd.DataFrame:
     path = ensure_complexpath(path)
     try:
         with path.open("rb") as stream:
-            df = pd.read_csv(
-                stream, header=None, names=("Seconds", "Class", "Identity")
-            )
+            df = pd.read_csv(stream, header=None, names=("Seconds", "Class", "Identity"))
     except FileNotFoundError:
         warnings.warn(f"UBX stream alignment file {path} could not be found.")
         return

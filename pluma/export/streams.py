@@ -58,12 +58,8 @@ def export_uniform_table_stream(
     outdir = os.path.join(outdir, stream.device)
     if not os.path.exists(outdir):
         os.makedirs(outdir, exist_ok=True)
-    resampled = resampling_function(
-        stream.data, georeference, **resampling_function_kws
-    )
-    resampled.to_csv(
-        f"{outdir}\\{stream.streamlabel}.csv", date_format="%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    resampled = resampling_function(stream.data, georeference, **resampling_function_kws)
+    resampled.to_csv(f"{outdir}\\{stream.streamlabel}.csv", date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
 
 def resample_stream_harp(
@@ -72,9 +68,7 @@ def resample_stream_harp(
     sampler: Callable = resampling.resample_temporospatial,
 ) -> gpd.GeoDataFrame:
     check_stream_data_integrity(stream)
-    return sampler(
-        stream.data, _get_resampled_georef(stream, sampling_dt), sampling_dt=None
-    )
+    return sampler(stream.data, _get_resampled_georef(stream, sampling_dt), sampling_dt=None)
 
 
 def resample_stream_accelerometer(
@@ -113,18 +107,14 @@ def resample_stream_empatica(
         "E4_Ibi": resampling.resample_temporospatial,
         "E4_Temperature": resampling.resample_temporospatial,
     }
-    return _resample_multistream(
-        stream, col_sampler, sampling_dt, data_selector=lambda x: x["Value"]
-    )
+    return _resample_multistream(stream, col_sampler, sampling_dt, data_selector=lambda x: x["Value"])
 
 
 def resample_stream_ecg(
     stream: Stream, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=2)
 ) -> gpd.GeoDataFrame:
     col_sampler = {"HeartRate": resampling.resample_temporospatial}
-    return _resample_multistream(
-        stream, col_sampler, sampling_dt, data_selector=lambda x: x["Bpm"]
-    )
+    return _resample_multistream(stream, col_sampler, sampling_dt, data_selector=lambda x: x["Bpm"])
 
 
 def _resample_multistream(
@@ -152,9 +142,7 @@ def check_stream_data_integrity(stream: Stream):
         raise ValueError("The stream does not have valid data.")
 
 
-def _get_resampled_georef(
-    stream: Stream, sampler: Union[gpd.GeoDataFrame, datetime.timedelta]
-):
+def _get_resampled_georef(stream: Stream, sampler: Union[gpd.GeoDataFrame, datetime.timedelta]):
     if isinstance(sampler, gpd.GeoDataFrame):
         return sampler
 

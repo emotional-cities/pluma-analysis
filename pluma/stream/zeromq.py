@@ -29,9 +29,7 @@ class ZmqStream(HarpStream):
 
     def load(self):
         super(ZmqStream, self).load()
-        self.data = pd.DataFrame(
-            np.arange(len(self.data)), index=self.data.index, columns=["Counter"]
-        )
+        self.data = pd.DataFrame(np.arange(len(self.data)), index=self.data.index, columns=["Counter"])
         zmq_data = load_zeromq(self.filenames, self.dtypes, root=self.rootfolder)
         self.data = self.data.join(zmq_data, on="Counter")
 

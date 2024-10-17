@@ -2,9 +2,7 @@ import pandas as pd
 
 
 class SiUnitConversion:
-    def __init__(
-        self, conversion_function: list = [], units: list = [], attempt_conversion=False
-    ) -> None:
+    def __init__(self, conversion_function: list = [], units: list = [], attempt_conversion=False) -> None:
         self.conversion_function = conversion_function
         self.units = units
         self.attempt_conversion = attempt_conversion

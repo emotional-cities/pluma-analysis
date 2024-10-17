@@ -126,9 +126,7 @@ def align_ubx_to_harp(
     if plot_diagnosis is True:
         import pluma.sync.plotting as plotting
 
-        plotting.plot_clockcalibration_diagnosis(
-            ubx_ts=ubx_ts, harp_ts=harp_ts, pulses_lookup=pulses_lookup
-        )
+        plotting.plot_clockcalibration_diagnosis(ubx_ts=ubx_ts, harp_ts=harp_ts, pulses_lookup=pulses_lookup)
 
     return pulses_lookup
 
@@ -152,9 +150,7 @@ def get_clockcalibration_lookup(
         tim_tm2.apply(lambda x: x.loc["Message"].towMsR, axis=1),
         False,
     )
-    risingEdgeEvents = (
-        tim_tm2["RisingEdge"].drop_duplicates(keep="first").values.astype(float)
-    )
+    risingEdgeEvents = tim_tm2["RisingEdge"].drop_duplicates(keep="first").values.astype(float)
 
     #  From Harp, get the second output channel
     harp_sync_out = harp_sync.copy()
@@ -166,15 +162,11 @@ def get_clockcalibration_lookup(
         seconds_conversion=lambda x: x / np.timedelta64(1, "s"),
     )
 
-    align_lookup = align_ubx_to_harp(
-        ubx_ts, harp_ts, dt_error=dt_error, plot_diagnosis=plot_diagnosis
-    )
+    align_lookup = align_ubx_to_harp(ubx_ts, harp_ts, dt_error=dt_error, plot_diagnosis=plot_diagnosis)
     return SyncLookup(ubx_ts, harp_ts, align_lookup)
 
 
-def get_clockcalibration_model(
-    sync_lookup: SyncLookup, r2_min_qc: float = 0.99
-) -> LinearRegression:
+def get_clockcalibration_model(sync_lookup: SyncLookup, r2_min_qc: float = 0.99) -> LinearRegression:
     ubx_ts = sync_lookup.ubx_ts
     harp_ts = sync_lookup.harp_ts
     align_lookup = sync_lookup.align_lookup
@@ -185,8 +177,6 @@ def get_clockcalibration_model(
     model = LinearRegression().fit(x_gps_time, y_harp_time)
     r2 = model.score(x_gps_time, y_harp_time)
     if r2 < r2_min_qc:
-        raise AssertionError(
-            f"The quality of the linear fit is lower than expected {r2}"
-        )
+        raise AssertionError(f"The quality of the linear fit is lower than expected {r2}")
     else:
         return model

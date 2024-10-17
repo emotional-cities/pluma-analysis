@@ -124,12 +124,7 @@ class Georeference:
         if height is None:
             height = self._height
 
-        if (
-            self._validate_build_spacetime_from_series(
-                time=time, lon=lon, lat=lat, height=height
-            )
-            is True
-        ):
+        if self._validate_build_spacetime_from_series(time=time, lon=lon, lat=lat, height=height) is True:
             df = pd.concat([time, lon, lat, height], axis=1)
             df.columns = Georeference._georeference_header
             self._spacetime = self._build_spacetime_from_dataframe(df)
@@ -147,9 +142,7 @@ class Georeference:
         self._lat = self._spacetime["Latitude"]
         self._height = self._spacetime["Elevation"]
 
-    def from_series(
-        self, time: pd.Series, lon: pd.Series, lat: pd.Series, height: pd.Series
-    ):
+    def from_series(self, time: pd.Series, lon: pd.Series, lat: pd.Series, height: pd.Series):
         if (time is None) or (lon is None) or (lat is None) or (height is None):
             raise ValueError("No inputs can be None.")
 
@@ -163,9 +156,7 @@ class Georeference:
     def strip(self):
         tokeep = Georeference._georeference_header[1:]
         tokeep.append("geometry")
-        self.spacetime = self.spacetime.loc[
-            :, self.spacetime.columns.intersection(tokeep)
-        ]
+        self.spacetime = self.spacetime.loc[:, self.spacetime.columns.intersection(tokeep)]
 
     def __str__(self) -> str:
         return str(self.spacetime)

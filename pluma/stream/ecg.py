@@ -12,9 +12,7 @@ from pluma.sync import ClockRefId
 
 
 class EcgStream(HarpStream):
-    def __init__(
-        self, eventcode: int, clockreferenceid: ClockRefId = ClockRefId.HARP, **kw
-    ):
+    def __init__(self, eventcode: int, clockreferenceid: ClockRefId = ClockRefId.HARP, **kw):
         super().__init__(
             eventcode,
             data=pd.DataFrame(columns=["Seconds", "Value"]),

@@ -84,9 +84,7 @@ class UbxStream(Stream):
             epoch = pd.Timestamp(1980, 1, 6)
             reference = self.data["TIM_TM2"].Message[0]
             offset = epoch + pd.Timedelta(weeks=reference.wnR)
-            NavData["Time_UTC"] = offset + NavData["Time_iTow"].astype(
-                "timedelta64[ms]"
-            )
+            NavData["Time_UTC"] = offset + NavData["Time_iTow"].astype("timedelta64[ms]")
         self.positiondata = NavData
         return NavData
 

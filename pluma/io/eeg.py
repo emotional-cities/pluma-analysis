@@ -14,9 +14,7 @@ from mne.io import Raw, read_raw_nedf
 from pluma.stream.harp import HarpStream
 
 
-def get_eeg_file(
-    root: Union[str, ComplexPath] = "", if_multiple_load_index: int = -1
-) -> List[str]:
+def get_eeg_file(root: Union[str, ComplexPath] = "", if_multiple_load_index: int = -1) -> List[str]:
     """Lists all EEG files in the root folder.
     If multiple sessions are found, throws a warning and loads
     if_multiple_load_index nth session."""
@@ -31,8 +29,7 @@ def get_eeg_file(
         ret = None
     elif len(expected_files) > 1:
         warnings.warn(
-            f"Multiple *.nedf files found in {root}. "
-            f"Loading {expected_files[if_multiple_load_index]}."
+            f"Multiple *.nedf files found in {root}. " f"Loading {expected_files[if_multiple_load_index]}."
         )
         ret = expected_files[if_multiple_load_index]
     else:
@@ -93,8 +90,7 @@ def load_eeg(
         for marker in _server_lsl_markers["MarkerIdx"].values
     ]
     _server_lsl_markers["EegTimestamp"] = [
-        _out.np_time[sample] if sample != -1 else np.nan
-        for sample in _server_lsl_markers["EegSample"].values
+        _out.np_time[sample] if sample != -1 else np.nan for sample in _server_lsl_markers["EegSample"].values
     ]
 
     return (_out, _server_lsl_markers)
@@ -115,21 +111,15 @@ def load_server_lsl_markers(
                 skiprows=1,
             )
     except FileNotFoundError:
-        raise FileNotFoundError(
-            f"Eeg server lsl tags file  {filename} could not be found."
-        )
+        raise FileNotFoundError(f"Eeg server lsl tags file  {filename} could not be found.")
     except FileExistsError:
-        raise FileExistsError(
-            f"Eeg server lsl tags file {filename} could not be found."
-        )
+        raise FileExistsError(f"Eeg server lsl tags file {filename} could not be found.")
 
     df["Seconds"] = _HARP_T0 + pd.to_timedelta(df["Seconds"].values, "s")
     return df
 
 
-def synchronize_eeg_to_harp(
-    server_lsl_markers: pd.DataFrame, min_q_r2: float = 0.999
-) -> LinearRegression:
+def synchronize_eeg_to_harp(server_lsl_markers: pd.DataFrame, min_q_r2: float = 0.999) -> LinearRegression:
     valid_samples = pd.notna(server_lsl_markers["EegTimestamp"].values) & pd.notna(
         server_lsl_markers["Seconds"].values
     )
@@ -138,13 +128,9 @@ def synchronize_eeg_to_harp(
     eeg_time = eeg_time.reshape(-1, 1)
     raw_harp_time = raw_harp_time.reshape(-1, 1)
 
-    model = LinearRegression(fit_intercept=True).fit(
-        eeg_time[valid_samples], raw_harp_time[valid_samples, :]
-    )
+    model = LinearRegression(fit_intercept=True).fit(eeg_time[valid_samples], raw_harp_time[valid_samples, :])
     r2 = model.score(eeg_time[valid_samples], raw_harp_time[valid_samples, :])
     if r2 < min_q_r2:
-        raise AssertionError(
-            f"The quality of the linear fit is lower than expected {r2}"
-        )
+        raise AssertionError(f"The quality of the linear fit is lower than expected {r2}")
     else:
         return model

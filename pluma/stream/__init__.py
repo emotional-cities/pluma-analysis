@@ -63,19 +63,13 @@ class Stream:
         self._rootfolder = value
 
     def load(self):
-        raise NotImplementedError(
-            "load() method is not implemented for the Stream base class."
-        )
+        raise NotImplementedError("load() method is not implemented for the Stream base class.")
 
     def resample(self):
-        raise NotImplementedError(
-            "resample() method is not implemented for the Stream base class."
-        )
+        raise NotImplementedError("resample() method is not implemented for the Stream base class.")
 
     def add_clock_offset(self, offset):
-        raise NotImplementedError(
-            "add_clock_offset() method is not implemented for the Stream base class."
-        )
+        raise NotImplementedError("add_clock_offset() method is not implemented for the Stream base class.")
 
     def reload(self):
         self.load()
@@ -105,11 +99,7 @@ class Stream:
             return self.data
 
     def convert_to_si(self, data=None):
-        raise NotImplementedError(
-            "convert_to_si() method is not implemented for the Stream base class."
-        )
+        raise NotImplementedError("convert_to_si() method is not implemented for the Stream base class.")
 
     def export_to_csv(self):
-        raise NotImplementedError(
-            "export_to_csv() method is not implemented for the Stream base class."
-        )
+        raise NotImplementedError("export_to_csv() method is not implemented for the Stream base class.")

@@ -12,9 +12,7 @@ def load_zeromq(
     dtypes: list[tuple[str, type]],
     root: Union[str, ComplexPath] = "",
 ) -> pd.DataFrame:
-    assert len(filenames) == len(
-        dtypes
-    ), "Length of filename and dtypes must be the same."
+    assert len(filenames) == len(dtypes), "Length of filename and dtypes must be the same."
 
     try:
         data_frames = []
@@ -25,9 +23,7 @@ def load_zeromq(
             path = ensure_complexpath(root)
             path.join(f)
 
-            data_frames.append(
-                pd.DataFrame(np.fromfile(path.path, dtype=np.dtype(dtypes[i])))
-            )
+            data_frames.append(pd.DataFrame(np.fromfile(path.path, dtype=np.dtype(dtypes[i]))))
     except FileNotFoundError:
         warnings.warn(f"Stream file\
                 {path} could not be found.")

@@ -11,17 +11,11 @@ from pluma.stream import Stream
 exclude_devices = ["PupilLabs", "Microphone", "BioData", "Enobio", "UBX"]
 
 
-def convert_dataset_to_geoframe(
-    dataset, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
-):
-    georef = resampling.resample_georeference(
-        dataset.georeference.spacetime, sampling_dt
-    )
+def convert_dataset_to_geoframe(dataset, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
+    georef = resampling.resample_georeference(dataset.georeference.spacetime, sampling_dt)
     streams_to_export = {}
     for stream in dataset.streams:
-        _ = recursive_resample_stream(
-            streams_to_export, dataset.streams[stream], georef
-        )
+        _ = recursive_resample_stream(streams_to_export, dataset.streams[stream], georef)
 
     exclude = ["Latitude", "Longitude", "Elevation"]
     out_columns = []
@@ -31,9 +25,7 @@ def convert_dataset_to_geoframe(
             if entry in exclude:
                 continue
 
-            cols[idx] = (
-                stream if entry.lower() == "data" else f"{stream}_{entry}"
-            ).lower()
+            cols[idx] = (stream if entry.lower() == "data" else f"{stream}_{entry}").lower()
         streams_to_export[stream].columns = cols
         out_columns.append(streams_to_export[stream])
 

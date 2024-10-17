@@ -41,10 +41,7 @@ def showmap(
             np.min(path["Latitude"].values),
             np.max(path["Latitude"].values),
         )
-        path = [
-            tmb.project(x, y)
-            for x, y in zip(path["Longitude"].values, path["Latitude"].values)
-        ]
+        path = [tmb.project(x, y) for x, y in zip(path["Longitude"].values, path["Latitude"].values)]
     x, y = zip(*path)
 
     if to_aspect is not None:

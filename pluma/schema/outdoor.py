@@ -1,4 +1,3 @@
-# fmt: off
 from dotmap import DotMap
 from typing import Union
 
@@ -13,6 +12,7 @@ from pluma.stream.zeromq import PupilGazeStream, PupilWorldCameraStream
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
+# fmt: off
 def build_schema(root: Union[str, ComplexPath], parent_dataset=None, autoload: bool = False) -> DotMap:
     """Builds a stream schema from a predefined structure.
 

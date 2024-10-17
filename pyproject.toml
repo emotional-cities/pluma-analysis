@@ -48,6 +48,7 @@ classifiers = [
 [project.optional-dependencies]
 dev = [
     "setuptools_scm",
+    "ruff",
 ]
 
 [build-system]

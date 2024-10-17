@@ -8,12 +8,14 @@ from pluma.export.streams import shift_stream_index
 
 
 class CsvStream(Stream):
-    def __init__(self,
-                 filename: str,
-                 data: pd.DataFrame = None,
-                 si_conversion: SiUnitConversion = SiUnitConversion(),
-                 clockreferenceid: ClockRefId = ClockRefId.HARP,
-                 **kw):
+    def __init__(
+        self,
+        filename: str,
+        data: pd.DataFrame = None,
+        si_conversion: SiUnitConversion = SiUnitConversion(),
+        clockreferenceid: ClockRefId = ClockRefId.HARP,
+        **kw,
+    ):
         super(CsvStream, self).__init__(data=data, **kw)
         self.streamtype = StreamType.CSV
         self.filename = filename
@@ -29,11 +31,11 @@ class CsvStream(Stream):
         try:
             self.data = pd.read_csv(path.path)
         except FileNotFoundError:
-            warnings.warn(f'Glia stream file\
-                        {path} could not be found.')
+            warnings.warn(f"Glia stream file\
+                        {path} could not be found.")
         except FileExistsError:
-            warnings.warn(f'Glia stream file\
-                        {path} could not be found.')
+            warnings.warn(f"Glia stream file\
+                        {path} could not be found.")
 
     def resample(self):
         pass

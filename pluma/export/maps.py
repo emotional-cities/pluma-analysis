@@ -10,18 +10,19 @@ import simplekml
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def showmap(path,
-            color=None,
-            fig=None,
-            ax=None,
-            figsize=(20, 20),
-            with_scaling=0.6,
-            to_aspect=None,
-            tiles=tmb.tiles.build_OSM(),
-            cmap='jet',
-            markersize=15,
-            **cbarkwargs):
-
+def showmap(
+    path,
+    color=None,
+    fig=None,
+    ax=None,
+    figsize=(20, 20),
+    with_scaling=0.6,
+    to_aspect=None,
+    tiles=tmb.tiles.build_OSM(),
+    cmap="jet",
+    markersize=15,
+    **cbarkwargs,
+):
     if fig is None:
         fig, ax = plt.subplots(1, 1)
         fig.set_size_inches(figsize)
@@ -35,15 +36,15 @@ def showmap(path,
         path = coords.apply(lambda p: tmb.project(p.x, p.y), axis=1)
     else:
         extent = tmb.Extent.from_lonlat(
-            np.min(path['Longitude'].values),
-            np.max(path['Longitude'].values),
-            np.min(path['Latitude'].values),
-            np.max(path['Latitude'].values))
-        path = [tmb.project(x, y)
-                for x, y in
-                zip(
-                    path['Longitude'].values,
-                    path['Latitude'].values)]
+            np.min(path["Longitude"].values),
+            np.max(path["Longitude"].values),
+            np.min(path["Latitude"].values),
+            np.max(path["Latitude"].values),
+        )
+        path = [
+            tmb.project(x, y)
+            for x, y in zip(path["Longitude"].values, path["Latitude"].values)
+        ]
     x, y = zip(*path)
 
     if to_aspect is not None:
@@ -61,15 +62,11 @@ def showmap(path,
         color = mdates.date2num(path.index)
         if len(cbarkwargs) == 0:
             loc = mdates.AutoDateLocator()
-            cbarkwargs['ticks'] = loc
-            cbarkwargs['format'] = mdates.ConciseDateFormatter(loc)
-            cbarkwargs['label'] = 'time'
+            cbarkwargs["ticks"] = loc
+            cbarkwargs["format"] = mdates.ConciseDateFormatter(loc)
+            cbarkwargs["label"] = "time"
 
-    im = ax.scatter(
-        x, y,
-        c=color,
-        s=markersize,
-        cmap=cmap)
+    im = ax.scatter(x, y, c=color, s=markersize, cmap=cmap)
     if cmap is not None:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
@@ -81,30 +78,27 @@ def exploremap(data: gpd.GeoDataFrame, **kwargs):
     index = data.index
     data = data.reset_index(drop=True)
 
-    column = kwargs.get('column')
+    column = kwargs.get("column")
     if column is None:
         minutes = (index - index[0]).to_series(index=data.index).dt.total_seconds() / 60
-        kwargs['column'] = minutes
-        legend_kwds = kwargs.get('legend_kwds', {})
-        if 'caption' not in legend_kwds:
-            legend_kwds['caption'] = 'time (minutes)'
-        kwargs['legend_kwds'] = legend_kwds
+        kwargs["column"] = minutes
+        legend_kwds = kwargs.get("legend_kwds", {})
+        if "caption" not in legend_kwds:
+            legend_kwds["caption"] = "time (minutes)"
+        kwargs["legend_kwds"] = legend_kwds
     elif isinstance(column, pd.Series):
         data[column.name] = column.reset_index(drop=True)
-        kwargs['column'] = column.name
+        kwargs["column"] = column.name
 
-    if 'cmap' not in kwargs:
-        kwargs['cmap'] = 'jet'
+    if "cmap" not in kwargs:
+        kwargs["cmap"] = "jet"
     return data.explore(**kwargs)
 
 
-def export_kml_line(df: pd.DataFrame,
-                    output_path: str = "walk.kml",
-                    **kwargs):
+def export_kml_line(df: pd.DataFrame, output_path: str = "walk.kml", **kwargs):
     kml = simplekml.Kml()
     ls = kml.newlinestring(**kwargs)
-    ls.coords = [(x, y) for x, y in zip(
-        df.Longitude.values, df.Latitude.values)]
+    ls.coords = [(x, y) for x, y in zip(df.Longitude.values, df.Latitude.values)]
     ls.extrude = 1
     ls.altitudemode = simplekml.AltitudeMode.relativetoground
     kml.save(output_path)

@@ -9,13 +9,20 @@ from typing import Union, Optional, Callable
 from pluma.export.streams import shift_stream_index
 from pluma.schema.outdoor import build_schema
 
-from pluma.sync.ubx2harp import SyncLookup, get_clockcalibration_model, get_clockcalibration_lookup
+from pluma.sync.ubx2harp import (
+    SyncLookup,
+    get_clockcalibration_model,
+    get_clockcalibration_lookup,
+)
 from pluma.sync import ClockRefId
 
 from pluma.stream import StreamType, Stream
 
 from pluma.export import maps
-from pluma.export.ogcapi.features import convert_dataset_to_geoframe, export_dataset_to_geojson
+from pluma.export.ogcapi.features import (
+    convert_dataset_to_geoframe,
+    export_dataset_to_geojson,
+)
 
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.georeference import Georeference
@@ -24,13 +31,13 @@ from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
 class Dataset:
-
-    def __init__(self,
-                 root: Union[str, ComplexPath],
-                 datasetlabel: str = '',
-                 georeference: Georeference = Georeference(),
-                 schema: Optional[Callable] = build_schema,
-                 ):
+    def __init__(
+        self,
+        root: Union[str, ComplexPath],
+        datasetlabel: str = "",
+        georeference: Georeference = Georeference(),
+        schema: Optional[Callable] = build_schema,
+    ):
         """High level class to represent an entire dataset. Loads and
         contains all the streams and methods for general dataset management.
 
@@ -45,11 +52,13 @@ class Dataset:
         self.streams = None
         self.has_calibration = False
 
-    def add_ubx_georeference(self,
-                             ubxstream: UbxStream = None,
-                             event: str = _UBX_MSGIDS.NAV_HPPOSLLH,
-                             calibrate_clock: bool = True,
-                             strip=True):
+    def add_ubx_georeference(
+        self,
+        ubxstream: UbxStream = None,
+        event: str = _UBX_MSGIDS.NAV_HPPOSLLH,
+        calibrate_clock: bool = True,
+        strip=True,
+    ):
         """_summary_
 
         Args:
@@ -68,23 +77,24 @@ class Dataset:
             try:
                 ubxstream = self.streams.UBX
             except Exception:
-                raise ImportError('Could not load Ubx stream.')
+                raise ImportError("Could not load Ubx stream.")
 
-        if not(ubxstream.streamtype == StreamType.UBX):
+        if not (ubxstream.streamtype == StreamType.UBX):
             raise TypeError("Reference must be a UBX Stream")
         else:
             navdata = ubxstream.parseposition(
-                event=event,
-                calibrate_clock=calibrate_clock)
+                event=event, calibrate_clock=calibrate_clock
+            )
 
         self.georeference.from_dataframe(navdata)
         if strip is True:
             self.georeference.strip()
         if calibrate_clock is True:
-            self.georeference.clockreference.referenceid =\
+            self.georeference.clockreference.referenceid = (
                 ubxstream.clockreference.referenceid
+            )
 
-    @staticmethod    
+    @staticmethod
     def _iter_schema_streams(schema: Union[DotMap, Stream, None] = None):
         if isinstance(schema, Stream):
             yield schema
@@ -118,7 +128,7 @@ class Dataset:
     @staticmethod
     def import_dataset(filename: Union[str, ComplexPath]) -> Dataset:
         path = ensure_complexpath(filename)
-        with path.open('rb') as handle:
+        with path.open("rb") as handle:
             return pickle.load(handle)
 
     def export_dataset(self, filename: Union[str, ComplexPath] = None):
@@ -132,10 +142,10 @@ class Dataset:
 
         if filename is None:
             path = ensure_complexpath(self.rootfolder)
-            path.join('dataset.pickle')
+            path.join("dataset.pickle")
         else:
             path = ensure_complexpath(filename)
-        with path.open('wb') as handle:
+        with path.open("wb") as handle:
             pickle.dump(self, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def export_streams(self, filename: Union[str, ComplexPath] = None):
@@ -149,10 +159,10 @@ class Dataset:
 
         if filename is None:
             path = ensure_complexpath(self.rootfolder)
-            path.join('dataset_streams.pickle')
+            path.join("dataset_streams.pickle")
         else:
             path = ensure_complexpath(filename)
-        with path.open('wb') as handle:
+        with path.open("wb") as handle:
             pickle.dump(self.streams, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def import_streams(self, filename: Union[str, ComplexPath] = None):
@@ -164,15 +174,15 @@ class Dataset:
         """
         if filename is None:
             path = ensure_complexpath(self.rootfolder)
-            path.join('dataset_streams.pickle')
+            path.join("dataset_streams.pickle")
         else:
             path = ensure_complexpath(filename)
-        with path.open('rb') as handle:
+        with path.open("rb") as handle:
             self.streams = pickle.load(handle)
 
-    def populate_streams(self,
-                         root: Union[str, ComplexPath, None] = None,
-                         autoload: bool = False):
+    def populate_streams(
+        self, root: Union[str, ComplexPath, None] = None, autoload: bool = False
+    ):
         """Populates the streams property with all the schema information.
 
         Args:
@@ -186,15 +196,14 @@ class Dataset:
         if isinstance(root, str):
             root = ComplexPath(root)
         root = ensure_complexpath(root)
-        self.streams = self.schema(
-            root=root,
-            parent_dataset=self,
-            autoload=autoload)
+        self.streams = self.schema(root=root, parent_dataset=self, autoload=autoload)
 
-    def calibrate_ubx_to_harp(self,
-                              dt_error: float = 0.002,
-                              plot_diagnosis: bool = False,
-                              r2_min_qc: float = 0.99) -> SyncLookup:
+    def calibrate_ubx_to_harp(
+        self,
+        dt_error: float = 0.002,
+        plot_diagnosis: bool = False,
+        r2_min_qc: float = 0.99,
+    ) -> SyncLookup:
         """Attempts to calibrate the ubx clock to harp clock using\
             the synchronization pulses as a reference.
 
@@ -212,39 +221,38 @@ class Dataset:
             ubx_stream=self.streams.UBX,
             harp_sync=self.streams.BioData.Set.data,
             dt_error=dt_error,
-            plot_diagnosis=plot_diagnosis
+            plot_diagnosis=plot_diagnosis,
         )
 
-        model = get_clockcalibration_model(
-            sync_lookup=sync_lookup,
-            r2_min_qc=r2_min_qc
-        )
+        model = get_clockcalibration_model(sync_lookup=sync_lookup, r2_min_qc=r2_min_qc)
 
         self.streams.UBX.clockreference.set_conversion_model(
-            model=model,
-            reference_from=ClockRefId.HARP)
+            model=model, reference_from=ClockRefId.HARP
+        )
         self.has_calibration = True
         return sync_lookup
 
     def showmap(self, **kwargs):
-        """Overload to export.showmap that shows spatial information color-coded by time.
-        """
+        """Overload to export.showmap that shows spatial information color-coded by time."""
         return maps.showmap(self.georeference.spacetime, **kwargs)
 
     def add_georeference_and_calibrate(self, plot_diagnosis=True):
         if self.has_calibration is False:
             self.calibrate_ubx_to_harp(plot_diagnosis=plot_diagnosis, dt_error=1)
-            self.add_ubx_georeference(event=_UBX_MSGIDS.NAV_HPPOSLLH,
-                                    calibrate_clock=True)
+            self.add_ubx_georeference(
+                event=_UBX_MSGIDS.NAV_HPPOSLLH, calibrate_clock=True
+            )
             self.has_calibration = True
         else:
-            raise AssertionError('Dataset is already been automatically calibrated.')
-        
+            raise AssertionError("Dataset is already been automatically calibrated.")
+
     def reference_harp_to_ubx_time(self):
         if self.has_calibration is False:
-            raise AssertionError('Dataset is not calibrated to UBX time.')
+            raise AssertionError("Dataset is not calibrated to UBX time.")
 
-        utc_offset = self.streams.UBX.positiondata['Time_UTC'][0] - self.georeference.time[0]
+        utc_offset = (
+            self.streams.UBX.positiondata["Time_UTC"][0] - self.georeference.time[0]
+        )
         shift_stream_index(self.georeference.spacetime, utc_offset)
         shift_stream_index(self.georeference.time, utc_offset)
         shift_stream_index(self.georeference.latitude, utc_offset)
@@ -256,12 +264,13 @@ class Dataset:
             if stream.clockreference.referenceid == ClockRefId.HARP:
                 stream.add_clock_offset(utc_offset)
                 stream.clockreference.referenceid = ClockRefId.GNSS
-        
-    def to_geoframe(self,
-                    sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
+
+    def to_geoframe(
+        self, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
+    ):
         return convert_dataset_to_geoframe(self, sampling_dt)
 
-    def to_geojson(self,
-                   filename,
-                   sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)):
+    def to_geojson(
+        self, filename, sampling_dt: datetime.timedelta = datetime.timedelta(seconds=1)
+    ):
         export_dataset_to_geojson(self, filename, sampling_dt)

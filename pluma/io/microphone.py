@@ -5,11 +5,12 @@ from typing import Union
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 
-def load_microphone(filename: str = 'Microphone.bin',
-                    channels: int = 2,
-                    root: Union[str, ComplexPath] = '',
-                    dtype=np.int16
-                    ) -> np.array:
+def load_microphone(
+    filename: str = "Microphone.bin",
+    channels: int = 2,
+    root: Union[str, ComplexPath] = "",
+    dtype=np.int16,
+) -> np.array:
     """Loads microphone waveform data from a file into a numpy array.
 
     Args:
@@ -27,13 +28,13 @@ def load_microphone(filename: str = 'Microphone.bin',
     path.join(filename)
 
     try:
-        with path.open('rb') as stream:
+        with path.open("rb") as stream:
             micdata = np.frombuffer(stream.read(), dtype=dtype)
             micdata = micdata.reshape((-1, channels))
     except FileNotFoundError:
-        warnings.warn(f'Microphone stream file\
-            {path} could not be found.')
+        warnings.warn(f"Microphone stream file\
+            {path} could not be found.")
     except FileExistsError:
-        warnings.warn(f'Microphone stream file\
-            {path} could not be found.')
+        warnings.warn(f"Microphone stream file\
+            {path} could not be found.")
     return micdata

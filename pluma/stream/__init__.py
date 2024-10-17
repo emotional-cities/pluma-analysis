@@ -7,97 +7,109 @@ from pluma.sync import ClockReference, ClockRefId
 
 
 class StreamType(Enum):
-	NONE = None
-	UBX = 'UbxStream'
-	HARP = 'HarpStream'
-	ACCELEROMETER = 'AccelerometerStream'
-	MICROPHONE = 'MicrophoneStream'
-	EMPATICA = 'EmpaticaStream'
-	EEG = 'EegStream'
-	GLIA = 'GliaStream'
-	CSV = 'CsvStream'
-	PUPIL = 'PupilStream'
-	UNITY = 'UnityStream'
+    NONE = None
+    UBX = "UbxStream"
+    HARP = "HarpStream"
+    ACCELEROMETER = "AccelerometerStream"
+    MICROPHONE = "MicrophoneStream"
+    EMPATICA = "EmpaticaStream"
+    EEG = "EegStream"
+    GLIA = "GliaStream"
+    CSV = "CsvStream"
+    PUPIL = "PupilStream"
+    UNITY = "UnityStream"
 
 
 class Stream:
-	"""Based class for all stream types
-	"""
-	def __init__(self,
-              device: str,
-              streamlabel: str,
-              root: Union[str, ComplexPath] = '',
-              data: any = None,
-              clockreference: ClockReference = None,
-			  parent_dataset=None,
-			  autoload: bool = True):
-		"""_summary_
-		Args:
-			device (str): Device label
-			streamlabel (str): Stream label
-			root (Union[str, ComplexPath], optional): Root path where the files of the stream are expected to be found. Defaults to ''.
-			data (any, optional): Data to initially populate the stream. Defaults to None.
-   			autoload (bool, optional): If True, it will attempt to automatically load the data when instantiated. Defaults to True.
-		"""
+    """Based class for all stream types"""
 
-		if clockreference is None:
-			clockreference = ClockReference(referenceid=ClockRefId.NONE)
+    def __init__(
+        self,
+        device: str,
+        streamlabel: str,
+        root: Union[str, ComplexPath] = "",
+        data: any = None,
+        clockreference: ClockReference = None,
+        parent_dataset=None,
+        autoload: bool = True,
+    ):
+        """_summary_
+        Args:
+                device (str): Device label
+                streamlabel (str): Stream label
+                root (Union[str, ComplexPath], optional): Root path where the files of the stream are expected to be found. Defaults to ''.
+                data (any, optional): Data to initially populate the stream. Defaults to None.
+                autoload (bool, optional): If True, it will attempt to automatically load the data when instantiated. Defaults to True.
+        """
 
-		self.device = device
-		self.streamlabel = streamlabel
-		self._rootfolder = self.rootfolder = root
-		self.data = data
-		self.clockreference = clockreference
-		self.parent_dataset = parent_dataset
-		self.autoload = autoload
-		self.streamtype = StreamType.NONE
+        if clockreference is None:
+            clockreference = ClockReference(referenceid=ClockRefId.NONE)
 
-	@property
-	def rootfolder(self):
-		return self._rootfolder
+        self.device = device
+        self.streamlabel = streamlabel
+        self._rootfolder = self.rootfolder = root
+        self.data = data
+        self.clockreference = clockreference
+        self.parent_dataset = parent_dataset
+        self.autoload = autoload
+        self.streamtype = StreamType.NONE
 
-	@rootfolder.setter
-	def rootfolder(self, value: Union[str, ComplexPath]):
-		self._rootfolder = value
+    @property
+    def rootfolder(self):
+        return self._rootfolder
 
-	def load(self):
-		raise NotImplementedError("load() method is not implemented for the Stream base class.")
+    @rootfolder.setter
+    def rootfolder(self, value: Union[str, ComplexPath]):
+        self._rootfolder = value
 
-	def resample(self):
-		raise NotImplementedError("resample() method is not implemented for the Stream base class.")
-	
-	def add_clock_offset(self, offset):
-		raise NotImplementedError("add_clock_offset() method is not implemented for the Stream base class.")
+    def load(self):
+        raise NotImplementedError(
+            "load() method is not implemented for the Stream base class."
+        )
 
-	def reload(self):
-		self.load()
+    def resample(self):
+        raise NotImplementedError(
+            "resample() method is not implemented for the Stream base class."
+        )
 
-	def plot(self, col=None, **kwargs):
-		if self.data.empty:
-			raise ValueError("Input dataframe is empty.")
-		thisfigure = plt.figure()
-		label = self.device + "." + self.streamlabel
-		if col is None:
-			plt.plot(self.data, **kwargs, label=label)
-		else:
-			plt.plot(self.data.loc[col], **kwargs, labe=label)
-		plt.xlabel("Time")
-		plt.ylabel("Sensor value (a.u.)")
-		plt.title(label)
-		return thisfigure
+    def add_clock_offset(self, offset):
+        raise NotImplementedError(
+            "add_clock_offset() method is not implemented for the Stream base class."
+        )
 
-	def slice(self, start=None, end=None):
-		if (start is not None) & (end is not None):
-			return self.data.loc[start:end]
-		elif (start is None) & (end is not None):
-			return self.data.loc[:end]
-		elif (start is not None) & (end is None):
-			return self.data.loc[start:]
-		else:
-			return self.data
+    def reload(self):
+        self.load()
 
-	def convert_to_si(self, data=None):
-		raise NotImplementedError("convert_to_si() method is not implemented for the Stream base class.")
+    def plot(self, col=None, **kwargs):
+        if self.data.empty:
+            raise ValueError("Input dataframe is empty.")
+        thisfigure = plt.figure()
+        label = self.device + "." + self.streamlabel
+        if col is None:
+            plt.plot(self.data, **kwargs, label=label)
+        else:
+            plt.plot(self.data.loc[col], **kwargs, labe=label)
+        plt.xlabel("Time")
+        plt.ylabel("Sensor value (a.u.)")
+        plt.title(label)
+        return thisfigure
 
-	def export_to_csv(self):
-		raise NotImplementedError("export_to_csv() method is not implemented for the Stream base class.")
+    def slice(self, start=None, end=None):
+        if (start is not None) & (end is not None):
+            return self.data.loc[start:end]
+        elif (start is None) & (end is not None):
+            return self.data.loc[:end]
+        elif (start is not None) & (end is None):
+            return self.data.loc[start:]
+        else:
+            return self.data
+
+    def convert_to_si(self, data=None):
+        raise NotImplementedError(
+            "convert_to_si() method is not implemented for the Stream base class."
+        )
+
+    def export_to_csv(self):
+        raise NotImplementedError(
+            "export_to_csv() method is not implemented for the Stream base class."
+        )

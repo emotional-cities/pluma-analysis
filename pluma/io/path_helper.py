@@ -4,19 +4,18 @@ import glob
 from enum import Enum
 from typing import Union, List
 
-class RemoteType (Enum):
-    NONE = ''
-    AWS = 'AWS'
-    WIN = 'WIN'
-    UNIX = 'UNIX'
+
+class RemoteType(Enum):
+    NONE = ""
+    AWS = "AWS"
+    WIN = "WIN"
+    UNIX = "UNIX"
 
 
-class ComplexPath():
+class ComplexPath:
     s3fs = None  # Stores the s3fs object that is instantiated when needed
 
-    def __init__(self,
-                 path: str = '') -> None:
-
+    def __init__(self, path: str = "") -> None:
         self._remote = RemoteType.NONE
         self._path = path
         self.path = self._path
@@ -77,20 +76,21 @@ class ComplexPath():
         self._remote = self._parse_remote_type(new_root)
         if (self._remote == RemoteType.AWS) and (self.s3fs is None):
             from s3fs.core import S3FileSystem
+
             self.s3fs = S3FileSystem()
 
     @staticmethod
     def _parse_remote_type(new_root: str) -> RemoteType:
-        if r's3://' in new_root:
+        if r"s3://" in new_root:
             return RemoteType.AWS
         else:
             return RemoteType.WIN
 
     def __str__(self) -> str:
-        return f'@({self.remote.value}) --> {self.path}'
+        return f"@({self.remote.value}) --> {self.path}"
 
     def __repr__(self) -> str:
-        return f'@({self.remote.value}) --> {self.path}'
+        return f"@({self.remote.value}) --> {self.path}"
 
     def glob(self, path: str = None) -> List:
         if path is None:
@@ -118,6 +118,7 @@ class ComplexPath():
         else:
             return os.path.isdir(path)
 
+
 # ----- Helper functions -----
 
 
@@ -127,5 +128,4 @@ def ensure_complexpath(in_path: Union[str, ComplexPath]) -> ComplexPath:
     elif isinstance(in_path, ComplexPath):
         return ComplexPath(in_path.path)
     else:
-        raise TypeError(
-            f"Must be of str or ComplexPath type. Got {type(in_path)}")
+        raise TypeError(f"Must be of str or ComplexPath type. Got {type(in_path)}")

@@ -67,7 +67,7 @@ class Dataset:
         if ubxstream is None:
             try:
                 ubxstream = self.streams.UBX
-            except:
+            except Exception:
                 raise ImportError('Could not load Ubx stream.')
 
         if not(ubxstream.streamtype == StreamType.UBX):

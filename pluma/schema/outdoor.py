@@ -1,6 +1,5 @@
 from dotmap import DotMap
 from typing import Union
-import numpy as np
 
 from pluma.stream.harp import HarpStream
 from pluma.stream.accelerometer import AccelerometerStream

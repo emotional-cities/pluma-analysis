@@ -1,6 +1,6 @@
 from enum import Enum
 import matplotlib.pyplot as plt
-from typing import Union, Optional
+from typing import Union
 
 from pluma.io.path_helper import ComplexPath
 from pluma.sync import ClockReference, ClockRefId

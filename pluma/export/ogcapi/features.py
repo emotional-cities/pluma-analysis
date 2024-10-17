@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 import datetime
 import pandas as pd
 import geopandas as gpd
@@ -59,7 +58,7 @@ def export_geoframe_to_geojson(
     try:
         if frame.index.freq.delta.to_pytimedelta().microseconds == 0:
             micro_format = ''
-    except:
+    except Exception:
         pass
     out = frame.reset_index(names='time')
     out.time = out.time.dt.strftime(f"%Y-%m-%dT%H:%M:%S{micro_format}Z")

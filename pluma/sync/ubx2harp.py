@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from sklearn.linear_model import LinearRegression
 
 from pluma.stream.harp import HarpStream
-from pluma.stream.ubx import UbxStream, _UBX_MSGIDS, _UBX_CLASSES
+from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 
 class SyncTimestamp:
     def __init__(self,

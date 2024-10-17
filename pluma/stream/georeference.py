@@ -3,10 +3,10 @@ import geopandas
 
 import warnings
 from shapely.errors import ShapelyDeprecationWarning
-warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
-
 from pluma.export.maps import export_kml_line
 from pluma.sync import ClockReference, ClockRefId
+
+warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 
 class Georeference():

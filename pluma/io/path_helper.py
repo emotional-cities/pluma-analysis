@@ -28,7 +28,7 @@ class ComplexPath():
             return open(self.path, *args, **kwargs)
 
     def exists_s3fs(self):
-        return not(self.s3fs is None)
+        return self.s3fs is not None
 
     # Instance properties
     @property

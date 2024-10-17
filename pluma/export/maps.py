@@ -86,14 +86,14 @@ def exploremap(data: gpd.GeoDataFrame, **kwargs):
         minutes = (index - index[0]).to_series(index=data.index).dt.total_seconds() / 60
         kwargs['column'] = minutes
         legend_kwds = kwargs.get('legend_kwds', {})
-        if not 'caption' in legend_kwds:
+        if 'caption' not in legend_kwds:
             legend_kwds['caption'] = 'time (minutes)'
         kwargs['legend_kwds'] = legend_kwds
     elif isinstance(column, pd.Series):
         data[column.name] = column.reset_index(drop=True)
         kwargs['column'] = column.name
 
-    if not 'cmap' in kwargs:
+    if 'cmap' not in kwargs:
         kwargs['cmap'] = 'jet'
     return data.explore(**kwargs)
 

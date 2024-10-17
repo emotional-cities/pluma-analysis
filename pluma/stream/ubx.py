@@ -4,7 +4,7 @@ from dotmap import DotMap
 
 from pluma.stream import Stream, StreamType
 from pluma.stream.harp import HarpStream
-from pluma.io.ubx import load_ubx_event_stream, _UBX_MSGIDS, _UBX_CLASSES
+from pluma.io.ubx import load_ubx_event_stream, _UBX_MSGIDS
 from pluma.sync import ClockRefId
 
 

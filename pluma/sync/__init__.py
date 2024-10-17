@@ -1,4 +1,3 @@
-import pandas as pd
 from enum import Enum
 from typing import Callable, Union
 from sklearn.linear_model import LinearRegression

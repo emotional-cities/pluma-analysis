@@ -1,5 +1,3 @@
-import numpy as np
-import os
 import pandas as pd
 import warnings
 from pluma.stream import Stream, StreamType

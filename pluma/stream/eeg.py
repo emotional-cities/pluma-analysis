@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pandas as pd
-from typing import Union, Optional, Tuple
+from typing import Optional
 
 from pluma.stream import Stream, StreamType
 from pluma.io.eeg import load_eeg, synchronize_eeg_to_harp

@@ -1,13 +1,8 @@
 from dotmap import DotMap
 from typing import Union
-import numpy as np
 
 from pluma.stream.harp import HarpStream
 from pluma.stream.accelerometer import AccelerometerStream
-from pluma.stream.empatica import EmpaticaStream
-from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
-from pluma.stream.microphone import MicrophoneStream
-from pluma.stream.eeg import EegStream
 from pluma.stream.zeromq import GliaEyeTrackingStream, GliaHeartRateStream, GliaImuStream, UnityTransformStream, UnityPointToOriginWorldStream, UnityPointToOriginMapStream
 from pluma.stream.csv import CsvStream
 
@@ -29,7 +24,6 @@ def build_schema(root: Union[str, ComplexPath],
     root = ensure_complexpath(root)
     streams = DotMap()
 
-    glia_t_types = [('HardwareTime', np.ulonglong), ('OmniceptTime', np.ulonglong), ('SystemTime', np.ulonglong)]  # timestamp data types and labels for glia streams
 
     # BioData streams
     streams.BioData.EnableStreams =               HarpStream(32, device='BioData', streamlabel='EnableStreams', root=root, autoload=autoload, parent_dataset=parent_dataset)

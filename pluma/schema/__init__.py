@@ -6,9 +6,13 @@ import datetime
 from dotmap import DotMap
 from typing import Union, Optional, Callable
 
+from pandas import DataFrame
+from sklearn.linear_model import LinearRegression
+
 from pluma.export.streams import shift_stream_index
 from pluma.schema.outdoor import build_schema
 
+from pluma.stream.zeromq import UnityGeoreferenceStream, UnityTransformStream
 from pluma.sync.ubx2harp import (
     SyncLookup,
     get_clockcalibration_model,
@@ -89,6 +93,32 @@ class Dataset:
             self.georeference.strip()
         if calibrate_clock is True:
             self.georeference.clockreference.referenceid = ubxstream.clockreference.referenceid
+
+    def add_unity_georeference(
+        self, positionstream: UnityTransformStream, georeferencestream: UnityGeoreferenceStream, strip=True
+    ):
+        if positionstream.streamtype != StreamType.UNITY:
+            raise TypeError("Position must be a Unity Stream.")
+
+        if georeferencestream.streamtype != StreamType.UNITY:
+            raise TypeError("Georeference must be a Unity Stream.")
+
+        posdata = positionstream.data
+        geodata = georeferencestream.data
+        lon_model = LinearRegression().fit(geodata[["TargetPositionZ"]].values, geodata[["TargetLongitude"]])
+        lat_model = LinearRegression().fit(geodata[["TargetPositionX"]].values, geodata[["TargetLatitude"]])
+        alt_model = LinearRegression().fit(geodata[["TargetPositionY"]].values, geodata[["TargetAltitude"]])
+        navdata = DataFrame(
+            data={
+                "Longitude": lon_model.predict(posdata[["Transform.Position.Z"]]).reshape(-1),
+                "Latitude": lat_model.predict(posdata[["Transform.Position.X"]]).reshape(-1),
+                "Elevation": alt_model.predict(posdata[["Transform.Position.Y"]]).reshape(-1),
+            },
+            index=posdata.index,
+        )
+        self.georeference.from_dataframe(navdata)
+        if strip is True:
+            self.georeference.strip()
 
     @staticmethod
     def _iter_schema_streams(schema: Union[DotMap, Stream, None] = None):

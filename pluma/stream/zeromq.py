@@ -16,10 +16,10 @@ class ZmqStream(HarpStream):
         dtypes: list[tuple[str, type]],
         **kw,
     ):
-        self.streamtype = streamtype
         self.filenames = filenames
         self.dtypes = dtypes
         super(ZmqStream, self).__init__(eventcode, **kw)
+        self.streamtype = streamtype
 
     def resample(self):
         pass

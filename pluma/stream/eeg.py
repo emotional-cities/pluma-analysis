@@ -54,5 +54,8 @@ class EegStream(Stream):
             self.server_lsl_marker["Seconds"] += offset
         self.data.np_time += offset
 
+    def to_frame(self):
+        return pd.DataFrame(data=self.data.np_eeg, index=self.data.np_time)
+
     def __str__(self):
         return f"EEG stream from device {self.device}, stream {self.streamlabel}"

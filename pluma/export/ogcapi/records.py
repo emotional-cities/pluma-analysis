@@ -3,7 +3,7 @@ import isodate
 import pandas as pd
 from pathlib import Path
 from geopandas import GeoDataFrame
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pluma.schema import Dataset
 from dataclasses import dataclass, field, fields
@@ -46,7 +46,7 @@ class DatasetRecord:
         self.id = f"{root_path.name.lower()}"
         self.start_date = gdf.index[0]
         self.end_date = gdf.index[-1]
-        self.created_timestamp = pd.Timestamp(datetime.utcnow())
+        self.created_timestamp = pd.Timestamp(datetime.now(timezone.utc))
         self.updated_timestamp = self.created_timestamp
         self.resolution = isodate.duration_isoformat(pd.Timedelta(gdf.index.freq))
         self.bounds = gdf.total_bounds

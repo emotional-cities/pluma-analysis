@@ -56,18 +56,18 @@ def build_schema(root: Union[str, ComplexPath], parent_dataset=None, autoload: b
     streams.EEG =                           EegStream(device="Enobio", streamlabel="EEG", **kwargs)
 
     # Glia streams
-    streams.Glia.EyeTracking =              GliaEyeTrackingStream(215, device="Glia", streamlabel="EyeTracking", **kwargs)
-    streams.Glia.HeartRate =                GliaHeartRateStream(216, device="Glia", streamlabel="HeartRate", **kwargs)
-    streams.Glia.IMU =                      GliaImuStream(217, device="Glia", streamlabel="IMU", **kwargs)
-    streams.Glia.Mouth.Timestamps =         HarpStream(218, device="Glia", streamlabel="Mouth_Timestamps", **kwargs)
+    streams.Glia.EyeTracking =              GliaEyeTrackingStream(190, device="Glia", streamlabel="EyeTracking", **kwargs)
+    streams.Glia.HeartRate =                GliaHeartRateStream(191, device="Glia", streamlabel="HeartRate", **kwargs)
+    streams.Glia.IMU =                      GliaImuStream(192, device="Glia", streamlabel="IMU", **kwargs)
+    streams.Glia.Mouth.Timestamps =         HarpStream(193, device="Glia", streamlabel="Mouth_Timestamps", **kwargs)
     
     # Unity streams
-    streams.Unity.Transform =               UnityTransformStream(219, device="Unity", streamlabel="Transform", **kwargs)
-    streams.Unity.Video.Timestamps =        HarpStream(220, device="Unity", streamlabel="Video_Timestamps", **kwargs)
-    streams.Unity.Georeference =            UnityGeoreferenceStream(221, device="Unity", streamlabel="Georeference", **kwargs)
-    streams.Unity.SceneSequence =           ProtocolNewSceneStream(225, device="Unity", streamlabel="SceneSequence", **kwargs)
-    streams.Unity.ITI =                     ProtocolItiStream(226, device="Unity", streamlabel="ITI", **kwargs)
-    streams.Unity.PointToOriginWorld =      ProtocolPointToOriginWorldStream(227, device="Unity", streamlabel="PointToOriginWorld", **kwargs)
-    streams.Unity.PointToOriginMap =        ProtocolPointToOriginMapStream(228, device="Unity", streamlabel="PointToOriginMap", **kwargs)
+    streams.Unity.Transform =               UnityTransformStream(180, device="Unity", streamlabel="Transform", **kwargs)
+    streams.Unity.Georeference =            UnityGeoreferenceStream(181, device="Unity", streamlabel="Georeference", **kwargs)
+    streams.Unity.Video.Timestamps =        HarpStream(182, device="Unity", streamlabel="Video_Timestamps", **kwargs)
+    streams.Unity.SceneSequence =           ProtocolNewSceneStream(185, device="Unity", streamlabel="SceneSequence", **kwargs)
+    streams.Unity.ITI =                     ProtocolItiStream(186, device="Unity", streamlabel="ITI", **kwargs)
+    streams.Unity.PointToOriginWorld =      ProtocolPointToOriginWorldStream(187, device="Unity", streamlabel="PointToOriginWorld", **kwargs)
+    streams.Unity.PointToOriginMap =        ProtocolPointToOriginMapStream(188, device="Unity", streamlabel="PointToOriginMap", **kwargs)
 
     return streams

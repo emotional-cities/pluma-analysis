@@ -119,9 +119,13 @@ def load_server_lsl_markers(
     return df
 
 
-def synchronize_eeg_to_harp(server_lsl_markers: pd.DataFrame, min_q_r2: float = 0.999) -> LinearRegression:
-    valid_samples = pd.notna(server_lsl_markers["EegTimestamp"].values) & pd.notna(
-        server_lsl_markers["Seconds"].values
+def synchronize_eeg_to_harp(
+    server_lsl_markers: pd.DataFrame, min_q_r2: float = 0.999, event_mask: int = 0x8000
+) -> LinearRegression:
+    valid_samples = (
+        pd.notna(server_lsl_markers["EegTimestamp"].values)
+        & pd.notna(server_lsl_markers["Seconds"].values)
+        & (server_lsl_markers["MarkerIdx"] & event_mask == 0)
     )
     raw_harp_time = HarpStream.to_seconds(server_lsl_markers["Seconds"].values)
     eeg_time = server_lsl_markers["EegTimestamp"].values

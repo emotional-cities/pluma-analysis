@@ -110,8 +110,8 @@ class Dataset:
         alt_model = LinearRegression().fit(geodata[["TargetPositionY"]].values, geodata[["TargetAltitude"]])
         navdata = DataFrame(
             data={
-                "Longitude": lon_model.predict(posdata[["Transform.Position.Z"]]).reshape(-1),
                 "Latitude": lat_model.predict(posdata[["Transform.Position.X"]]).reshape(-1),
+                "Longitude": lon_model.predict(posdata[["Transform.Position.Z"]]).reshape(-1),
                 "Elevation": alt_model.predict(posdata[["Transform.Position.Y"]]).reshape(-1),
             },
             index=posdata.index,

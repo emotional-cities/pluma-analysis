@@ -82,8 +82,12 @@ class UbxStream(Stream):
         if decode_utc_time is True:
             # GPS epoch
             epoch = pd.Timestamp(1980, 1, 6)
-            reference = self.data["TIM_TM2"].Message[0]
-            offset = epoch + pd.Timedelta(weeks=reference.wnR)
+            if calibrate_clock:
+                reference = self.data["TIM_TM2"].Message[0]
+                offset = epoch + pd.Timedelta(weeks=reference.wnR)
+            else:
+                reference = self.data["TIM_TP"].Message[0]
+                offset = epoch + pd.Timedelta(weeks=reference.week)
             NavData["Time_UTC"] = offset + NavData["Time_iTow"].astype("timedelta64[ms]")
         self.positiondata = NavData
         return NavData

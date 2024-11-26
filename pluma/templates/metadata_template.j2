@@ -32,7 +32,7 @@
         "email": [
           {"value" : "{{ contact.email }}"}
         ]
-      }
+      }{{ "," if not loop.last }}
       {%- endfor %}
     ],
     "themes": [
@@ -42,11 +42,11 @@
           {% for concept in theme.concepts %}
           {
             "id": "{{ concept }}"
-          }
+          }{{ "," if not loop.last }}
           {% endfor %}
         ],
         "scheme": "{{ theme.scheme_url }}"
-      }
+      }{{ "," if not loop.last }}
       {%- endfor %}
     ],
     "formats": [

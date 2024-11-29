@@ -43,7 +43,7 @@ class RecordProperties:
 class DatasetRecord:
     def __init__(self, dataset: Dataset, gdf: GeoDataFrame, properties: RecordProperties) -> None:
         root_path = Path(dataset.rootfolder.path)
-        self.id = f"{root_path.name.lower()}"
+        self.id = dataset.datasetlabel or f"{root_path.name.lower()}"
         self.start_date = gdf.index[0]
         self.end_date = gdf.index[-1]
         self.created_timestamp = pd.Timestamp(datetime.now(timezone.utc))

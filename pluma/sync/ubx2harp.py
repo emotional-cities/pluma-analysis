@@ -2,6 +2,7 @@ import numpy as np
 from dataclasses import dataclass
 from sklearn.linear_model import LinearRegression
 
+from pluma.io.harp import to_harptime
 from pluma.stream.harp import HarpStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 
@@ -171,7 +172,7 @@ def get_clockcalibration_model(sync_lookup: SyncLookup, r2_min_qc: float = 0.99)
     harp_ts = sync_lookup.harp_ts
     align_lookup = sync_lookup.align_lookup
 
-    harp_ts_seconds = HarpStream.to_seconds(harp_ts.raw_ts_array)
+    harp_ts_seconds = to_harptime(harp_ts.raw_ts_array)
     x_gps_time = ubx_ts.raw_ts_array[align_lookup[:, 0]].reshape(-1, 1)
     y_harp_time = harp_ts_seconds[align_lookup[:, 1]]
     model = LinearRegression().fit(x_gps_time, y_harp_time)

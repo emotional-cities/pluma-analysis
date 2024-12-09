@@ -1,9 +1,8 @@
-import numpy as np
 import pandas as pd
 import datetime
 
 from pluma.stream import Stream, StreamType
-from pluma.io.harp import load_harp_stream, _HARP_T0
+from pluma.io.harp import load_harp_stream
 
 from pluma.stream.siconversion import SiUnitConversion
 
@@ -26,7 +25,7 @@ class HarpStream(Stream):
     def __init__(
         self,
         eventcode: int,
-        data: pd.DataFrame = pd.DataFrame(columns=["Seconds", "Value"]),
+        data: pd.DataFrame = pd.DataFrame(columns=["Timestamp", "Value"]),
         si_conversion: SiUnitConversion = SiUnitConversion(),
         clockreferenceid: ClockRefId = ClockRefId.HARP,
         **kw,
@@ -58,16 +57,6 @@ class HarpStream(Stream):
     def __str__(self):
         return f"Harp stream from device \
 		{self.device}, stream {self.streamlabel}({self.eventcode})"
-
-    @staticmethod
-    def to_seconds(index):
-        # Converts an harp referred timedelta to seconds (double)
-        return (index - np.datetime64(_HARP_T0)) / np.timedelta64(1, "s")
-
-    @staticmethod
-    def from_seconds(index):
-        # Converts seconds (double) back to a harp referenced timedelta
-        return (_HARP_T0 + pd.to_timedelta(index, "s")).values
 
     def export_to_csv(self, root_path, **kwargs):
         export_stream_to_csv(self, root_path, **kwargs)

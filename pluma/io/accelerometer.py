@@ -3,7 +3,7 @@ import warnings
 import pandas as pd
 
 from typing import Union
-from pluma.io.harp import _HARP_T0
+from pluma.io.harp import to_datetime
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 _accelerometer_header = [
@@ -30,7 +30,7 @@ _accelerometer_header = [
     "AccCalibEnabled",
     "MagCalibEnabled",
     "Temperature",
-    "Seconds",
+    "Timestamp",
     "SoftwareTimestamp",
 ]
 
@@ -40,12 +40,17 @@ def load_accelerometer(
 ) -> pd.DataFrame:
     """Loads the raw accelerometer data from file to a pandas DataFrame.
 
-    Args:
-        filename (str, optional): Input file name to target. Defaults to 'Accelerometer.csv'.
-        root (Union[str, ComplexPath], optional): Root path where filename is expected to be found. Defaults to ''.
+    Parameters
+    ----------
+        filename: str
+            Input file name to target. Defaults to 'Accelerometer.csv'.
+        root: str or ComplexPath
+            Root path where filename is expected to be found. Defaults to ''.
 
-    Returns:
-        pd.DataFrame: Dataframe with descriptive data indexed by time (Seconds)
+    Returns
+    -------
+        DataFrame
+            Dataframe with descriptive data indexed by time
     """
     path = ensure_complexpath(root)
     path.join(filename)
@@ -59,7 +64,7 @@ def load_accelerometer(
         warnings.warn(f"Accelerometer stream file {path} could not be found.")
         return
 
-    acc_df["Seconds"] = _HARP_T0 + pd.to_timedelta(acc_df["Seconds"].values, "s")
-    acc_df["SoftwareTimestamp"] = _HARP_T0 + pd.to_timedelta(acc_df["SoftwareTimestamp"].values, "s")
-    acc_df.set_index("Seconds", inplace=True)
+    acc_df["Timestamp"] = to_datetime(acc_df["Timestamp"].values)
+    acc_df["SoftwareTimestamp"] = to_datetime(acc_df["SoftwareTimestamp"].values)
+    acc_df.set_index("Timestamp", inplace=True)
     return acc_df

@@ -15,7 +15,7 @@ class EcgStream(HarpStream):
     def __init__(self, eventcode: int, clockreferenceid: ClockRefId = ClockRefId.HARP, **kw):
         super().__init__(
             eventcode,
-            data=pd.DataFrame(columns=["Seconds", "Value"]),
+            data=pd.DataFrame(columns=["Timestamp", "Value"]),
             si_conversion=SiUnitConversion(),
             clockreferenceid=clockreferenceid,
             **kw,

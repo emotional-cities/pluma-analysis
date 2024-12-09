@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Union
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
-from pluma.io.harp import _HARP_T0
+from pluma.io.harp import to_datetime
 
 
 _UBX_CLASSES = Enum(
@@ -118,15 +118,15 @@ def load_ubx_harp_ts(path: Union[str, ComplexPath] = "") -> pd.DataFrame:
     path = ensure_complexpath(path)
     try:
         with path.open("rb") as stream:
-            df = pd.read_csv(stream, header=None, names=("Seconds", "Class", "Identity"))
+            df = pd.read_csv(stream, header=None, names=("Timestamp", "Class", "Identity"))
     except FileNotFoundError:
         warnings.warn(f"UBX stream alignment file {path} could not be found.")
         return
     except FileExistsError:
         warnings.warn(f"UBX stream alignment file {path} could not be found.")
         return
-    df["Seconds"] = _HARP_T0 + pd.to_timedelta(df["Seconds"].values, "s")
-    df.set_index("Seconds", inplace=True)
+    df["Timestamp"] = to_datetime(df["Timestamp"].values)
+    df.set_index("Timestamp", inplace=True)
     return df
 
 
@@ -154,8 +154,8 @@ def load_ubx_event_stream(
     bin_file = load_ubx_bin_event(ubxmsgid=ubxmsgid, root=root, ubxfolder=ubxfolder)
     csv_file = load_ubx_harp_ts_event(ubxmsgid=ubxmsgid, root=root, ubxfolder=ubxfolder)
     if (bin_file["Class"].values == csv_file["Class"].values).all():
-        bin_file["Seconds"] = csv_file.index
-        bin_file = bin_file.set_index("Seconds")
+        bin_file["Timestamp"] = csv_file.index
+        bin_file = bin_file.set_index("Timestamp")
         return bin_file
     else:
         raise ValueError("Misalignment found between CSV and UBX arrays.")

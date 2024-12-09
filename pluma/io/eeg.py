@@ -6,12 +6,11 @@ import numpy as np
 from typing import Union, List, Optional, Tuple
 from sklearn.linear_model import LinearRegression
 
-from pluma.io.harp import _HARP_T0
+from pluma.io.harp import to_datetime, to_harptime
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 import mne
 from mne.io import Raw, read_raw_nedf
-from pluma.stream.harp import HarpStream
 
 
 def get_eeg_file(root: Union[str, ComplexPath] = "", if_multiple_load_index: int = -1) -> List[str]:
@@ -105,7 +104,7 @@ def load_server_lsl_markers(
         with path.open("rb") as stream:
             df = pd.read_csv(
                 stream,
-                names=["Seconds", "LslTimestamp", "MarkerIdx"],
+                names=["Timestamp", "LslTimestamp", "MarkerIdx"],
                 delimiter=",",
                 header=None,
                 skiprows=1,
@@ -115,7 +114,7 @@ def load_server_lsl_markers(
     except FileExistsError:
         raise FileExistsError(f"Eeg server lsl tags file {filename} could not be found.")
 
-    df["Seconds"] = _HARP_T0 + pd.to_timedelta(df["Seconds"].values, "s")
+    df["Timestamp"] = to_datetime(df["Timestamp"].values)
     return df
 
 
@@ -124,10 +123,10 @@ def synchronize_eeg_to_harp(
 ) -> LinearRegression:
     valid_samples = (
         pd.notna(server_lsl_markers["EegTimestamp"].values)
-        & pd.notna(server_lsl_markers["Seconds"].values)
+        & pd.notna(server_lsl_markers["Timestamp"].values)
         & (server_lsl_markers["MarkerIdx"] & event_mask == 0)
     )
-    raw_harp_time = HarpStream.to_seconds(server_lsl_markers["Seconds"].values)
+    raw_harp_time = to_harptime(server_lsl_markers["Timestamp"].values)
     eeg_time = server_lsl_markers["EegTimestamp"].values
     eeg_time = eeg_time.reshape(-1, 1)
     raw_harp_time = raw_harp_time.reshape(-1, 1)

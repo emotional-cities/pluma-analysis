@@ -3,12 +3,17 @@ import datetime
 
 import pandas as pd
 from dotmap import DotMap
-from typing import Union
+from typing import Sequence, Union
+from numpy.typing import ArrayLike
 
-from pluma.io.harp import _HARP_T0
+from pluma.io.harp import to_datetime
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 
 _EMPATICA_T0 = datetime.datetime(1970, 1, 1)
+
+
+def _E4_to_datetime(seconds: Union[float, ArrayLike, Sequence[float]]) -> datetime:
+    return _EMPATICA_T0 + pd.to_timedelta(seconds, "s")
 
 
 def load_empatica(
@@ -31,7 +36,7 @@ def load_empatica(
     path.join(filename)
     try:
         with path.open("rb") as stream:
-            df = pd.read_csv(stream, names=["Message", "Seconds"], delimiter=",", header=1)
+            df = pd.read_csv(stream, names=["Message", "Timestamp"], delimiter=",", header=1)
     except FileNotFoundError:
         warnings.warn(f"Empatica stream file {filename} could not be found.")
         return
@@ -40,14 +45,14 @@ def load_empatica(
         return
 
     clock_offset = None
-    df["Seconds"] = _HARP_T0 + pd.to_timedelta(df["Seconds"].values, "s")
+    df["Timestamp"] = to_datetime(df["Timestamp"].values)
     if align_timestamps:
         first_ts = next((x for _, x in df.iterrows() if x["Message"].startswith("E4_")), None)
         if first_ts is not None:
-            reference_ts = _EMPATICA_T0 + pd.to_timedelta(float(first_ts["Message"].split(" ")[1]), "s")
-            clock_offset = first_ts["Seconds"] - reference_ts
+            reference_ts = _E4_to_datetime(float(first_ts["Message"].split(" ")[1]))
+            clock_offset = first_ts["Timestamp"] - reference_ts
 
-    df.set_index("Seconds", inplace=True)
+    df.set_index("Timestamp", inplace=True)
     df["StreamId"] = df["Message"].apply(lambda x: x.split(" ")[0])
     _dict = {}
     for label, group in df.groupby("StreamId"):
@@ -68,12 +73,12 @@ def parse_empatica_stream(empatica_stream: pd.DataFrame, clock_offset: pd.Timede
     stream_id = empatica_stream["Message"][0].split(" ")[0]
     if stream_id == "E4_Acc":
         df = empatica_stream["Message"].str.split(pat=" ", expand=True)
-        df_labels = ["Stream", "E4_Seconds", "AccX", "AccY", "AccZ"]
+        df_labels = ["Stream", "E4_Timestamp", "AccX", "AccY", "AccZ"]
         df.columns = df_labels
         df[["AccX", "AccY", "AccZ"]] = df[["AccX", "AccY", "AccZ"]].astype(float)
-        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(df["E4_Seconds"].values.astype(float), "s")
+        df["E4_Timestamp"] = _E4_to_datetime(df["E4_Timestamp"].values.astype(float))
         if clock_offset is not None:
-            df.index = pd.DatetimeIndex(df["E4_Seconds"] + clock_offset, name=df.index.name)
+            df.index = pd.DatetimeIndex(df["E4_Timestamp"] + clock_offset, name=df.index.name)
 
     elif stream_id in [
         "E4_Hr",
@@ -85,12 +90,12 @@ def parse_empatica_stream(empatica_stream: pd.DataFrame, clock_offset: pd.Timede
         "E4_Temperature",
     ]:
         df = empatica_stream["Message"].str.split(pat=" ", expand=True)
-        df_labels = ["Stream", "E4_Seconds", "Value"]
+        df_labels = ["Stream", "E4_Timestamp", "Value"]
         df.columns = df_labels
         df[["Value"]] = df[["Value"]].astype(float)
-        df["E4_Seconds"] = _EMPATICA_T0 + pd.to_timedelta(df["E4_Seconds"].values.astype(float), "s")
+        df["E4_Timestamp"] = _E4_to_datetime(df["E4_Timestamp"].values.astype(float))
         if clock_offset is not None:
-            df.index = pd.DatetimeIndex(df["E4_Seconds"] + clock_offset, name=df.index.name)
+            df.index = pd.DatetimeIndex(df["E4_Timestamp"] + clock_offset, name=df.index.name)
     elif stream_id == "R":
         df = pd.DataFrame(index=empatica_stream.index.copy())
         df["Message"] = empatica_stream["Message"].apply(lambda a: a[2:])

@@ -4,9 +4,9 @@ import pandas as pd
 from typing import Optional
 
 from pluma.stream import Stream, StreamType
+from pluma.io.harp import to_datetime
 from pluma.io.eeg import load_eeg, synchronize_eeg_to_harp
 from pluma.sync import ClockRefId
-from pluma.stream.harp import HarpStream
 
 from mne.io import Raw
 
@@ -44,14 +44,12 @@ class EegStream(Stream):
     def align_to_harp(self):
         print("Attempting to automatically correct eeg timestamps to harp timestamps...")
         eeg_to_harp_model = synchronize_eeg_to_harp(self.server_lsl_marker)
-        self.data.np_time = HarpStream.from_seconds(
-            eeg_to_harp_model.predict(self.data.np_time.reshape(-1, 1)).flatten()
-        )
+        self.data.np_time = to_datetime(eeg_to_harp_model.predict(self.data.np_time.reshape(-1, 1)).flatten())
         print("Done.")
 
     def add_clock_offset(self, offset):
         if self.server_lsl_marker is not None:
-            self.server_lsl_marker["Seconds"] += offset
+            self.server_lsl_marker["Timestamp"] += offset
         self.data.np_time += offset
 
     def to_frame(self):

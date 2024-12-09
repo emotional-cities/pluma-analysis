@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 
 
 class Georeference:
-    _georeference_header = ["Seconds", "Longitude", "Latitude", "Elevation"]
+    _georeference_header = ["Timestamp", "Longitude", "Latitude", "Elevation"]
 
     def __init__(
         self,
@@ -83,8 +83,8 @@ class Georeference:
             return None
         else:
             if self._validate_build_spacetime_from_dataframe(df) is True:
-                if not (df.index.name == "Seconds"):
-                    df.set_index("Seconds", inplace=True)
+                if not (df.index.name == "Timestamp"):
+                    df.set_index("Timestamp", inplace=True)
                 gdf = geopandas.GeoDataFrame(
                     df,
                     geometry=geopandas.points_from_xy(
@@ -95,7 +95,7 @@ class Georeference:
 
     def _validate_build_spacetime_from_dataframe(self, df: pd.DataFrame) -> bool:
         offset = 0
-        if df.index.name == "Seconds":
+        if df.index.name == "Timestamp":
             offset = 1
 
         expected = [x for x in Georeference._georeference_header[offset:]]

@@ -3,7 +3,7 @@ import pandas as pd
 from dotmap import DotMap
 
 from pluma.stream import Stream, StreamType
-from pluma.stream.harp import HarpStream
+from pluma.io.harp import to_datetime
 from pluma.io.ubx import load_ubx_event_stream, _UBX_MSGIDS
 from pluma.sync import ClockRefId
 
@@ -76,9 +76,9 @@ class UbxStream(Stream):
         if calibrate_clock is True:
             iTow = NavData["Time_iTow"].values.reshape(-1, 1)
             iTowCorrected = self.calibrate_itow(iTow)
-            iTowCorrected = pd.DataFrame(HarpStream.from_seconds(iTowCorrected))
-            iTowCorrected.columns = ["Seconds"]
-            NavData.set_index(iTowCorrected["Seconds"], inplace=True)
+            iTowCorrected = pd.DataFrame(to_datetime(iTowCorrected))
+            iTowCorrected.columns = ["Timestamp"]
+            NavData.set_index(iTowCorrected["Timestamp"], inplace=True)
         if decode_utc_time is True:
             # GPS epoch
             epoch = pd.Timestamp(1980, 1, 6)

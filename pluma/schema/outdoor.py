@@ -31,12 +31,14 @@ def build_schema(root: Union[str, ComplexPath], parent_dataset=None, autoload: b
     # BioData streams
     streams.BioData.EnableStreams =         HarpStream(32, device="BioData", streamlabel="EnableStreams", **kwargs)
     streams.BioData.DisableStreams =        HarpStream(33, device="BioData", streamlabel="DisableStreams", **kwargs)
-    streams.BioData.ECG =                   EcgStream (35, device="BioData", streamlabel="ECG", **kwargs)
-    streams.BioData.GSR =                   HarpStream(36, device="BioData", streamlabel="GSR", **kwargs)
     streams.BioData.Accelerometer =         HarpStream(37, device="BioData", streamlabel="Accelerometer", **kwargs)
     streams.BioData.DigitalIn =             HarpStream(38, device="BioData", streamlabel="DigitalIn", **kwargs)
     streams.BioData.Set =                   HarpStream(39, device="BioData", streamlabel="Set", **kwargs)
     streams.BioData.Clear =                 HarpStream(40, device="BioData", streamlabel="Clear", **kwargs)
+
+    # Pluma streams
+    streams.Pluma.ECG =                     EcgStream (35, device="Pluma", streamlabel="ECG", **kwargs)
+    streams.Pluma.GSR =                     HarpStream(36, device="Pluma", streamlabel="GSR", **kwargs)
 
     # Pupil streams
     streams.PupilLabs.DecodedFrames =       HarpStream(209, device="PupilLabs", streamlabel="Pupil_RawFrames", **kwargs)

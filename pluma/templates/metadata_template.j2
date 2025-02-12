@@ -109,6 +109,24 @@
       "type": "application/geo+json",
       "title": "OGC API Tiles",
       "href": "https://emotional.byteroad.net/collections/{{ id }}/tiles"
+    },
+    {
+      "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geojson/{{ id }}.geojson",
+      "rel": "item",
+      "type": "application/geo+json",
+      "title": "GeoJson download link for {{ id }}"
+    },
+    {
+      "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geoparquet/{{ id }}.parquet",
+      "rel": "item",
+      "type": "application/vnd.apache.parquet",
+      "title": "GeoParquet download link for {{ id }}"
+    },
+    {
+      "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geopackage/{{ id }}.gpkg",
+      "rel": "item",
+      "type": "application/x-sqlite3",
+      "title": "GeoPackage download link for {{ id }}"
     }
   ]
 }

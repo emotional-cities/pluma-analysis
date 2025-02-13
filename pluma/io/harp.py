@@ -92,10 +92,10 @@ def read_harp_bin(file: Union[str, ComplexPath], time_offset: float = 0) -> pd.D
     if len(data) == 0:
         return None
 
-    stride = data[1] + 2
+    stride = int(data[1] + 2)
     length = len(data) // stride
     payloadsize = stride - 12
-    payloadtype = _payloadtypes[data[4] & ~0x10]
+    payloadtype = _payloadtypes[data[4] & ~np.uint8(0x10)]
     elementsize = payloadtype.itemsize
     payloadshape = (length, payloadsize // elementsize)
     seconds = np.ndarray(length, dtype=np.uint32, buffer=data, offset=5, strides=stride)

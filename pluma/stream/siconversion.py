@@ -19,9 +19,10 @@ class SiUnitConversion:
             raise AssertionError("No conversion units are set.")
 
         if not (n_handles == n_units == n_col):
-            raise AssertionError(f"Number of SI conversion handles (={n_handles}),\
-        units' labels (={n_units}),\
-            and DataFrame columns (={n_col}) must be the same")
+            raise AssertionError(
+                f"Number of SI conversion handles (={n_handles}), units' labels (={n_units}),\
+                  and DataFrame columns (={n_col}) must be the same"
+            )
 
     def convert_to_si(self, df: pd.DataFrame) -> pd.DataFrame:
         if self.is_si:

@@ -28,7 +28,7 @@ def get_eeg_file(root: Union[str, ComplexPath] = "", if_multiple_load_index: int
         ret = None
     elif len(expected_files) > 1:
         warnings.warn(
-            f"Multiple *.nedf files found in {root}. " f"Loading {expected_files[if_multiple_load_index]}."
+            f"Multiple *.nedf files found in {root}. Loading {expected_files[if_multiple_load_index]}."
         )
         ret = expected_files[if_multiple_load_index]
     else:

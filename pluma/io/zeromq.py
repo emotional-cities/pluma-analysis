@@ -25,10 +25,8 @@ def load_zeromq(
 
             data_frames.append(pd.DataFrame(np.fromfile(path.path, dtype=np.dtype(dtypes[i]))))
     except FileNotFoundError:
-        warnings.warn(f"Stream file\
-                {path} could not be found.")
+        warnings.warn(f"Stream file {path} could not be found.")
     except FileExistsError:
-        warnings.warn(f"Stream file\
-                {path} could not be found.")
+        warnings.warn(f"Stream file {path} could not be found.")
 
     return pd.concat(data_frames, axis=1)

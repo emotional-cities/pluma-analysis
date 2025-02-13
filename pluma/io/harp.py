@@ -84,12 +84,10 @@ def read_harp_bin(file: Union[str, ComplexPath], time_offset: float = 0) -> pd.D
         with path.open("rb") as stream:
             data = np.frombuffer(stream.read(), dtype=np.uint8)
     except FileNotFoundError:
-        warnings.warn(f"Harp stream file\
-            {path} could not be found.")
+        warnings.warn(f"Harp stream file {path} could not be found.")
         return pd.DataFrame()
     except FileExistsError:
-        warnings.warn(f"Harp stream file\
-            {path} could not be found.")
+        warnings.warn(f"Harp stream file {path} could not be found.")
         return pd.DataFrame()
     if len(data) == 0:
         return None

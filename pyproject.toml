@@ -47,16 +47,14 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-    "setuptools_scm",
     "ruff",
 ]
 
+[tool.ruff]
+line-length = 110
+
 [build-system]
-requires = [
-    "setuptools>=45",
-    "wheel",
-    "setuptools_scm[toml]>=6.2",
-]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -66,6 +64,4 @@ include-package-data = true
 include = ["pluma*"]
 
 [tool.setuptools_scm]
-
-[tool.ruff]
-line-length = 110
+version_file = "pluma/_version.py"

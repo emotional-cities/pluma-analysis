@@ -25,6 +25,7 @@ dependencies = [
     "tilemapbase",
     "dotmap",
     "mne",
+    "defusedxml",
     "heartpy",
     "setuptools",
     "simplekml",

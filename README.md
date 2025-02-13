@@ -1,21 +1,27 @@
 # pluma-analysis
 
+![build](https://github.com/emotional-cities/pluma-analysis/actions/workflows/build.yml/badge.svg?branch=main)
+
 A low-level interface to data collected with the [pluma](https://github.com/emotional-cities/pluma) urban data acquisition system. Data used in the notebooks has been made publicly available in Amazon Simple Storage Service (S3) buckets.
 
 More information about sample data sharing can be found in the [eMOTIONAL Cities data-share repository](https://github.com/emotional-cities/data-share).
 
-## Compatible Environments
+## Set-up Instructions
 
-[Visual Studio Code](https://code.visualstudio.com/): All notebooks have been tested in Visual Studio Code on a Windows platform. Tests in other platforms and environments are forthcoming and will be added here.
+We recommend [uv](https://docs.astral.sh/uv/) for python version, environment, and package dependency management. However, any other tool compatible with the `pyproject.toml` standard should work.
 
-## How to build
+### Install from PyPI
 
-1. Open project folder in VS Code
-2. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html) (Python 3.9)
-3. Install [Python Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
-4. Create environment from VS Code:
-  - `Ctrl+Shift+P` > `Create Environment`
-  - Select `.conda` environment
-5. Make sure correct environment is selected in the notebook
+```
+uv pip install pluma-analysis
+```
 
-The current notebook requires Python 3.9+ to run successfully. The file `environment.yml` contains the list of minimal package dependencies required.
+### Install from source
+
+```
+git clone https://github.com/emotional-cities/pluma-analysis.git
+cd pluma-analysis
+uv sync --all-extras
+```
+
+This package was developed for the eMOTIONAL CITIES Project, which received funding from European Union’s Horizon 2020 research and innovation programme, under the grant agreement No 945307. The eMOTIONAL CITIES Project is a consortium of 12 partners co-coordinated by IGOT and FMUL, taking place between 2021 and 2025. More information at https://emotionalcities-h2020.eu/

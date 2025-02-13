@@ -51,7 +51,7 @@ class PupilGazeStream(ZmqStream):
                 "PupilLabs/Gaze_Frame2.bin",
             ],
             dtypes=[
-                [("SensorId", np.string_, 36)],
+                [("SensorId", np.bytes_, 36)],
                 [("Timestamp", np.uint64)],
                 [("GazeX", np.single), ("GazeY", np.single)],
             ],
@@ -70,7 +70,7 @@ class PupilWorldCameraStream(ZmqStream):
                 "PupilLabs/WorldCamera_Frame2.bin",
             ],
             dtypes=[
-                [("SensorId", np.string_, 36)],
+                [("SensorId", np.bytes_, 36)],
                 [
                     ("Format", np.uint32),
                     ("Width", np.uint32),

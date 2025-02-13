@@ -62,12 +62,10 @@ def read_ubx_file(path: Union[str, ComplexPath]) -> pd.DataFrame:
         with path.open("rb") as fstream:
             out = read(fstream)
     except FileNotFoundError:
-        warnings.warn(f"UBX file\
-            {path} could not be found.")
+        warnings.warn(f"UBX file {path} could not be found.")
         return pd.DataFrame()
     except FileExistsError:
-        warnings.warn(f"UBX file\
-            {path} could not be found.")
+        warnings.warn(f"UBX file {path} could not be found.")
         return pd.DataFrame()
 
     df = pd.DataFrame({"Message": out})

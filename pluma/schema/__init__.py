@@ -129,8 +129,7 @@ class Dataset:
                 for _nested in Dataset._iter_schema_streams(_stream):
                     yield _nested
         else:
-            raise TypeError(f"Invalid type was found. Must be of \
-                            {Union[DotMap, Stream]}")
+            raise TypeError(f"Invalid type was found. Must be of {Union[DotMap, Stream]}")
 
     def reload_streams(self, force_load: bool = False) -> None:
         """Recursively loads, from disk , all available streams in the streams' schema

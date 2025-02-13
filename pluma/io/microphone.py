@@ -32,9 +32,7 @@ def load_microphone(
             micdata = np.frombuffer(stream.read(), dtype=dtype)
             micdata = micdata.reshape((-1, channels))
     except FileNotFoundError:
-        warnings.warn(f"Microphone stream file\
-            {path} could not be found.")
+        warnings.warn(f"Microphone stream file {path} could not be found.")
     except FileExistsError:
-        warnings.warn(f"Microphone stream file\
-            {path} could not be found.")
+        warnings.warn(f"Microphone stream file {path} could not be found.")
     return micdata

@@ -44,8 +44,7 @@ def export_stream_to_csv(
             resampling_function_kws=resampling_function_kws,
         )
     else:
-        raise NotImplementedError(f"Export of stream type\
-                                  {type(stream)} is not yet supported.")
+        raise NotImplementedError(f"Export of stream type {type(stream)} is not yet supported.")
 
 
 def export_uniform_table_stream(

@@ -31,11 +31,9 @@ class CsvStream(Stream):
         try:
             self.data = pd.read_csv(path.path)
         except FileNotFoundError:
-            warnings.warn(f"Glia stream file\
-                        {path} could not be found.")
+            warnings.warn(f"Glia stream file {path} could not be found.")
         except FileExistsError:
-            warnings.warn(f"Glia stream file\
-                        {path} could not be found.")
+            warnings.warn(f"Glia stream file {path} could not be found.")
 
     def resample(self):
         pass

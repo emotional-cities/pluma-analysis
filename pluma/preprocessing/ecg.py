@@ -20,7 +20,7 @@ def heartrate_from_ecg(
     Args:
         ecg_data (Stream or DataFrame): ECG input data
         sample_rate (float, optional): ECG sampling rate (Hz). Defaults to 50.
-        skip_slice (int, optional): How to slice the incoming raw array. Fs corresponds to the sampling rate post-slicing. Defaults to 4.
+        skip_slice (int, optional): How to slice the incoming raw array. Fs corresponds to the sampling rate post-slicing. Defaults to 20.
         bpmmax (float, optional): Maximum theoretical heartrate. Defaults to 200.0.
         highpass_cutoff (float, optional): Cutoff frequency of the high-pass filter (Hz). Defaults to 5.
         segment_width (int, optional): Segment window size (in seconds) over which to compute heartrate. Defaults to 5.
@@ -37,7 +37,7 @@ def heartrate_from_ecg(
     if invert:
         ecg = ecg * (-1.0)
 
-    # sensor acquires at 50hz but saves at 1khz
+    # sensor acquires at 50hz but is sampled at 1khz
     ecg = ecg.Value0[::skip_slice].astype(np.float64)
 
     # high-pass filter seems to give consistently less rejected peaks than notch

@@ -140,9 +140,7 @@ def get_clockcalibration_lookup(
 ) -> SyncLookup:
     # Get the TIM_TM2 Message that timestamps the incoming TTL
     if not (ubx_stream.has_event(_UBX_MSGIDS.TIM_TM2)):
-        raise KeyError(f"UbxStream does not contain \
-            {_UBX_MSGIDS.TIM_TM2.value}\
-                event. Try to load it?")
+        raise KeyError(f"UbxStream does not contain {_UBX_MSGIDS.TIM_TM2.value} event. Try to load it?")
 
     tim_tm2 = ubx_stream.data.TIM_TM2.copy()  # TTL
     tim_tm2.insert(

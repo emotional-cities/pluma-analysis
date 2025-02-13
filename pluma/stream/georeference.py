@@ -102,8 +102,7 @@ class Georeference:
         got = [x for x in df.columns]
 
         if not (all(elem in got for elem in expected)):
-            raise KeyError(f"Not compatible. Expected {expected}\
-                , and got {got}")
+            raise KeyError(f"Not compatible. Expected {expected} , and got {got}")
         else:
             return True
 

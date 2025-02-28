@@ -16,7 +16,7 @@ class PupilGazeStream(ZmqStream):
             ],
             dtypes=[
                 [("SensorId", np.bytes_, 36)],
-                [("Timestamp", np.uint64)],
+                [("PupilTime", np.uint64)],
                 [("GazeX", np.single), ("GazeY", np.single)],
             ],
             **kw,
@@ -40,7 +40,7 @@ class PupilWorldCameraStream(ZmqStream):
                     ("Width", np.uint32),
                     ("Height", np.uint32),
                     ("Sequence", np.uint32),
-                    ("Timestamp", np.uint64),
+                    ("PupilTime", np.uint64),
                     ("DataBytes", np.uint32),
                     ("Reserved", np.uint32),
                 ],

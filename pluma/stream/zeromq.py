@@ -14,12 +14,16 @@ class ZmqStream(HarpStream):
         streamtype: StreamType,
         filenames: list[str],
         dtypes: list[tuple[str, type]],
+        clocksource: str | None = None,
+        clockunit: str | None = None,
         **kw,
     ):
         self.filenames = filenames
         self.dtypes = dtypes
         super(ZmqStream, self).__init__(eventcode, **kw)
         self.streamtype = streamtype
+        self.clocksource = clocksource
+        self.clockunit = clockunit
 
     def resample(self):
         pass
@@ -32,6 +36,9 @@ class ZmqStream(HarpStream):
         self.data = pd.DataFrame(np.arange(len(self.data)), index=self.data.index, columns=["Counter"])
         zmq_data = load_zeromq(self.filenames, self.dtypes, root=self.rootfolder)
         self.data = self.data.join(zmq_data, on="Counter")
+        if self.clocksource is not None:
+            counter_timedelta = pd.to_timedelta(self.data[self.clocksource] - self.data[self.clocksource][0], self.clockunit)
+            self.data.index = self.data.index[0] + counter_timedelta
 
     def export_to_csv(self, export_path):
         self.data.to_csv(export_path)

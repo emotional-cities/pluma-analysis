@@ -9,11 +9,11 @@ class UnityTransformStream(ZmqStream):
         super(UnityTransformStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=["Unity/VRTransform_Frame1.bin", "Unity/VRTransform_Frame2.bin"],
             dtypes=[
-                [("SystemDateTime", np.ulonglong)],
+                [("Timestamp", np.ulonglong)],
                 [
                     ("Transform.Position.X", np.single),
                     ("Transform.Position.Y", np.single),
@@ -32,14 +32,14 @@ class UnityGeoreferenceStream(ZmqStream):
         super(UnityGeoreferenceStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=[
                 "Unity/Georeference_Frame1.bin",
                 "Unity/Georeference_Frame2.bin",
             ],
             dtypes=[
-                [("SystemDateTime", np.ulonglong)],
+                [("Timestamp", np.ulonglong)],
                 [
                     ("TargetPositionX", np.single),
                     ("TargetPositionY", np.single),
@@ -58,14 +58,14 @@ class ProtocolPointToOriginWorldStream(ZmqStream):
         super(ProtocolPointToOriginWorldStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=[
                 "Protocol/PointToOriginWorld_Frame1.bin",
                 "Protocol/PointToOriginWorld_Frame2.bin",
             ],
             dtypes=[
-                [("SystemDateTime", np.ulonglong)],
+                [("Timestamp", np.ulonglong)],
                 [
                     ("Origin.Position.X", np.single),
                     ("Origin.Position.Y", np.single),
@@ -90,14 +90,14 @@ class ProtocolPointToOriginMapStream(ZmqStream):
         super(ProtocolPointToOriginMapStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=[
                 "Protocol/PointToOriginMap_Frame1.bin",
                 "Protocol/PointToOriginMap_Frame2.bin",
             ],
             dtypes=[
-                [("SystemDateTime", np.ulonglong)],
+                [("Timestamp", np.ulonglong)],
                 [
                     ("Origin.Position.X", np.single),
                     ("Origin.Position.Y", np.single),
@@ -116,11 +116,11 @@ class ProtocolNewSceneStream(ZmqStream):
         super(ProtocolNewSceneStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=["Protocol/NewScene_Frame1.bin", "Protocol/NewScene_Frame2.bin"],
             dtypes=[
-                [("SystemDateTime", np.ulonglong)],
+                [("Timestamp", np.ulonglong)],
                 [
                     ("SceneType", np.intc),
                     ("SpawnID", np.intc),
@@ -136,9 +136,9 @@ class ProtocolItiStream(ZmqStream):
         super(ProtocolItiStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
-            clocksource="SystemDateTime",
+            clocksource="Timestamp",
             clockunit="us",
             filenames=["Protocol/ITI_Frame1.bin", "Protocol/ITI_Frame2.bin"],
-            dtypes=[[("SystemDateTime", np.ulonglong)], [("InterTrialInterval", np.single)]],
+            dtypes=[[("Timestamp", np.ulonglong)], [("InterTrialInterval", np.single)]],
             **kw,
         )

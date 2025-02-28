@@ -8,7 +8,7 @@ from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.ubx import UbxStream, _UBX_MSGIDS
 from pluma.stream.microphone import MicrophoneStream
 from pluma.stream.eeg import EegStream
-from pluma.stream.zeromq import PupilGazeStream, PupilWorldCameraStream
+from pluma.stream.pupil import PupilGazeStream, PupilWorldCameraStream
 
 from pluma.io.path_helper import ComplexPath, ensure_complexpath
 

@@ -6,10 +6,8 @@ from pluma.stream.eeg import EegStream
 from pluma.stream.empatica import EmpaticaStream
 from pluma.stream.harp import HarpStream
 from pluma.stream.accelerometer import AccelerometerStream
-from pluma.stream.zeromq import (
-    GliaEyeTrackingStream,
-    GliaHeartRateStream,
-    GliaImuStream,
+from pluma.stream.glia import GliaEyeTrackingStream, GliaHeartRateStream, GliaImuStream
+from pluma.stream.unity import (
     ProtocolItiStream,
     ProtocolNewSceneStream,
     UnityGeoreferenceStream,

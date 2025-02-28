@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 from pluma.export.streams import shift_stream_index
 from pluma.schema.outdoor import build_schema
 
-from pluma.stream.zeromq import UnityGeoreferenceStream, UnityTransformStream
+from pluma.stream.unity import UnityGeoreferenceStream, UnityTransformStream
 from pluma.sync.ubx2harp import (
     SyncLookup,
     get_clockcalibration_model,

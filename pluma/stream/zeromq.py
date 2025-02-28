@@ -38,7 +38,9 @@ class ZmqStream(HarpStream):
         self.data = self.data.join(zmq_data, on="Counter")
         if self.clocksource is not None:
             index_name = self.data.index.name
-            counter_timedelta = pd.to_timedelta(self.data[self.clocksource] - self.data[self.clocksource][0], self.clockunit)
+            counter_timedelta = pd.to_timedelta(
+                self.data[self.clocksource] - self.data[self.clocksource][0], self.clockunit
+            )
             self.data.index = self.data.index[0] + counter_timedelta
             self.data.index.name = index_name
 

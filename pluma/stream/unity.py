@@ -9,6 +9,8 @@ class UnityTransformStream(ZmqStream):
         super(UnityTransformStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=["Unity/VRTransform_Frame1.bin", "Unity/VRTransform_Frame2.bin"],
             dtypes=[
                 [("SystemDateTime", np.ulonglong)],
@@ -30,6 +32,8 @@ class UnityGeoreferenceStream(ZmqStream):
         super(UnityGeoreferenceStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=[
                 "Unity/Georeference_Frame1.bin",
                 "Unity/Georeference_Frame2.bin",
@@ -54,6 +58,8 @@ class ProtocolPointToOriginWorldStream(ZmqStream):
         super(ProtocolPointToOriginWorldStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=[
                 "Protocol/PointToOriginWorld_Frame1.bin",
                 "Protocol/PointToOriginWorld_Frame2.bin",
@@ -84,6 +90,8 @@ class ProtocolPointToOriginMapStream(ZmqStream):
         super(ProtocolPointToOriginMapStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=[
                 "Protocol/PointToOriginMap_Frame1.bin",
                 "Protocol/PointToOriginMap_Frame2.bin",
@@ -108,6 +116,8 @@ class ProtocolNewSceneStream(ZmqStream):
         super(ProtocolNewSceneStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=["Protocol/NewScene_Frame1.bin", "Protocol/NewScene_Frame2.bin"],
             dtypes=[
                 [("SystemDateTime", np.ulonglong)],
@@ -126,6 +136,8 @@ class ProtocolItiStream(ZmqStream):
         super(ProtocolItiStream, self).__init__(
             eventcode,
             streamtype=StreamType.UNITY,
+            clocksource="SystemDateTime",
+            clockunit="us",
             filenames=["Protocol/ITI_Frame1.bin", "Protocol/ITI_Frame2.bin"],
             dtypes=[[("SystemDateTime", np.ulonglong)], [("InterTrialInterval", np.single)]],
             **kw,

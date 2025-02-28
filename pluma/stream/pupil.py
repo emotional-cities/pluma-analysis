@@ -9,6 +9,8 @@ class PupilGazeStream(ZmqStream):
         super(PupilGazeStream, self).__init__(
             eventcode,
             streamtype=StreamType.PUPIL,
+            clocksource="PupilTime",
+            clockunit="us",
             filenames=[
                 "PupilLabs/Gaze_Frame0.bin",
                 "PupilLabs/Gaze_Frame1.bin",
@@ -28,6 +30,8 @@ class PupilWorldCameraStream(ZmqStream):
         super(PupilWorldCameraStream, self).__init__(
             eventcode,
             streamtype=StreamType.PUPIL,
+            clocksource="PupilTime",
+            clockunit="us",
             filenames=[
                 "PupilLabs/WorldCamera_Frame0.bin",
                 "PupilLabs/WorldCamera_Frame1.bin",

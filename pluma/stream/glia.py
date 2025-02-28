@@ -9,6 +9,8 @@ class GliaEyeTrackingStream(ZmqStream):
         super(GliaEyeTrackingStream, self).__init__(
             eventcode,
             streamtype=StreamType.GLIA,
+            clocksource="OmniceptTime",
+            clockunit="us",
             filenames=["Glia/EyeTracking_Frame1.bin", "Glia/EyeTracking_Frame2.bin"],
             dtypes=[
                 [
@@ -46,6 +48,8 @@ class GliaHeartRateStream(ZmqStream):
         super(GliaHeartRateStream, self).__init__(
             eventcode,
             streamtype=StreamType.GLIA,
+            clocksource="OmniceptTime",
+            clockunit="us",
             filenames=["Glia/HeartRate_Frame1.bin", "Glia/HeartRate_Frame2.bin"],
             dtypes=[
                 [
@@ -64,6 +68,8 @@ class GliaImuStream(ZmqStream):
         super(GliaImuStream, self).__init__(
             eventcode,
             streamtype=StreamType.GLIA,
+            clocksource="OmniceptTime",
+            clockunit="us",
             filenames=["Glia/IMU_Frame1.bin", "Glia/IMU_Frame2.bin"],
             dtypes=[
                 [
